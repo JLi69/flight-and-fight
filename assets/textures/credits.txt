@@ -1,0 +1,40 @@
+TEXTURES CREDITS:
+
+grass.png: https://opengameart.org/content/seamless-grass-texture
+used in terraintextures.png
+
+sand.png: https://opengameart.org/content/seamless-beach-sand
+used in terraintextures.png
+
+stone.png: https://opengameart.org/node/15623
+used in terraintextures.png
+
+snow.png: https://opengameart.org/content/seamless-snow-texture-0
+used in terraintextures.png
+
+waternormals.png: https://watersimulation.tumblr.com/post/115928250077/scrolling-normal-maps
+
+waterdudv.png: https://www.dropbox.com/sh/lwvm5i223cwd5ue/AADedi_y3XTQ_j2aD2oH4DLKa?dl=0
+(linked from this wonderful video by ThinMatrix: https://www.youtube.com/watch?v=7T5o4vZXAvI)
+
+tree_bark.png - copyright Blender Foundation | apricot.blender.org 
+License: CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
+Used as bark texture for tree textures
+
+shrub2.png - by "bart" (https://opengameart.org/content/3-tiling-shrub-textures) 
+used as texture for "pinetreetexture.png"
+License: CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
+
+also used the shape of pine_leaves.png from quaternius to create the shape of
+the pine tree branches
+(https://opengameart.org/content/lowpoly-textured-trees-pineleavespng)
+
+used leaves texture from https://opengameart.org/node/10501
+by lauris71
+licensed under CC-BY-SA 3.0 or GPL 3.0 
+used part of the leaves texture for leaves in "treetexture.png"
+also modified to be more "green"
+(https://creativecommons.org/licenses/by-sa/3.0/)
+
+Consider all textures used to be distributed under the CC-BY-SA 3.0 license
+(https://creativecommons.org/licenses/by-sa/3.0/)

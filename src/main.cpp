@@ -41,13 +41,12 @@ int main(int argc, char *argv[])
 	State* state = State::get();
 	Camera& cam = state->getCamera();
 
-	printf("seed: %d\n", argvals.seed);
 	infworld::worldseed permutations = infworld::makePermutations(argvals.seed, 9);
 
 	//Initialize glfw and glad, if any of this fails, kill the program
 	if(!glfwInit()) 
 		die("Failed to init glfw!");
-	GLFWwindow* window = glfwCreateWindow(960, 720, "infworld", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(960, 720, "flight sim", NULL, NULL);
 	if(!window)
 		die("Failed to create window!");
 	glfwMakeContextCurrent(window);
@@ -75,18 +74,23 @@ int main(int argc, char *argv[])
 	gfx::Vao 
 		tree = plants::createTreeModel(6),
 		treelowdetail = plants::createTreeModel(3);
+	//Plane model
+	gfx::Vao plane = gfx::createModelVao(mesh::loadObjModel("assets/models/plane.obj"));
 	//Textures
 	unsigned int terraintextures;
 	glGenTextures(1, &terraintextures); 
-	gfx::loadTexture("assets/textures/terraintextures.png", terraintextures); 
+	gfx::loadTexture("assets/textures/terraintextures.png", terraintextures, false); 
 	unsigned int watermaps;
 	glGenTextures(1, &watermaps);
-	gfx::loadTexture("assets/textures/watermaps.png", watermaps);
+	gfx::loadTexture("assets/textures/watermaps.png", watermaps, false);
 	unsigned int pinetexture, treetexture;
 	glGenTextures(1, &pinetexture);
 	glGenTextures(1, &treetexture);	
-	gfx::loadTexture("assets/textures/pinetreetexture.png", pinetexture);
-	gfx::loadTexture("assets/textures/treetexture.png", treetexture);
+	gfx::loadTexture("assets/textures/pinetreetexture.png", pinetexture, false);
+	gfx::loadTexture("assets/textures/treetexture.png", treetexture, false);
+	unsigned int planetexture;
+	glGenTextures(1, &planetexture);
+	gfx::loadTexture("assets/textures/planetexture.png", planetexture, true);
 	unsigned int skyboxcubemap;
 	glGenTextures(1, &skyboxcubemap);
 	const std::vector<std::string> faces = {
@@ -104,6 +108,7 @@ int main(int argc, char *argv[])
 	ShaderProgram simpleWaterShader("assets/shaders/instancedvert.glsl", "assets/shaders/watersimplefrag.glsl");
 	ShaderProgram skyboxShader("assets/shaders/skyboxvert.glsl", "assets/shaders/skyboxfrag.glsl");
 	ShaderProgram treeShader("assets/shaders/tree-vert.glsl", "assets/shaders/textured-frag.glsl");
+	ShaderProgram texturedShader("assets/shaders/vert.glsl", "assets/shaders/textured-frag.glsl");
 	float viewdist = CHUNK_SZ * SCALE * 2.0f * float(argvals.range) * std::pow(LOD_SCALE, MAX_LOD - 2);
 	waterShader.use();
 	waterShader.uniformFloat("viewdist", viewdist);
@@ -247,6 +252,19 @@ int main(int argc, char *argv[])
 		waterShader.uniformMat4x4("transform", transform);
 		glDrawElementsInstanced(GL_TRIANGLES, quad.vertcount, GL_UNSIGNED_INT, 0, count);
 		glEnable(GL_CULL_FACE);
+
+		//Display plane	
+		texturedShader.use();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, planetexture);
+		texturedShader.uniformMat4x4("persp", persp);
+		texturedShader.uniformMat4x4("view", view);
+		texturedShader.uniformVec3("lightdir", glm::normalize(glm::vec3(-1.0f)));
+		transform = glm::mat4(1.0f);	
+		transform = glm::translate(transform, glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
+		texturedShader.uniformMat4x4("transform", transform);
+		plane.bind();
+		glDrawElements(GL_TRIANGLES, plane.vertcount, GL_UNSIGNED_INT, 0);
 
 		//Draw skybox
 		glCullFace(GL_FRONT);

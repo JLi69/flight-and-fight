@@ -64,6 +64,8 @@ namespace mesh {
 	void transformModelTc(Model &model, const glm::mat4 &transform);
 	//Combines two models, returns the combined model
 	Model mergeModels(const Model &model1, const Model &model2);
+	//Loads a model from an obj file, uses the fast_obj library as a dependency
+	Model loadObjModel(const char *path);
 }
 
 namespace gfx {
@@ -78,6 +80,8 @@ namespace gfx {
 	Vao createQuadVao();
 	//Create a cube vao (only position vectors - not texture/normal data)
 	Vao createCubeVao();
+	//Creates a vao from a model (has normal and texture coordinate data)
+	Vao createModelVao(const mesh::Model &model);
 	void destroyVao(Vao &vao);
 
 	//Outputs opengl errors
@@ -87,7 +91,8 @@ namespace gfx {
 	GLenum getFormat(int channels); 
 	//Loads a texture from 'path' and passes its data to textureid
 	//returns true if texture is successfully read, false otherwise
-	bool loadTexture(const char *path, unsigned int textureid);
+	//also has a flag for whether the image should be flipped vertically
+	bool loadTexture(const char *path, unsigned int textureid, bool flipvertical);
 	//Attempts to load all 6 faces of a cubemap from a vector of 6 paths
 	//If loading a face fails, the function will return false, otherwise true
 	bool loadCubemap(const std::vector<std::string> &faces, unsigned int textureid);

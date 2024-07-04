@@ -3,7 +3,10 @@
 #include "gfx.hpp"
 #include <stdio.h>
 #include <stb_image/stb_image.h>
+#include <fast_obj/fast_obj.h>
 #include <assert.h>
+#include <unordered_map>
+#include <sstream>
 
 namespace mesh {
 	void addToMesh(Meshf &mesh, const glm::vec3 &v)
@@ -281,6 +284,81 @@ namespace mesh {
 		return merged;
 	}
 
+	std::string indicesToStr(unsigned int v, unsigned int t, unsigned int n)
+	{
+		std::stringstream ss;
+		ss << v << '/' << t << '/' << n;
+		return ss.str();
+	}
+
+	Model loadObjModel(const char *path)
+	{
+		fastObjMesh* m = fast_obj_read(path);
+
+		if(!m) {
+			fast_obj_destroy(m);
+			fprintf(stderr, "Failed to open file: %s\n", path);
+			return mesh::Model();
+		}
+
+		mesh::Model model;
+
+		std::vector<glm::vec3> vertices;
+		std::vector<glm::vec3> normals;
+		std::vector<glm::vec2> texturecoords;
+
+		vertices.reserve(m->position_count);
+		for(int i = 0; i < m->position_count; i++) {
+			int index = i * 3;
+			glm::vec3 pos(
+				m->positions[index],
+				m->positions[index + 1],
+				m->positions[index + 2]
+			);
+			vertices.push_back(pos);
+		}
+
+		normals.reserve(m->normal_count);
+		for(int i = 0; i < m->normal_count; i++) {	
+			int index = i * 3;
+			glm::vec3 norm(
+				m->normals[index],
+				m->normals[index + 1],
+				m->normals[index + 2]
+			);
+			normals.push_back(norm);
+		} 
+
+		texturecoords.reserve(m->texture_count);
+		for(int i = 0; i < m->texcoord_count; i++) {
+			int index = i * 2;
+			glm::vec2 tc(m->texcoords[index], m->texcoords[index + 1]);
+			texturecoords.push_back(tc);
+		}
+
+		std::unordered_map<std::string, unsigned int> indices;
+		model.indices.reserve(m->index_count);
+		unsigned int index = 0;
+		for(int i = 0; i < m->index_count; i++) {
+			fastObjIndex ind = m->indices[i];
+			std::string indstr = indicesToStr(ind.p, ind.t, ind.n);
+			if(indices.count(indstr))
+				model.indices.push_back(indices.at(indstr));	
+			else {
+				model.vertices.push_back(vertices.at(ind.p));
+				model.normals.push_back(normals.at(ind.n));
+				model.texturecoords.push_back(texturecoords.at(ind.t));
+				model.indices.push_back(index);
+				indices.insert({ indstr, index });
+				index++;
+			}
+		}
+
+		fast_obj_destroy(m);
+
+		return model;
+	}
+
 	Meshf Model::vertData() const 
 	{
 		Meshf data;
@@ -399,6 +477,16 @@ namespace gfx {
 		return cubevao;
 	}
 
+	Vao createModelVao(const mesh::Model &model)
+	{
+		Vao vao;
+		vao.genBuffers(4);
+		vao.bind();
+		model.dataToBuffers(vao.buffers);
+		vao.vertcount = model.indices.size();
+		return vao;
+	}
+
 	void destroyVao(Vao &vao) 
 	{
 		glDeleteVertexArrays(1, &vao.vaoid);
@@ -434,8 +522,9 @@ namespace gfx {
 		return GL_RGBA;
 	}
 
-	bool loadTexture(const char *path, unsigned int textureid)
+	bool loadTexture(const char *path, unsigned int textureid, bool flipvertical)
 	{
+		stbi_set_flip_vertically_on_load(flipvertical);
 		int width, height, channels;
 		unsigned char* data = stbi_load(path, &width, &height, &channels, 0);
 		bool success = false;
@@ -460,7 +549,8 @@ namespace gfx {
 		}
 		else
 			fprintf(stderr, "Failed to open: %s\n", path);
-
+	
+		stbi_set_flip_vertically_on_load(false); //reset flag to false
 		stbi_image_free(data);
 		return success;
 	}

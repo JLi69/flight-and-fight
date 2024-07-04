@@ -1,7 +1,6 @@
-CPP_SRC=$(wildcard src/*.cpp)
-HEADER=$(wildcard src/*.hpp)
-GLAD=glad.c
-OBJ=$(CPP_SRC:%=%.o)
+SRC=$(wildcard src/*.cpp) $(wildcard src/*.c)
+HEADER=$(wildcard src/*.hpp) $(wildcard src/*.h)
+OBJ=$(SRC:%=%.o)
 CPP=c++
 BIN_NAME=flightsim
 INCLUDE=-Iinclude
@@ -15,9 +14,12 @@ else
 endif
 
 output: $(OBJ)
-	$(CPP) $(OBJ) $(GLAD) -o $(BIN_NAME) $(FLAGS) $(LD_FLAGS)
+	$(CPP) $(OBJ) -o $(BIN_NAME) $(FLAGS) $(LD_FLAGS)
 
 %.cpp.o: %.cpp $(HEADER)
+	$(CPP) $(FLAGS) -c $< -o $@ 
+
+%.c.o: %.c $(HEADER)
 	$(CPP) $(FLAGS) -c $< -o $@ 
 
 clean:

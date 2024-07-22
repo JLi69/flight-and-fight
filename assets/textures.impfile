@@ -1,0 +1,56 @@
+# This is a list of textures to be imported
+# Textures must have the following variables:
+# target - this is either 'texture2d' or 'cubemap'
+# if target is 'texture2d', the variables 'flip' and 'path'
+# must be defined ('flip' determines if the texture should
+# be flipped vertically and 'path' is the path to the
+# texture relative to the executable)
+# 
+# If the target is 'cubemap' then you must provide 6 paths:
+# east, west, up, down, north, south
+
+# this is the texture for the terrain 
+"terrain" {
+	"target" = "texture2d";
+	"path" = "assets/textures/terraintextures.png";
+	"flip" = "false";
+}
+
+# this is the texture for water
+"watermaps" {
+	"target" = "texture2d";
+	"path" = "assets/textures/watermaps.png";
+	"flip" = "false";
+}
+
+# texture for pine tree
+"pinetree" {
+	"target" = "texture2d";
+	"path" = "assets/textures/pinetreetexture.png";
+	"flip" = "false";
+}
+
+# texture for tree
+"tree" {
+	"target" = "texture2d";
+	"path" = "assets/textures/treetexture.png";
+	"flip" = "false";
+}
+
+# texture for plane
+"plane" {
+	"target" = "texture2d";
+	"path" = "assets/textures/planetexture.png";
+	"flip" = "true";
+}
+
+# cubemap for skybox
+"skybox" {
+	"target" = "cubemap";
+	"east" = "assets/textures/skybox/skybox_east.png";
+	"west" = "assets/textures/skybox/skybox_west.png";
+	"up" = "assets/textures/skybox/skybox_up.png";
+	"down" = "assets/textures/skybox/skybox_down.png";
+	"north" = "assets/textures/skybox/skybox_north.png";
+	"south" = "assets/textures/skybox/skybox_south.png";
+}

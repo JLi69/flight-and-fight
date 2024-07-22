@@ -1,0 +1,34 @@
+# This is a list of shaders that are to be imported
+# Shaders must have the following variables:
+# 'vertex' - path to the vertex shader relative to the executable
+# 'fragment' - path to the fragment shader relative to the executable
+
+"terrain" {
+	"vertex" = "assets/shaders/terrainvert.glsl";
+	"fragment" = "assets/shaders/terrainfrag.glsl";
+}
+
+"water" {
+	"vertex" = "assets/shaders/instancedvert.glsl";
+	"fragment" = "assets/shaders/waterfrag.glsl";
+}
+
+"simplewater" {
+	"vertex" = "assets/shaders/instancedvert.glsl";
+	"fragment" = "assets/shaders/watersimplefrag.glsl";
+}
+
+"skybox" {
+	"vertex" = "assets/shaders/skyboxvert.glsl";
+	"fragment" = "assets/shaders/skyboxfrag.glsl";
+}
+
+"tree" {
+	"vertex" = "assets/shaders/tree-vert.glsl";
+	"fragment" = "assets/shaders/textured-frag.glsl";
+}
+
+"textured" {
+	"vertex" = "assets/shaders/vert.glsl";
+	"fragment" = "assets/shaders/textured-frag.glsl";
+}

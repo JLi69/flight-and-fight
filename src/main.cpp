@@ -15,11 +15,19 @@
 #include "app.hpp"
 #include "arg.hpp"
 #include "plants.hpp"
+#include "assets.hpp"
+#include "display.hpp"
 
 constexpr float SPEED = 32.0f;
 constexpr float FLY_SPEED = 20.0f;
 constexpr unsigned int MAX_LOD = 5;
 constexpr float LOD_SCALE = 2.0f;
+
+constexpr float FOVY = glm::radians(75.0f);
+constexpr float ZNEAR = 2.0f;
+constexpr float ZFAR = 20000.0f;
+
+const glm::vec3 LIGHT = glm::normalize(glm::vec3(-1.0f));
 
 void generateChunks(
 	const infworld::worldseed &permutations,
@@ -59,72 +67,40 @@ int main(int argc, char *argv[])
 		die("Failed to init glad!");
 	initMousePos(window);
 
-	infworld::ChunkTable chunktables[MAX_LOD];	
+	infworld::ChunkTable chunktables[MAX_LOD];
 	generateChunks(permutations, chunktables, argvals.range);
 	infworld::DecorationTable decorations = infworld::DecorationTable(32, CHUNK_SZ);
 	decorations.genDecorations(permutations);
-	//Quad
-	gfx::Vao quad = gfx::createQuadVao();
-	//Cube
-	gfx::Vao cube = gfx::createCubeVao();
-	//Trees
-	gfx::Vao 
-		pinetree = plants::createPineTreeModel(8),
-		pinetreelowdetail = plants::createPineTreeModel(4);
-	gfx::Vao 
-		tree = plants::createTreeModel(6),
-		treelowdetail = plants::createTreeModel(3);
-	//Plane model
-	gfx::Vao plane = gfx::createModelVao(mesh::loadObjModel("assets/models/plane.obj"));
-	//Textures
-	unsigned int terraintextures;
-	glGenTextures(1, &terraintextures); 
-	gfx::loadTexture("assets/textures/terraintextures.png", terraintextures, false); 
-	unsigned int watermaps;
-	glGenTextures(1, &watermaps);
-	gfx::loadTexture("assets/textures/watermaps.png", watermaps, false);
-	unsigned int pinetexture, treetexture;
-	glGenTextures(1, &pinetexture);
-	glGenTextures(1, &treetexture);	
-	gfx::loadTexture("assets/textures/pinetreetexture.png", pinetexture, false);
-	gfx::loadTexture("assets/textures/treetexture.png", treetexture, false);
-	unsigned int planetexture;
-	glGenTextures(1, &planetexture);
-	gfx::loadTexture("assets/textures/planetexture.png", planetexture, true);
-	unsigned int skyboxcubemap;
-	glGenTextures(1, &skyboxcubemap);
-	const std::vector<std::string> faces = {
-		"assets/textures/skybox/skybox_east.png",
-		"assets/textures/skybox/skybox_west.png",
-		"assets/textures/skybox/skybox_up.png",
-		"assets/textures/skybox/skybox_down.png",
-		"assets/textures/skybox/skybox_north.png",
-		"assets/textures/skybox/skybox_south.png"
-	};
-	gfx::loadCubemap(faces, skyboxcubemap);
-
-	ShaderProgram terrainShader("assets/shaders/terrainvert.glsl", "assets/shaders/terrainfrag.glsl");
-	ShaderProgram waterShader("assets/shaders/instancedvert.glsl", "assets/shaders/waterfrag.glsl");
-	ShaderProgram simpleWaterShader("assets/shaders/instancedvert.glsl", "assets/shaders/watersimplefrag.glsl");
-	ShaderProgram skyboxShader("assets/shaders/skyboxvert.glsl", "assets/shaders/skyboxfrag.glsl");
-	ShaderProgram treeShader("assets/shaders/tree-vert.glsl", "assets/shaders/textured-frag.glsl");
-	ShaderProgram texturedShader("assets/shaders/vert.glsl", "assets/shaders/textured-frag.glsl");
-	float viewdist = CHUNK_SZ * SCALE * 2.0f * float(argvals.range) * std::pow(LOD_SCALE, MAX_LOD - 2);
-	waterShader.use();
-	waterShader.uniformFloat("viewdist", viewdist);
-	simpleWaterShader.use();
-	simpleWaterShader.uniformFloat("viewdist", viewdist);
-	treeShader.use();
-	treeShader.uniformFloat("viewdist", viewdist);
-	terrainShader.use();
-	terrainShader.uniformFloat("viewdist", viewdist);
-	terrainShader.uniformFloat("maxheight", HEIGHT); 
-	terrainShader.uniformInt("prec", PREC);
 	
-	decorations.generateOffsets(infworld::PINE_TREE, pinetree, 0, 5);
-	decorations.generateOffsets(infworld::PINE_TREE, pinetreelowdetail, 5, 999);
-	decorations.generateOffsets(infworld::TREE, tree, 0, 5);
-	decorations.generateOffsets(infworld::TREE, treelowdetail, 5, 16);
+	//Vaos
+	VAOS->genSimple();
+	VAOS->add("pinetree", plants::createPineTreeModel(8));
+	VAOS->add("pinetreelowdetail", plants::createPineTreeModel(4));
+	VAOS->add("tree", plants::createTreeModel(6));
+	VAOS->add("treelowdetail", plants::createTreeModel(3));
+	VAOS->importFromFile("assets/models.impfile");
+	//Textures
+	TEXTURES->importFromFile("assets/textures.impfile");
+
+	//Shaders
+	SHADERS->importFromFile("assets/shaders.impfile");
+	const float viewdist = 
+		CHUNK_SZ * SCALE * 2.0f * float(argvals.range) * std::pow(LOD_SCALE, MAX_LOD - 2);
+	SHADERS->use("water");
+	SHADERS->getShader("water").uniformFloat("viewdist", viewdist);
+	SHADERS->use("simplewater");
+	SHADERS->getShader("simplewater").uniformFloat("viewdist", viewdist);
+	SHADERS->use("tree");
+	SHADERS->getShader("tree").uniformFloat("viewdist", viewdist);
+	SHADERS->use("terrain");
+	SHADERS->getShader("terrain").uniformFloat("viewdist", viewdist);
+	SHADERS->getShader("terrain").uniformFloat("maxheight", HEIGHT);
+	SHADERS->getShader("terrain").uniformInt("prec", PREC);
+	
+	decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetree"), 0, 5);
+	decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetreelowdetail"), 5, 999);
+	decorations.generateOffsets(infworld::TREE, VAOS->getVao("tree"), 0, 5);
+	decorations.generateOffsets(infworld::TREE, VAOS->getVao("treelowdetail"), 5, 16);
 
 	glClearColor(0.5f, 0.8f, 1.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
@@ -133,151 +109,34 @@ int main(int argc, char *argv[])
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	float dt = 0.0f;
-	float time = 0.0f;
+	float totalTime = 0.0f;
 	unsigned int chunksPerSecond = 0; //Number of chunks drawn per second
 	while(!glfwWindowShouldClose(window)) {
 		float start = glfwGetTime();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//Get perspective matrix
-		int w, h;
-		glfwGetWindowSize(window, &w, &h);
-		const float aspect = float(w) / float(h);
-		const float fovy = glm::radians(75.0f);
-		glm::mat4 persp = glm::perspective(fovy, aspect, 2.0f, 20000.0f);
+		//Update perspective matrix
+		state->updatePerspectiveMat(window, FOVY, ZNEAR, ZFAR);
 		//View matrix
 		glm::mat4 view = cam.viewMatrix();
-		geo::Frustum viewfrustum = cam.getViewFrustum(2.0f, 20000.0f, aspect, fovy);	
 
 		//Draw terrain
-		terrainShader.use();
-		//Textures
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, terraintextures);
-		terrainShader.uniformInt("terraintexture", 0);
-		//uniforms
-		terrainShader.uniformMat4x4("persp", persp);
-		terrainShader.uniformMat4x4("view", view);
-		terrainShader.uniformVec3("lightdir", glm::normalize(glm::vec3(-1.0f)));
-		terrainShader.uniformVec3("camerapos", cam.position);
-		terrainShader.uniformFloat("time", time);
-		unsigned int drawCount = 0;	
-
-		for(int i = 0; i < MAX_LOD; i++) {
-			terrainShader.uniformFloat("chunksz", chunktables[i].scale());
-
-			if(i < MAX_LOD - 1) {
-				float chunkscale = 
-					chunktables[i + 1].scale() * 
-					2.0f * 
-					float(PREC) / float(PREC + 1);
-				float range = float(chunktables[i + 1].range()) / LOD_SCALE - 0.5f;
-				//Slight amount of overlap to mitigate cracks in terrain
-				//We increase this amount due to the terrain becoming less precise
-				//and more likely to have cracks
-				float d = 8.0f * float(i) + 4.0f;
-				float maxrange = chunkscale * range * SCALE + d;
-				infworld::ChunkPos center = chunktables[i + 1].getCenter();
-				
-				glm::vec2 centerpos = glm::vec2(float(center.z), float(center.x));
-				centerpos *= float(PREC) / float(PREC + 1);
-				centerpos *= chunktables[i + 1].scale() * SCALE * 2.0f;
-				
-				terrainShader.uniformFloat("maxrange", maxrange);
-				terrainShader.uniformVec2("center", centerpos);
-			}
-			else {
-				terrainShader.uniformVec2("center", glm::vec2(0.0f));
-				terrainShader.uniformFloat("maxrange", -1.0f);
-			}
-
-			if(i == 0)
-				drawCount += chunktables[i].draw(terrainShader, viewfrustum);
-			else {
-				int minrange = chunktables[i - 1].range() / int(LOD_SCALE);
-				drawCount += chunktables[i].draw(terrainShader, minrange, viewfrustum);
-			}
-		}
+		unsigned int drawCount = gfx::displayTerrain(chunktables, MAX_LOD, LOD_SCALE);
 		chunksPerSecond += drawCount;
 
-		glDisable(GL_CULL_FACE);
 		//Display trees	
-		treeShader.use();
-		treeShader.uniformMat4x4("persp", persp);
-		treeShader.uniformMat4x4("view", view);
-		treeShader.uniformVec3("lightdir", glm::normalize(glm::vec3(-1.0f)));
-		treeShader.uniformVec3("camerapos", cam.position);
-		treeShader.uniformFloat("time", time);
-		treeShader.uniformFloat("windstrength", SCALE * 3.0f);
-		treeShader.uniformMat4x4(
-			"transform",
-			glm::scale(glm::mat4(1.0f), glm::vec3(SCALE * 2.5f))
-		);
-		treeShader.uniformVec3("camerapos", cam.position);
-		//Draw pine trees
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, pinetexture);
-		pinetree.bind();
-		decorations.drawDecorations(pinetree);
-		pinetreelowdetail.bind();
-		decorations.drawDecorations(pinetreelowdetail);
-		//Draw trees
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, treetexture);
-		tree.bind();
-		decorations.drawDecorations(tree);
-		treelowdetail.bind();
-		decorations.drawDecorations(treelowdetail);
-
-		quad.bind();
-		const int waterrange = 4;
-		const int count = (waterrange * 2 + 1) * (waterrange * 2 + 1);
-		const float quadscale = CHUNK_SZ * 32.0f * SCALE;
-		//Draw water
-		waterShader.use();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, watermaps);
-		waterShader.uniformInt("range", waterrange);
-		waterShader.uniformFloat("scale", quadscale);
-		waterShader.uniformInt("waternormals", 0);
-		waterShader.uniformInt("waterdudv", 1);
-		waterShader.uniformMat4x4("persp", persp);
-		waterShader.uniformMat4x4("view", view);
-		waterShader.uniformVec3("lightdir", glm::normalize(glm::vec3(-1.0f)));
-		waterShader.uniformVec3("camerapos", cam.position);
-		waterShader.uniformFloat("time", time);
-		glm::mat4 transform = glm::mat4(1.0f);
-		transform = glm::translate(transform, glm::vec3(cam.position.x, 0.0f, cam.position.z));
-		transform = glm::scale(transform, glm::vec3(quadscale));
-		waterShader.uniformMat4x4("transform", transform);
-		glDrawElementsInstanced(GL_TRIANGLES, quad.vertcount, GL_UNSIGNED_INT, 0, count);
-		glEnable(GL_CULL_FACE);
+		gfx::displayDecorations(decorations, totalTime);
+		
+		//Display water
+		gfx::displayWater(totalTime);
 
 		//Display plane	
-		texturedShader.use();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, planetexture);
-		texturedShader.uniformMat4x4("persp", persp);
-		texturedShader.uniformMat4x4("view", view);
-		texturedShader.uniformVec3("lightdir", glm::normalize(glm::vec3(-1.0f)));
-		transform = glm::mat4(1.0f);	
+		glm::mat4 transform = glm::mat4(1.0f);
 		transform = glm::translate(transform, glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
-		texturedShader.uniformMat4x4("transform", transform);
-		plane.bind();
-		glDrawElements(GL_TRIANGLES, plane.vertcount, GL_UNSIGNED_INT, 0);
+		gfx::displayModel("textured", "plane", "plane", transform, LIGHT);
 
 		//Draw skybox
-		glCullFace(GL_FRONT);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxcubemap);
-		skyboxShader.use();
-		skyboxShader.uniformInt("skybox", 0);
-		skyboxShader.uniformMat4x4("persp", persp);
-		glm::mat4 skyboxView = glm::mat4(glm::mat3(view));
-		skyboxShader.uniformMat4x4("view", skyboxView);
-		cube.bind();
-		glDrawElements(GL_TRIANGLES, cube.vertcount, GL_UNSIGNED_INT, 0);
-		glCullFace(GL_BACK);
+		gfx::displaySkybox();	
 
 		//Update camera
 		cam.position += cam.velocity() * dt * SPEED;
@@ -286,16 +145,16 @@ int main(int argc, char *argv[])
 			chunktables[i].generateNewChunks(cam.position.x, cam.position.z, permutations);
 		bool generated = decorations.genNewDecorations(cam.position.x, cam.position.z, permutations);
 		if(generated) {
-			decorations.generateOffsets(infworld::PINE_TREE, pinetree, 0, 5);
-			decorations.generateOffsets(infworld::PINE_TREE, pinetreelowdetail, 5, 999);
-			decorations.generateOffsets(infworld::TREE, tree, 0, 5);
-			decorations.generateOffsets(infworld::TREE, treelowdetail, 5, 16);
+			decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetree"), 0, 5);
+			decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetreelowdetail"), 5, 999);
+			decorations.generateOffsets(infworld::TREE, VAOS->getVao("tree"), 0, 5);
+			decorations.generateOffsets(infworld::TREE, VAOS->getVao("treelowdetail"), 5, 16);
 		}
 
 		glfwSwapBuffers(window);
 		gfx::outputErrors();
 		glfwPollEvents();
-		time += dt;
+		totalTime += dt;
 		outputFps(dt, chunksPerSecond);
 		dt = glfwGetTime() - start;
 	}
@@ -303,6 +162,5 @@ int main(int argc, char *argv[])
 	//Clean up	
 	for(int i = 0; i < MAX_LOD; i++)
 		chunktables[i].clearBuffers();
-	gfx::destroyVao(quad);
 	glfwTerminate();
 }

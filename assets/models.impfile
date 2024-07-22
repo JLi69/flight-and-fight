@@ -1,0 +1,6 @@
+# This is a list of models to be imported into the game
+
+# Plane model
+"plane" {
+	"path" = "assets/models/plane.obj"
+}

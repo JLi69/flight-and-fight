@@ -2,12 +2,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <map>
+#include <glm/gtc/matrix_transform.hpp>
 
 State::State() 
 {
 	cam = Camera(glm::vec3(0.0f, 360.0f, 0.0f));
 	mousex = 0.0;
 	mousey = 0.0;
+	persp = glm::mat4(1.0f);
+
+	currentFovy = 0.0f;
+	currentAspect = 0.0f;
+	currentZnear = 0.0f;
+	currentZfar = 0.0f;
 }
 
 State* State::get()
@@ -35,6 +42,44 @@ void State::setMousePos(double x, double y)
 Camera& State::getCamera()
 {
 	return cam;
+}
+
+void State::updatePerspectiveMat(GLFWwindow *window, float fovy, float znear, float zfar)
+{
+	int w, h;
+	glfwGetWindowSize(window, &w, &h);
+	const float aspect = float(w) / float(h);
+	persp = glm::perspective(fovy, aspect, znear, zfar);	
+
+	currentFovy = fovy;
+	currentAspect = aspect;
+	currentZnear = znear;
+	currentZfar = zfar;
+}
+
+float State::getFovy()
+{
+	return currentFovy;
+}
+
+float State::getAspect()
+{
+	return currentAspect;
+}
+
+float State::getZnear()
+{
+	return currentZnear;
+}
+
+float State::getZfar()
+{
+	return currentZfar;
+}
+
+glm::mat4 State::getPerspective()
+{
+	return persp;
 }
 
 void die(const char *msg)

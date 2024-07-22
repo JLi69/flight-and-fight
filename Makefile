@@ -27,3 +27,6 @@ clean:
 
 run: output
 	./$(BIN_NAME)
+
+test: $(OBJ)
+	@cd tests && make

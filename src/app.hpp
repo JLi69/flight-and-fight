@@ -4,7 +4,12 @@
 
 class State {
 	Camera cam;
-	double mousex, mousey;
+	double mousex, mousey; //Mouse position
+	glm::mat4 persp; //Global perspective matrix
+	float currentFovy;
+	float currentAspect;
+	float currentZnear;
+	float currentZfar;
 	State();
 public:
 	static State* get();
@@ -12,6 +17,12 @@ public:
 	double getMouseY();
 	void setMousePos(double x, double y);
 	Camera& getCamera();
+	void updatePerspectiveMat(GLFWwindow *window, float fovy, float znear, float zfar);
+	glm::mat4 getPerspective();
+	float getFovy();
+	float getAspect();
+	float getZnear();
+	float getZfar();
 };
 
 void die(const char *msg);

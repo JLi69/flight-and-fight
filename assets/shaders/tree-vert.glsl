@@ -22,6 +22,7 @@ uniform vec3 lightdir;
 out float lighting;
 
 out vec3 fragpos;
+out vec3 normal;
 
 out vec2 tc;
 
@@ -40,4 +41,5 @@ void main()
 	fragpos = transformed.xyz;
 	lighting = max(-dot(lightdir, norm), 0.0) * 0.7 + 0.3;
 	tc = texcoord;
+	normal = norm;
 }

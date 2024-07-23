@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
 		//Display plane	
 		glm::mat4 transform = glm::mat4(1.0f);
 		transform = glm::translate(transform, glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
-		gfx::displayModel("textured", "plane", "plane", transform, LIGHT);
+		gfx::displayModel("textured", "plane", "plane", transform, LIGHT, 1.0f);
 
 		//Draw skybox
 		gfx::displaySkybox();	

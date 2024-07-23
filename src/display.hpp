@@ -15,4 +15,12 @@ namespace gfx {
 		const glm::mat4 &transform,
 		const glm::vec3 &lightdir
 	);
+	void displayModel(
+		const std::string &shadername,
+		const std::string &texturename,
+		const std::string &vaoname,
+		const glm::mat4 &transform,
+		const glm::vec3 &lightdir,
+		float specularfactor
+	);
 }

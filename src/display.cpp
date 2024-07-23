@@ -176,6 +176,7 @@ namespace gfx {
 		shader.uniformMat4x4("view", cam.viewMatrix());
 		shader.uniformVec3("lightdir", lightdir);
 		shader.uniformMat4x4("transform", transform);
+		shader.uniformVec3("camerapos", cam.position);
 		VAOS->bind(vaoname);
 		VAOS->draw();
 	}
@@ -199,6 +200,7 @@ namespace gfx {
 		shader.uniformVec3("lightdir", lightdir);
 		shader.uniformMat4x4("transform", transform);
 		shader.uniformFloat("specularfactor", specularfactor);
+		shader.uniformVec3("camerapos", cam.position);
 		VAOS->bind(vaoname);
 		VAOS->draw();
 	}

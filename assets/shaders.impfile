@@ -13,11 +13,6 @@
 	"fragment" = "assets/shaders/waterfrag.glsl";
 }
 
-"simplewater" {
-	"vertex" = "assets/shaders/instancedvert.glsl";
-	"fragment" = "assets/shaders/watersimplefrag.glsl";
-}
-
 "skybox" {
 	"vertex" = "assets/shaders/skyboxvert.glsl";
 	"fragment" = "assets/shaders/skyboxfrag.glsl";

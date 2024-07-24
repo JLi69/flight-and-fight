@@ -44,6 +44,13 @@
 	"flip" = "true";
 }
 
+# texture for propeller
+"propeller" {
+	"target" = "texture2d";
+	"path" = "assets/textures/propellertexture.png";
+	"flip" = "true";
+}
+
 # cubemap for skybox
 "skybox" {
 	"target" = "cubemap";

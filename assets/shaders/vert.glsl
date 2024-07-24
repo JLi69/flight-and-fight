@@ -7,6 +7,7 @@ layout(location = 2) in vec3 norm;
 uniform mat4 persp;
 uniform mat4 view;
 uniform mat4 transform;
+uniform mat3 normalmat;
 
 uniform vec3 lightdir;
 out float lighting;
@@ -19,7 +20,7 @@ void main()
 {
 	gl_Position = persp * view * transform * pos;
 	fragpos = (transform * pos).xyz;
-	lighting = max(-dot(lightdir, norm), 0.0) * 0.8 + 0.2;
+	normal = normalmat * norm;
+	lighting = max(-dot(lightdir, normal), 0.0) * 0.8 + 0.2;
 	tc = texcoord;
-	normal = norm;
 }

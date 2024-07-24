@@ -157,51 +157,5 @@ namespace gfx {
 		}
 
 		return drawCount;
-	}
-
-	void displayModel(
-		const std::string &shadername, 
-		const std::string &texturename,
-		const std::string &vaoname,
-		const glm::mat4 &transform,
-		const glm::vec3 &lightdir
-	) {
-		State* state = State::get();
-		Camera& cam = state->getCamera();
-
-		ShaderProgram& shader = SHADERS->getShader(shadername);
-		shader.use();
-		TEXTURES->bindTexture(texturename, GL_TEXTURE0);
-		shader.uniformMat4x4("persp", state->getPerspective());
-		shader.uniformMat4x4("view", cam.viewMatrix());
-		shader.uniformVec3("lightdir", lightdir);
-		shader.uniformMat4x4("transform", transform);
-		shader.uniformVec3("camerapos", cam.position);
-		VAOS->bind(vaoname);
-		VAOS->draw();
-	}
-
-	void displayModel(
-		const std::string &shadername,
-		const std::string &texturename,
-		const std::string &vaoname,
-		const glm::mat4 &transform,
-		const glm::vec3 &lightdir,
-		float specularfactor
-	) {
-		State* state = State::get();
-		Camera& cam = state->getCamera();
-
-		ShaderProgram& shader = SHADERS->getShader(shadername);
-		shader.use();
-		TEXTURES->bindTexture(texturename, GL_TEXTURE0);
-		shader.uniformMat4x4("persp", state->getPerspective());
-		shader.uniformMat4x4("view", cam.viewMatrix());
-		shader.uniformVec3("lightdir", lightdir);
-		shader.uniformMat4x4("transform", transform);
-		shader.uniformFloat("specularfactor", specularfactor);
-		shader.uniformVec3("camerapos", cam.position);
-		VAOS->bind(vaoname);
-		VAOS->draw();
-	}
+	}	
 }

@@ -2,5 +2,10 @@
 
 # Plane model
 "plane" {
-	"path" = "assets/models/plane.obj"
+	"path" = "assets/models/plane.obj";
+}
+
+# Propeller model
+"propeller" {
+	"path" = "assets/models/propeller.obj";
 }

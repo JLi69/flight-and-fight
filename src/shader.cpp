@@ -128,6 +128,12 @@ int ShaderProgram::getUniformLocation(const char *uniformName)
 	return uniformLocations[uniformName];
 }
 
+void ShaderProgram::uniformMat3x3(const char *uniformName, const glm::mat3 &mat)
+{
+	int location = getUniformLocation(uniformName);
+	glUniformMatrix3fv(location, 1, false, glm::value_ptr(mat));
+}
+
 void ShaderProgram::uniformMat4x4(const char *uniformName, const glm::mat4 &mat)
 {
 	int location = getUniformLocation(uniformName);

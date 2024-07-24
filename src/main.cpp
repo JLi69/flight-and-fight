@@ -42,6 +42,27 @@ void generateChunks(
 	}
 }
 
+void generateDecorationOffsets(infworld::DecorationTable &decorations)
+{
+	decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetree"), 0, 5);
+	decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetreelowdetail"), 5, 999);
+	decorations.generateOffsets(infworld::TREE, VAOS->getVao("tree"), 0, 5);
+	decorations.generateOffsets(infworld::TREE, VAOS->getVao("treelowdetail"), 5, 16);
+}
+
+void generateNewChunks(
+	const infworld::worldseed &permutations,
+	infworld::ChunkTable *chunktables,
+	infworld::DecorationTable &decorations
+) {
+	Camera& cam = State::get()->getCamera();
+	for(int i = 0; i < MAX_LOD; i++)
+		chunktables[i].generateNewChunks(cam.position.x, cam.position.z, permutations);
+	bool generated = decorations.genNewDecorations(cam.position.x, cam.position.z, permutations);
+	if(generated)
+		generateDecorationOffsets(decorations);
+}
+
 int main(int argc, char *argv[])
 {
 	Args argvals = parseArgs(argc, argv);
@@ -66,11 +87,6 @@ int main(int argc, char *argv[])
 	if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		die("Failed to init glad!");
 	initMousePos(window);
-
-	infworld::ChunkTable chunktables[MAX_LOD];
-	generateChunks(permutations, chunktables, argvals.range);
-	infworld::DecorationTable decorations = infworld::DecorationTable(32, CHUNK_SZ);
-	decorations.genDecorations(permutations);
 	
 	//Vaos
 	VAOS->genSimple();
@@ -81,15 +97,12 @@ int main(int argc, char *argv[])
 	VAOS->importFromFile("assets/models.impfile");
 	//Textures
 	TEXTURES->importFromFile("assets/textures.impfile");
-
 	//Shaders
 	SHADERS->importFromFile("assets/shaders.impfile");
 	const float viewdist = 
 		CHUNK_SZ * SCALE * 2.0f * float(argvals.range) * std::pow(LOD_SCALE, MAX_LOD - 2);
 	SHADERS->use("water");
 	SHADERS->getShader("water").uniformFloat("viewdist", viewdist);
-	SHADERS->use("simplewater");
-	SHADERS->getShader("simplewater").uniformFloat("viewdist", viewdist);
 	SHADERS->use("tree");
 	SHADERS->getShader("tree").uniformFloat("viewdist", viewdist);
 	SHADERS->use("terrain");
@@ -97,10 +110,12 @@ int main(int argc, char *argv[])
 	SHADERS->getShader("terrain").uniformFloat("maxheight", HEIGHT);
 	SHADERS->getShader("terrain").uniformInt("prec", PREC);
 	
-	decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetree"), 0, 5);
-	decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetreelowdetail"), 5, 999);
-	decorations.generateOffsets(infworld::TREE, VAOS->getVao("tree"), 0, 5);
-	decorations.generateOffsets(infworld::TREE, VAOS->getVao("treelowdetail"), 5, 16);
+	//Initially generate world
+	infworld::ChunkTable chunktables[MAX_LOD];
+	generateChunks(permutations, chunktables, argvals.range);
+	infworld::DecorationTable decorations = infworld::DecorationTable(32, CHUNK_SZ);
+	decorations.genDecorations(permutations);
+	generateDecorationOffsets(decorations);
 
 	glClearColor(0.5f, 0.8f, 1.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
@@ -117,8 +132,6 @@ int main(int argc, char *argv[])
 
 		//Update perspective matrix
 		state->updatePerspectiveMat(window, FOVY, ZNEAR, ZFAR);
-		//View matrix
-		glm::mat4 view = cam.viewMatrix();
 
 		//Draw terrain
 		unsigned int drawCount = gfx::displayTerrain(chunktables, MAX_LOD, LOD_SCALE);
@@ -131,9 +144,36 @@ int main(int argc, char *argv[])
 		gfx::displayWater(totalTime);
 
 		//Display plane	
+		ShaderProgram& shader = SHADERS->getShader("textured");	
+
+		shader.use();
+		shader.uniformMat4x4("persp", state->getPerspective());
+		shader.uniformMat4x4("view", cam.viewMatrix());
+		shader.uniformVec3("lightdir", LIGHT);
+		shader.uniformVec3("camerapos", cam.position);
+		
 		glm::mat4 transform = glm::mat4(1.0f);
 		transform = glm::translate(transform, glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
-		gfx::displayModel("textured", "plane", "plane", transform, LIGHT, 1.0f);
+		glm::mat4 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
+		TEXTURES->bindTexture("plane", GL_TEXTURE0);	
+		shader.uniformFloat("specularfactor", 0.5f);	
+		shader.uniformMat4x4("transform", transform);
+		shader.uniformMat3x3("normalmat", normal);
+		VAOS->bind("plane");
+		VAOS->draw();
+
+		TEXTURES->bindTexture("propeller", GL_TEXTURE0);
+		glm::mat4 propellerTransform = glm::mat4(1.0f);
+		propellerTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 13.888f));
+		float rotation = totalTime * 16.0f;
+		propellerTransform = glm::rotate(propellerTransform, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+		propellerTransform = transform * propellerTransform;
+		normal = glm::mat3(glm::transpose(glm::inverse(propellerTransform)));
+		shader.uniformFloat("specularfactor", 0.0f);
+		shader.uniformMat4x4("transform", propellerTransform);
+		shader.uniformMat3x3("normalmat", normal);
+		VAOS->bind("propeller");
+		VAOS->draw();
 
 		//Draw skybox
 		gfx::displaySkybox();	
@@ -141,15 +181,7 @@ int main(int argc, char *argv[])
 		//Update camera
 		cam.position += cam.velocity() * dt * SPEED;
 		cam.fly(dt, FLY_SPEED);
-		for(int i = 0; i < MAX_LOD; i++)
-			chunktables[i].generateNewChunks(cam.position.x, cam.position.z, permutations);
-		bool generated = decorations.genNewDecorations(cam.position.x, cam.position.z, permutations);
-		if(generated) {
-			decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetree"), 0, 5);
-			decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetreelowdetail"), 5, 999);
-			decorations.generateOffsets(infworld::TREE, VAOS->getVao("tree"), 0, 5);
-			decorations.generateOffsets(infworld::TREE, VAOS->getVao("treelowdetail"), 5, 16);
-		}
+		generateNewChunks(permutations, chunktables, decorations);
 
 		glfwSwapBuffers(window);
 		gfx::outputErrors();

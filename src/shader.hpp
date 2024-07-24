@@ -34,6 +34,7 @@ public:
 	int getUniformLocation(const char *uniformName);
 	unsigned int getid();
 
+	void uniformMat3x3(const char *uniformName, const glm::mat3 &mat);
 	void uniformMat4x4(const char *uniformName, const glm::mat4 &mat);
 	void uniformVec4(const char *uniformName, const glm::vec4 &vec);
 	void uniformVec3(const char *uniformName, const glm::vec3 &vec);

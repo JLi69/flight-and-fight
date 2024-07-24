@@ -4,7 +4,7 @@ OBJ=$(SRC:%=%.o)
 CPP=c++
 BIN_NAME=flightsim
 INCLUDE=-Iinclude
-FLAGS=$(INCLUDE) -std=c++17 -O2 -DDISALLOW_ERRORS
+FLAGS=$(INCLUDE) -std=c++17 -O2
 LD_FLAGS=-lglfw3
 
 ifeq ($(OS), Windows_NT)
@@ -29,4 +29,4 @@ run: output
 	./$(BIN_NAME)
 
 test: $(OBJ)
-	@cd tests && make
+	@cd tests && make -j$(nproc)

@@ -1,9 +1,9 @@
 #include "app.hpp"
 #include <stdio.h>
 #include <stdlib.h>
-#include <map>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glad/glad.h>
+#include <stb_image/stb_image.h>
 
 State::State() 
 {
@@ -16,6 +16,8 @@ State::State()
 	currentAspect = 0.0f;
 	currentZnear = 0.0f;
 	currentZfar = 0.0f;
+
+	window = nullptr;
 }
 
 State* State::get()
@@ -45,7 +47,7 @@ Camera& State::getCamera()
 	return cam;
 }
 
-void State::updatePerspectiveMat(GLFWwindow *window, float fovy, float znear, float zfar)
+void State::updatePerspectiveMat(float fovy, float znear, float zfar)
 {
 	int w, h;
 	glfwGetWindowSize(window, &w, &h);
@@ -78,9 +80,36 @@ float State::getZfar()
 	return currentZfar;
 }
 
+void State::setKey(int key, KeyState keystate)
+{
+	keystates[key] = keystate;
+}
+
+void State::updateKeyStates()
+{
+	for(auto &keystate : keystates)
+		if(keystate.second == JUST_PRESSED)
+			keystate.second = HELD;
+}
+
+KeyState State::getKeyState(int key)
+{
+	return keystates[key];
+}
+
 glm::mat4 State::getPerspective()
 {
 	return persp;
+}
+
+GLFWwindow* State::getWindow()
+{
+	return window;
+}
+
+void State::createWindow(const char *name, int w, int h)
+{
+	window = glfwCreateWindow(w, h, name, nullptr, nullptr);
 }
 
 void die(const char *msg)
@@ -101,22 +130,11 @@ void cursorPosCallback(GLFWwindow *window, double x, double y)
 	double 
 		dx = x - state->getMouseX(),
 		dy = y - state->getMouseY();
-	if(cursorMode == GLFW_CURSOR_DISABLED)
-		state->getCamera().rotateCamera(dx, dy, 0.02f);
 	state->setMousePos(x, y);
 }
 
 void handleKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods)
-{
-	const std::map<int, CameraMovement> keyToMovement = {
-		{ GLFW_KEY_W, CameraMovement(FORWARD, NONE, NONE) },
-		{ GLFW_KEY_S, CameraMovement(BACKWARD, NONE, NONE) },
-		{ GLFW_KEY_A, CameraMovement(NONE, STRAFE_LEFT, NONE) },
-		{ GLFW_KEY_D, CameraMovement(NONE, STRAFE_RIGHT, NONE) },
-		{ GLFW_KEY_SPACE, CameraMovement(NONE, NONE, FLY_UP) },
-		{ GLFW_KEY_LEFT_SHIFT, CameraMovement(NONE, NONE, FLY_DOWN) },
-	};
-
+{	
 	//Toggle cursor
 	if(key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
 		int cursorMode = glfwGetInputMode(window, GLFW_CURSOR);
@@ -127,11 +145,10 @@ void handleKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 		);
 	}
 
-	Camera& cam = State::get()->getCamera();
-	if(action == GLFW_PRESS && keyToMovement.count(key))
-		cam.updateMovement(keyToMovement.at(key), true);
-	else if(action == GLFW_RELEASE && keyToMovement.count(key))
-		cam.updateMovement(keyToMovement.at(key), false);	
+	if(action == GLFW_PRESS)
+		State::get()->setKey(key, JUST_PRESSED);
+	else if(action == GLFW_RELEASE)
+		State::get()->setKey(key, RELEASED);
 }
 
 void initMousePos(GLFWwindow *window)
@@ -158,4 +175,35 @@ bool outputFps(float dt, unsigned int &chunksPerSecond)
 	frames++;
 
 	return false;
+}
+
+void initWindow(GLFWwindow* window)
+{
+	if(!window)
+		die("Failed to create window!");
+	glfwMakeContextCurrent(window);
+	glfwSwapInterval(1);
+	glfwSetWindowSizeCallback(window, handleWindowResize);
+	glfwSetKeyCallback(window, handleKeyInput);
+	glfwSetCursorPosCallback(window, cursorPosCallback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	//Set icon of window
+	int channels;
+	GLFWimage icon[1];
+	icon->pixels = nullptr;
+	icon->pixels = stbi_load("assets/icon.png", &icon->width, &icon->height, &channels, 0);
+	if(!icon->pixels)
+		die("Failed to load icon.png!");
+	glfwSetWindowIcon(window, 1, icon);
+	stbi_image_free(icon->pixels); //Free icon data
+
+	if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+		die("Failed to init glad!");
+	initMousePos(window);
+}
+
+bool keyIsHeld(KeyState keystate)
+{
+	return keystate == JUST_PRESSED || keystate == HELD;
 }

@@ -1,4 +1,4 @@
-#include "display.hpp"
+#include "game.hpp"
 #include "assets.hpp"
 #include "app.hpp"
 #include "infworld.hpp"
@@ -56,6 +56,14 @@ namespace gfx {
 		waterShader.uniformMat4x4("transform", transform);
 		VAOS->drawInstanced(count);
 		glEnable(GL_CULL_FACE);
+	}
+
+	void generateDecorationOffsets(infworld::DecorationTable &decorations)
+	{
+		decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetree"), 0, 5);
+		decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetreelowdetail"), 5, 999);
+		decorations.generateOffsets(infworld::TREE, VAOS->getVao("tree"), 0, 5);
+		decorations.generateOffsets(infworld::TREE, VAOS->getVao("treelowdetail"), 5, 16);
 	}
 
 	void displayDecorations(
@@ -157,5 +165,43 @@ namespace gfx {
 		}
 
 		return drawCount;
-	}	
+	}
+
+	void displayPlayerPlane(float totalTime, const game::Transform &transform)
+	{
+		State* state = State::get();
+		Camera& cam = state->getCamera();
+
+		ShaderProgram& shader = SHADERS->getShader("textured");	
+
+		shader.use();
+		shader.uniformMat4x4("persp", state->getPerspective());
+		shader.uniformMat4x4("view", cam.viewMatrix());
+		shader.uniformVec3("lightdir", LIGHT);
+		shader.uniformVec3("camerapos", cam.position);
+	
+		//Display plane body
+		glm::mat4 transformMat = transform.getTransformMat();
+		glm::mat4 normal = glm::mat3(glm::transpose(glm::inverse(transformMat)));
+		TEXTURES->bindTexture("plane", GL_TEXTURE0);	
+		shader.uniformFloat("specularfactor", 0.5f);	
+		shader.uniformMat4x4("transform", transformMat);
+		shader.uniformMat3x3("normalmat", normal);
+		VAOS->bind("plane");
+		VAOS->draw();
+
+		//Display propeller
+		TEXTURES->bindTexture("propeller", GL_TEXTURE0);
+		glm::mat4 propellerTransform = glm::mat4(1.0f);
+		propellerTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 13.888f));
+		float rotation = totalTime * 16.0f;
+		propellerTransform = glm::rotate(propellerTransform, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+		propellerTransform = transformMat * propellerTransform;
+		normal = glm::mat3(glm::transpose(glm::inverse(propellerTransform)));
+		shader.uniformFloat("specularfactor", 0.0f);
+		shader.uniformMat4x4("transform", propellerTransform);
+		shader.uniformMat3x3("normalmat", normal);
+		VAOS->bind("propeller");
+		VAOS->draw();
+	}
 }

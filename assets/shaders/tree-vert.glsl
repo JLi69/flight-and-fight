@@ -30,13 +30,11 @@ void main()
 {
 	vec4 transformed = transform * pos;
 	transformed += vec4(offset, 0.0);
-	if(texcoord.x > 0.5) {
-		float dist = length(pos.xz);
-		float value = sin(pos.x) * 132.0 + cos(pos.z) * 931.0;
-		transformed.y += sin(time * dist + value) * 0.03 * dist * windstrength;
-		transformed.x += cos(time * dist + value) * 0.03 * dist * windstrength;
-		transformed.z += sin(time * dist + value / 2.0) * 0.04 * dist * windstrength;
-	}
+	float dist = length(pos.xz);
+	float value = sin(pos.x) * 132.0 + cos(pos.z) * 931.0;
+	transformed.y += sin(time * dist + value) * 0.03 * dist * windstrength * step(0.5, texcoord.x);
+	transformed.x += cos(time * dist + value) * 0.03 * dist * windstrength * step(0.5, texcoord.x);
+	transformed.z += sin(time * dist + value / 2.0) * 0.04 * dist * windstrength * step(0.5, texcoord.x);
 	gl_Position = persp * view * transformed;
 	fragpos = transformed.xyz;
 	lighting = max(-dot(lightdir, norm), 0.0) * 0.7 + 0.3;

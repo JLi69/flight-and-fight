@@ -71,8 +71,8 @@ namespace gfx {
 	{
 		decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetree"), 0, 4);
 		decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetreelowdetail"), 4, 999);
-		decorations.generateOffsets(infworld::TREE, VAOS->getVao("tree"), 0, 3);
-		decorations.generateOffsets(infworld::TREE, VAOS->getVao("treelowdetail"), 3, 7);
+		decorations.generateOffsets(infworld::TREE, VAOS->getVao("tree"), 0, 4);
+		decorations.generateOffsets(infworld::TREE, VAOS->getVao("treelowdetail"), 4, 8);
 	}
 
 	void displayDecorations(

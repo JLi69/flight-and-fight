@@ -114,6 +114,7 @@ namespace infworld {
 			int z
 		);
 		void addChunk(unsigned int index, const ChunkData &chunk);
+		void updateChunk(unsigned int index, const ChunkData &chunk);
 		void bindVao(unsigned int index);
 		ChunkPos getPos(unsigned int index);
 		unsigned int count() const;
@@ -164,4 +165,7 @@ namespace infworld {
 		float maxheight,
 		float chunkscale
 	);
+	std::vector<unsigned int> generateChunkIndices();
 }
+
+const std::vector<unsigned int> CHUNK_INDICES = infworld::generateChunkIndices();

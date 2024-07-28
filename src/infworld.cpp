@@ -75,7 +75,6 @@ namespace infworld {
 		mesh::ElementArrayBuffer<float> worldarraybuffer;
 
 		worldarraybuffer.mesh.vertices.reserve(PREC * PREC * 3 * 2);
-		worldarraybuffer.indices.reserve(CHUNK_VERT_COUNT);
 
 		for(unsigned int i = 0; i <= PREC; i++) {
 			for(unsigned int j = 0; j <= PREC; j++) {
@@ -95,20 +94,6 @@ namespace infworld {
 				worldarraybuffer.mesh.vertices.push_back(vertex.y / maxheight);	
 				worldarraybuffer.mesh.vertices.push_back(n.x);
 				worldarraybuffer.mesh.vertices.push_back(n.y);
-			}
-		}
-
-		//Indices
-		for(unsigned int i = 0; i < PREC; i++) {
-			for(unsigned int j = 0; j < PREC; j++) {
-				unsigned int index = i * (PREC + 1) + j;
-				worldarraybuffer.indices.push_back(index + (PREC + 1));
-				worldarraybuffer.indices.push_back(index + 1);
-				worldarraybuffer.indices.push_back(index);
-
-				worldarraybuffer.indices.push_back(index + 1);
-				worldarraybuffer.indices.push_back(index + (PREC + 1));
-				worldarraybuffer.indices.push_back(index + (PREC + 1) + 1);
 			}
 		}
 
@@ -185,5 +170,25 @@ namespace infworld {
 		printf("Time to generate world: %f\n", time);
 	
 		return chunks;
+	}
+
+	std::vector<unsigned int> generateChunkIndices()
+	{
+		std::vector<unsigned int> indices;
+
+		for(unsigned int i = 0; i < PREC; i++) {
+			for(unsigned int j = 0; j < PREC; j++) {
+				unsigned int index = i * (PREC + 1) + j;
+				indices.push_back(index + (PREC + 1));
+				indices.push_back(index + 1);
+				indices.push_back(index);
+
+				indices.push_back(index + 1);
+				indices.push_back(index + (PREC + 1));
+				indices.push_back(index + (PREC + 1) + 1);
+			}
+		}
+
+		return indices;
 	}
 }

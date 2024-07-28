@@ -31,7 +31,7 @@ namespace infworld {
 	void ChunkTable::clearBuffers()
 	{
 		glDeleteVertexArrays(vaoids.size(), &vaoids[0]);
-		glGenBuffers(bufferids.size(), &bufferids[0]);
+		glDeleteBuffers(bufferids.size(), &bufferids[0]);
 	}
 
 	void ChunkTable::addChunk(
@@ -83,8 +83,8 @@ namespace infworld {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferids.at(index * BUFFER_PER_CHUNK + 2));
 		glBufferData(
 			GL_ELEMENT_ARRAY_BUFFER,
-			chunkmesh.indices.size() * sizeof(unsigned int),
-			&chunkmesh.indices[0],
+			CHUNK_INDICES.size() * sizeof(unsigned int),
+			&CHUNK_INDICES[0],
 			GL_STATIC_DRAW
 		);
 	}
@@ -92,6 +92,31 @@ namespace infworld {
 	void ChunkTable::addChunk(unsigned int index, const ChunkData &chunk)
 	{
 		addChunk(index, chunk.chunkmesh, chunk.position.x, chunk.position.z);
+	}
+
+	void ChunkTable::updateChunk(unsigned int index, const ChunkData &chunk)
+	{
+		chunkpos.at(index) = { chunk.position.x, chunk.position.z };
+
+		glBindVertexArray(vaoids.at(index));
+
+		//Buffer 0 (vertex positions)
+		glBindBuffer(GL_ARRAY_BUFFER, bufferids.at(index * BUFFER_PER_CHUNK));
+		glBufferSubData(
+			GL_ARRAY_BUFFER,
+			0,
+			chunk.chunkmesh.mesh.vertices.size() * sizeof(float),
+			&chunk.chunkmesh.mesh.vertices[0]
+		);
+
+		//Buffer 1 (vertex normals)
+		glBindBuffer(GL_ARRAY_BUFFER, bufferids.at(index * BUFFER_PER_CHUNK + 1));
+		glBufferSubData(
+			GL_ARRAY_BUFFER,
+			0,
+			chunk.chunkmesh.mesh.vertices.size() * sizeof(float),
+			&chunk.chunkmesh.mesh.vertices[0]
+		);
 	}
 
 	void ChunkTable::bindVao(unsigned int index)
@@ -129,7 +154,7 @@ namespace infworld {
 			int i = indices.size() - 1;
 			int x = newChunks.at(i).x, z = newChunks.at(i).z;
 			ChunkData chunk = buildChunk(permutations, x, z, height, chunkscale);
-			addChunk(indices.at(i), chunk);
+			updateChunk(indices.at(i), chunk);
 			indices.pop_back();
 			newChunks.pop_back();
 			return;

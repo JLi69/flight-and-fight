@@ -20,7 +20,7 @@ void main()
 {
 	gl_Position = persp * view * transform * pos;
 	fragpos = (transform * pos).xyz;
-	normal = normalmat * norm;
+	normal = normalize(normalmat * norm);
 	lighting = max(-dot(lightdir, normal), 0.0) * 0.8 + 0.2;
 	tc = texcoord;
 }

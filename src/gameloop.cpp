@@ -15,7 +15,7 @@ namespace game {
 		infworld::worldseed permutations = infworld::makePermutations(randSeed, 9);
 		infworld::ChunkTable chunktables[MAX_LOD];
 		game::generateChunks(permutations, chunktables, RANGE);
-		infworld::DecorationTable decorations = infworld::DecorationTable(32, CHUNK_SZ);
+		infworld::DecorationTable decorations = infworld::DecorationTable(14, CHUNK_SZ);
 		decorations.genDecorations(permutations);
 		gfx::generateDecorationOffsets(decorations);
 

@@ -5,6 +5,15 @@
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 
+//Just debug colors for different terrain LOD levels
+constexpr glm::vec3 TERRAIN_LOD_COLORS[] = {
+	glm::vec3(0.0f, 1.0f, 0.0f),
+	glm::vec3(0.0f, 0.0f, 1.0f),
+	glm::vec3(1.0f, 0.0f, 0.0f),
+	glm::vec3(0.0f, 1.0f, 1.0f),
+	glm::vec3(1.0f, 0.0f, 1.0f),
+};
+
 namespace gfx {
 	void displaySkybox() 
 	{
@@ -60,10 +69,10 @@ namespace gfx {
 
 	void generateDecorationOffsets(infworld::DecorationTable &decorations)
 	{
-		decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetree"), 0, 5);
-		decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetreelowdetail"), 5, 999);
-		decorations.generateOffsets(infworld::TREE, VAOS->getVao("tree"), 0, 5);
-		decorations.generateOffsets(infworld::TREE, VAOS->getVao("treelowdetail"), 5, 16);
+		decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetree"), 0, 4);
+		decorations.generateOffsets(infworld::PINE_TREE, VAOS->getVao("pinetreelowdetail"), 4, 999);
+		decorations.generateOffsets(infworld::TREE, VAOS->getVao("tree"), 0, 3);
+		decorations.generateOffsets(infworld::TREE, VAOS->getVao("treelowdetail"), 3, 7);
 	}
 
 	void displayDecorations(
@@ -128,31 +137,36 @@ namespace gfx {
 			state->getFovy()
 		);
 
+		infworld::ChunkPos center = chunktables[0].getCenter();
+		glm::vec2 centerpos = glm::vec2(float(center.z), float(center.x));
+		centerpos *= float(PREC) / float(PREC + 1);
+		centerpos *= chunktables[0].scale() * SCALE * 2.0f;
+		terrainShader.uniformVec2("center", centerpos);
+
+		float mindist = 0.0f;
 		for(int i = 0; i < maxlod; i++) {
+			terrainShader.uniformVec3("testcolor", TERRAIN_LOD_COLORS[i]);
 			terrainShader.uniformFloat("chunksz", chunktables[i].scale());
 
 			if(i < maxlod - 1) {
 				float chunkscale = 
-					chunktables[i + 1].scale() * 
+					chunktables[i].scale() * 
 					2.0f * 
 					float(PREC) / float(PREC + 1);
-				float range = float(chunktables[i + 1].range()) / lodscale - 0.5f;
+				float range = float(chunktables[i].range()) - 0.5f;
 				//Slight amount of overlap to mitigate cracks in terrain
 				//We increase this amount due to the terrain becoming less precise
 				//and more likely to have cracks
 				float d = 8.0f * float(i) + 4.0f;
-				float maxrange = chunkscale * range * SCALE + d;
-				infworld::ChunkPos center = chunktables[i + 1].getCenter();
-				
-				glm::vec2 centerpos = glm::vec2(float(center.z), float(center.x));
-				centerpos *= float(PREC) / float(PREC + 1);
-				centerpos *= chunktables[i + 1].scale() * SCALE * 2.0f;
-				
+				float maxrange = chunkscale * range * SCALE + d;	
+			
+				terrainShader.uniformFloat("minrange", mindist);
 				terrainShader.uniformFloat("maxrange", maxrange);
-				terrainShader.uniformVec2("center", centerpos);
+
+				mindist = maxrange - 2.0f * d;
 			}
 			else {
-				terrainShader.uniformVec2("center", glm::vec2(0.0f));
+				terrainShader.uniformFloat("minrange", mindist);
 				terrainShader.uniformFloat("maxrange", -1.0f);
 			}
 
@@ -160,7 +174,7 @@ namespace gfx {
 				drawCount += chunktables[i].draw(terrainShader, viewfrustum);
 			else {
 				int minrange = chunktables[i - 1].range() / int(lodscale);
-				drawCount += chunktables[i].draw(terrainShader, minrange, viewfrustum);
+				drawCount += chunktables[i].draw(terrainShader, minrange - 1, viewfrustum);
 			}
 		}
 

@@ -3,7 +3,7 @@
 #include "infworld.hpp"
 
 //Constants
-constexpr float SPEED = 64.0f;
+constexpr float SPEED = 48.0f;
 constexpr unsigned int MAX_LOD = 5;
 constexpr float LOD_SCALE = 2.0f;
 
@@ -11,7 +11,7 @@ constexpr float FOVY = glm::radians(75.0f);
 constexpr float ZNEAR = 2.0f;
 constexpr float ZFAR = 20000.0f;
 
-constexpr int RANGE = 8;
+constexpr int RANGE = 4;
 
 const glm::vec3 LIGHT = glm::normalize(glm::vec3(-1.0f));
 

@@ -81,8 +81,8 @@ namespace infworld {
 		int seed = getChunkSeed(pos.x, pos.z, permutations);
 		std::minstd_rand0 lcg;
 		lcg.seed(seed);
-		genDecorations(permutations, PINE_TREE, 40, pos.x, pos.z, index, lcg);
-		genDecorations(permutations, TREE, 12, pos.x, pos.z, index, lcg);
+		genDecorations(permutations, PINE_TREE, 120, pos.x, pos.z, index, lcg);
+		genDecorations(permutations, TREE, 36, pos.x, pos.z, index, lcg);
 
 		decorations.at(index).erase(std::remove_if(
 			decorations.at(index).begin(),

@@ -9,8 +9,8 @@
 #include "geometry.hpp"
 #include "shader.hpp"
 
-constexpr unsigned int PREC = 32;
-constexpr float CHUNK_SZ = 32.0f;
+constexpr unsigned int PREC = 40;
+constexpr float CHUNK_SZ = 64.0f;
 constexpr float HEIGHT = 270.0f;
 constexpr float SCALE = 2.5f;
 constexpr float FREQUENCY = 720.0f;

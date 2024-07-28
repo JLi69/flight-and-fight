@@ -18,7 +18,9 @@ const float FOG_DIST = 10000.0;
 const float WATER_FOG_DIST = 128.0;
 
 uniform vec2 center;
+uniform float minrange;
 uniform float maxrange;
+uniform vec3 testcolor;
 
 vec2 getuv1()
 {
@@ -72,10 +74,12 @@ void main()
 	float range = max(abs(fragpos.x - center.x), abs(fragpos.z - center.y));
 	//We discard fragments that are beyond a certain range to prevent overlap
 	//with terrain of lower level of detail
-	if(range > maxrange && maxrange > 0.0)
+	if((range > maxrange && maxrange > 0.0) || range < minrange)
 		discard;
 
 	color = getcolor() * lighting;
+	//uncomment this line whenever you want to display the different levels of detail
+	//color = vec4(testcolor, 1.0) * lighting;
 	color.a = 1.0;
 	//fog
 	vec4 fogeffect = mix(color, vec4(0.5, 0.8, 1.0, 1.0), min(max(0.0, d - viewdist) / FOG_DIST, 1.0));

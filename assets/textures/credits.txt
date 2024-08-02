@@ -42,3 +42,6 @@ Consider all textures used to be distributed under the CC-BY-SA 3.0 license
 used "metall010-new-tileable.png" for plane texture (https://opengameart.org/node/9070)
 by p0ss
 License: GPL 2.0, GPL 3.0, or CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
+
+used explosion particle by kenney (https://opengameart.org/content/smoke-particle-assets)
+License: CC0

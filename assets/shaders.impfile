@@ -27,3 +27,8 @@
 	"vertex" = "assets/shaders/vert.glsl";
 	"fragment" = "assets/shaders/textured-frag.glsl";
 }
+
+"explosion" {
+	"vertex" = "assets/shaders/explosionvert.glsl";
+	"fragment" = "assets/shaders/explosionfrag.glsl";
+}

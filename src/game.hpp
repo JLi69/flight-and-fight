@@ -20,8 +20,11 @@ namespace game {
 		glm::vec3 position;
 		glm::vec3 scale;
 		glm::vec3 rotation; //in radians
+		Transform();
 		glm::mat4 getTransformMat() const;
-		glm::vec3 direction() const;
+		glm::vec3 direction() const; //Forward vector
+		glm::vec3 right() const;
+		glm::vec3 rotate(const glm::vec3 &v) const;
 	};	
 
 	void loadAssets();
@@ -45,6 +48,7 @@ namespace game {
 namespace gameobjects {
 	struct Player {
 		game::Transform transform;
+		bool crashed;
 		enum {
 			RY_LEFT,
 			RY_RIGHT,
@@ -56,6 +60,17 @@ namespace gameobjects {
 			RX_NONE,
 		} xRotationDirection;
 		Player(glm::vec3 position);
+
+		void update(float dt);
+		void checkIfCrashed(float dt, infworld::worldseed &permutations);
+	};
+
+	struct Explosion {
+		game::Transform transform;
+		float timePassed;
+		bool visible;
+		Explosion(glm::vec3 position);
+		void update(float dt);
 	};
 }
 
@@ -64,7 +79,6 @@ namespace game {
 	glm::vec3 getCameraFollowPos(const Transform &playertransform);
 	//Have the camera follow the player
 	void updateCamera(gameobjects::Player &player);
-	void updatePlayer(gameobjects::Player &player, float dt);
 }
 
 namespace gfx {
@@ -74,4 +88,5 @@ namespace gfx {
 	unsigned int displayTerrain(infworld::ChunkTable *chunktables, int maxlod, float lodscale);	
 	void generateDecorationOffsets(infworld::DecorationTable &decorations);
 	void displayPlayerPlane(float totalTime, const game::Transform &transform);
+	void displayExplosions(const std::vector<gameobjects::Explosion> &explosions);
 }

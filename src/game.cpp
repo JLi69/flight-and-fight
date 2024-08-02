@@ -5,6 +5,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace game {
+	Transform::Transform()
+	{
+		position = glm::vec3(0.0f);
+		scale = glm::vec3(1.0f);
+		rotation = glm::vec3(0.0f);
+	}
+
 	glm::mat4 Transform::getTransformMat() const
 	{
 		glm::mat4 transform(1.0f);
@@ -24,7 +31,23 @@ namespace game {
 		rotationMat = glm::rotate(rotationMat, rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
 		rotationMat = glm::rotate(rotationMat, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
 		dir = rotationMat * dir;
-		return glm::vec3(dir.x, dir.y, dir.z);
+		return glm::normalize(glm::vec3(dir.x, dir.y, dir.z));
+	}
+
+	glm::vec3 Transform::right() const 
+	{
+		return glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), direction()));
+	}
+
+	glm::vec3 Transform::rotate(const glm::vec3 &v) const
+	{
+		glm::mat4 rotationMat(1.0f);
+		rotationMat = glm::rotate(rotationMat, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+		rotationMat = glm::rotate(rotationMat, rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+		rotationMat = glm::rotate(rotationMat, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::vec4 transformed(v.x, v.y, v.z, 1.0f);
+		transformed = rotationMat * transformed;
+		return glm::vec3(transformed.x, transformed.y, transformed.z);
 	}
 
 	void loadAssets()

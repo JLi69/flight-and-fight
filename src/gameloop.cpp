@@ -21,6 +21,7 @@ namespace game {
 
 		//Gameobjects
 		gobjs::Player player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
+		std::vector<gobjs::Explosion> explosions;
 
 		glClearColor(0.5f, 0.8f, 1.0f, 1.0f);
 		glEnable(GL_DEPTH_TEST);
@@ -44,17 +45,29 @@ namespace game {
 			//Display trees	
 			gfx::displayDecorations(decorations, totalTime);	
 			//Display plane
-			gfx::displayPlayerPlane(totalTime, player.transform);
+			if(!player.crashed)
+				gfx::displayPlayerPlane(totalTime, player.transform);		
 			//Display water
-			gfx::displayWater(totalTime);
+			gfx::displayWater(totalTime);	
 			//Draw skybox
 			gfx::displaySkybox();
+			//Display explosions
+			gfx::displayExplosions(explosions);
 
 			//Update plane
-			game::updatePlayer(player, dt);
+			player.update(dt);
+			bool justcrashed = player.crashed;
+			player.checkIfCrashed(dt, permutations);
+			justcrashed = player.crashed ^ justcrashed;
+			//Update explosions
+			if(justcrashed)
+				explosions.push_back(gobjs::Explosion(player.transform.position));
+
+			for(auto &explosion : explosions)
+				explosion.update(dt);
 			//Update camera
 			game::updateCamera(player);
-			game::generateNewChunks(permutations, chunktables, decorations);
+			game::generateNewChunks(permutations, chunktables, decorations);	
 
 			state->updateKeyStates();
 			glfwSwapBuffers(state->getWindow());

@@ -14,6 +14,8 @@ constexpr glm::vec3 TERRAIN_LOD_COLORS[] = {
 	glm::vec3(1.0f, 0.0f, 1.0f),
 };
 
+namespace gobjs = gameobjects;
+
 namespace gfx {
 	void displaySkybox() 
 	{
@@ -64,7 +66,6 @@ namespace gfx {
 		transform = glm::scale(transform, glm::vec3(quadscale));
 		waterShader.uniformMat4x4("transform", transform);
 		VAOS->drawInstanced(count);
-		glEnable(GL_CULL_FACE);
 	}
 
 	void generateDecorationOffsets(infworld::DecorationTable &decorations)
@@ -110,6 +111,7 @@ namespace gfx {
 		decorations.drawDecorations(VAOS->getVao("tree"));
 		VAOS->bind("treelowdetail");
 		decorations.drawDecorations(VAOS->getVao("treelowdetail"));
+		glEnable(GL_CULL_FACE);
 	}
 
 	unsigned int displayTerrain(infworld::ChunkTable *chunktables, int maxlod, float lodscale)
@@ -217,5 +219,31 @@ namespace gfx {
 		shader.uniformMat3x3("normalmat", normal);
 		VAOS->bind("propeller");
 		VAOS->draw();
+	}
+
+	void displayExplosions(const std::vector<gobjs::Explosion> &explosions)
+	{
+		if(explosions.empty())
+			return;
+
+		State* state = State::get();
+
+		glDisable(GL_CULL_FACE);
+		glDepthMask(GL_FALSE);
+		VAOS->bind("quad");
+		SHADERS->use("explosion");
+		TEXTURES->bindTexture("explosion_particle", GL_TEXTURE0);
+		ShaderProgram& shader = SHADERS->getShader("explosion");
+		shader.uniformMat4x4("persp", state->getPerspective());
+		shader.uniformMat4x4("view", state->getCamera().viewMatrix());
+		for(const auto &explosion : explosions) {
+			if(!explosion.visible)
+				continue;
+			shader.uniformFloat("time", explosion.timePassed);
+			shader.uniformMat4x4("transform", explosion.transform.getTransformMat());
+			VAOS->drawInstanced(128);
+		}
+		glDepthMask(GL_TRUE);
+		glEnable(GL_CULL_FACE);
 	}
 }

@@ -51,6 +51,13 @@
 	"flip" = "true";
 }
 
+# explosion particle
+"explosion_particle" {
+	"target" = "texture2d";
+	"path" = "assets/textures/explosionparticle.png";
+	"flip" = "false";
+}
+
 # cubemap for skybox
 "skybox" {
 	"target" = "cubemap";

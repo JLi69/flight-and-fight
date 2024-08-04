@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glad/glad.h>
 #include <stb_image/stb_image.h>
 
 State::State() 
@@ -112,6 +111,22 @@ void State::createWindow(const char *name, int w, int h)
 	window = glfwCreateWindow(w, h, name, nullptr, nullptr);
 }
 
+void State::initNuklear()
+{
+	//Init nuklear	
+	ctx = nk_glfw3_init(&glfw, getWindow(), NK_GLFW3_INSTALL_CALLBACKS);
+}
+
+nk_glfw* State::getNkGlfw()
+{
+	return &glfw;
+}
+
+nk_context* State::getNkContext()
+{
+	return ctx;
+}
+
 void die(const char *msg)
 {
 	fprintf(stderr, "%s\n", msg);
@@ -158,23 +173,25 @@ void initMousePos(GLFWwindow *window)
 	State::get()->setMousePos(mousex, mousey);
 }
 
-bool outputFps(float dt, unsigned int &chunksPerSecond)
+unsigned int outputFps(float dt, unsigned int &chunksPerSecond)
 {
+	static unsigned int fps = 0;
 	static float fpstimer = 0.0f;
 	static int frames = 0;
 	fpstimer += dt;
 
 	if(fpstimer > 1.0f) {
 		fprintf(stderr, "FPS: %d | Chunks drawn: %d\n", frames, chunksPerSecond);
+		fps = frames;
 		fpstimer = 0;
 		frames = 0;
 		chunksPerSecond = 0;
-		return true;
+		return fps;
 	}
 		
 	frames++;
 
-	return false;
+	return fps;
 }
 
 void initWindow(GLFWwindow* window)

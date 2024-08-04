@@ -1,0 +1,16 @@
+# This is a list of fonts used and fonts of different sizes
+
+"armata_small" {
+	"path" = "assets/fonts/Armata-Regular.ttf";
+	"fontsz" = "16";
+}
+
+"armata_medium" {
+	"path" = "assets/fonts/Armata-Regular.ttf";
+	"fontsz" = "32";
+}
+
+"armata_large" {
+	"path" = "assets/fonts/Armata-Regular.ttf";
+	"fontsz" = "96";
+}

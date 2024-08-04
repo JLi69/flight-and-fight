@@ -1,2 +1,3 @@
 g++
 %cpp -Iinclude
+%c -Iinclude

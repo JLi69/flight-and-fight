@@ -63,6 +63,8 @@ namespace game {
 		TEXTURES->importFromFile("assets/textures.impfile");
 		//Shaders
 		SHADERS->importFromFile("assets/shaders.impfile");	
+		//Fonts
+		FONTS->importFromFile("assets/fonts.impfile");
 	}
 
 	void generateChunks(

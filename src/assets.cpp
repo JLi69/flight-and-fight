@@ -1,4 +1,5 @@
 #include "assets.hpp"
+#include "app.hpp"
 
 namespace assets {
 	TextureManager* TextureManager::get()
@@ -195,5 +196,56 @@ namespace assets {
 			exit(1);
 		}
 		return vaos.at(name);
+	}
+
+	FontMetaData entryToFontMetaData(const impfile::Entry &entry)
+	{
+		FontMetaData metadata;
+		metadata.name = entry.name;
+		metadata.path = entry.getVar("path");
+		metadata.fontsize = atoi(entry.getVar("fontsz").c_str());
+		return metadata;
+	}
+
+	void FontManager::importFromFile(const char *path)
+	{
+		State* state = State::get();
+		std::vector<impfile::Entry> entries = impfile::parseFile(path);
+		nk_glfw3_font_stash_begin(state->getNkGlfw(), &fontatlas);
+		for(const auto &entry : entries) {
+			FontMetaData fontmetadata = entryToFontMetaData(entry);
+			nk_font* font = nk_font_atlas_add_from_file(
+				fontatlas,
+				fontmetadata.path.c_str(),
+				fontmetadata.fontsize,
+				0
+			);
+			fonts.insert({ fontmetadata.name, font });
+		}
+		nk_glfw3_font_stash_end(state->getNkGlfw());
+	}
+
+	FontManager* FontManager::get()
+	{
+		static FontManager* fontmanager = new FontManager;
+		return fontmanager;
+	}
+
+	void FontManager::pushFont(const std::string &fontname)
+	{
+		State* state = State::get();
+
+		if(!fonts.count(fontname))
+			return;
+
+		nk_style_push_font(
+			state->getNkContext(),
+			&fonts.at(fontname)->handle
+		);
+	}
+
+	void FontManager::popFont()
+	{	
+		nk_style_pop_font(State::get()->getNkContext());
 	}
 }

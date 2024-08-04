@@ -1,10 +1,5 @@
 #include <glad/glad.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <vector>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <random>
 
 #include "camera.hpp"
 #include "infworld.hpp"
@@ -25,8 +20,13 @@ int main(int argc, char *argv[])
 		die("Failed to init glfw!");
 	state->createWindow("flight sim", 960, 720);
 	initWindow(state->getWindow());
+	state->initNuklear();
 
 	game::loadAssets();
+	//Load fonts
+	nk_font_atlas *fonts;
+	nk_glfw3_font_stash_begin(state->getNkGlfw(), &fonts);
+	nk_glfw3_font_stash_end(state->getNkGlfw());
 	//Initialize uniforms - TODO: these can probably be made into a single
 	//uniform buffer object and then they can be accessed across all shaders
 	const float viewdist = 
@@ -39,6 +39,14 @@ int main(int argc, char *argv[])
 	SHADERS->getShader("terrain").uniformFloat("viewdist", viewdist);
 	SHADERS->getShader("terrain").uniformFloat("maxheight", HEIGHT);
 	SHADERS->getShader("terrain").uniformInt("prec", PREC);
+
+	//Set OpenGL state
+	glClearColor(0.5f, 0.8f, 1.0f, 1.0f);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	game::casualModeGameLoop();	
 

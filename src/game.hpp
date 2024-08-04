@@ -59,6 +59,7 @@ namespace gameobjects {
 			RX_DOWN,
 			RX_NONE,
 		} xRotationDirection;
+		float deathtimer = 0.0f; //Keeps track of how long the player has been dead
 		Player(glm::vec3 position);
 
 		void update(float dt);
@@ -89,4 +90,12 @@ namespace gfx {
 	void generateDecorationOffsets(infworld::DecorationTable &decorations);
 	void displayPlayerPlane(float totalTime, const game::Transform &transform);
 	void displayExplosions(const std::vector<gameobjects::Explosion> &explosions);
+}
+
+namespace gui {
+	void displayFPSCounter(unsigned int fps);
+	//Returns action taken by the user on the pause menu
+	std::string displayPauseMenu();
+	//Returns the action taken by the user on the death screen
+	void displayDeathScreen();
 }

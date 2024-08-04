@@ -245,5 +245,5 @@ namespace gfx {
 		}
 		glDepthMask(GL_TRUE);
 		glEnable(GL_CULL_FACE);
-	}
+	}	
 }

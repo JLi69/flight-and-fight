@@ -19,21 +19,20 @@ namespace game {
 		decorations.genDecorations(permutations);
 		gfx::generateDecorationOffsets(decorations);
 
+
+		bool paused = false;
 		//Gameobjects
 		gobjs::Player player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
 		std::vector<gobjs::Explosion> explosions;
 
-		glClearColor(0.5f, 0.8f, 1.0f, 1.0f);
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LEQUAL);
-		glEnable(GL_CULL_FACE);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		unsigned int fps = 0;
 		float dt = 0.0f;
 		float totalTime = 0.0f;
 		unsigned int chunksPerSecond = 0; //Number of chunks drawn per second
 		while(!glfwWindowShouldClose(state->getWindow())) {
 			float start = glfwGetTime();
+
+			nk_glfw3_new_frame(state->getNkGlfw());
 
 			//Update perspective matrix
 			state->updatePerspectiveMat(FOVY, ZNEAR, ZFAR);
@@ -53,28 +52,49 @@ namespace game {
 			gfx::displaySkybox();
 			//Display explosions
 			gfx::displayExplosions(explosions);
+			//User Interface
+			gui::displayFPSCounter(fps);
+			if(player.crashed && !paused && player.deathtimer > 2.5f)
+				gui::displayDeathScreen();
+			if(paused) {
+				std::string action = gui::displayPauseMenu();
+				if(action == "unpause") {
+					paused = false;
+					glfwSetInputMode(state->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+				}
+			}
+			
+			//Pause/unpause the game
+			if(state->getKeyState(GLFW_KEY_ESCAPE) == JUST_PRESSED)
+				paused = !paused;
+			if(!paused) {
+				//Update plane
+				player.update(dt);
+				bool justcrashed = player.crashed;
+				player.checkIfCrashed(dt, permutations);
+				justcrashed = player.crashed ^ justcrashed;
+				//Update explosions
+				if(justcrashed)
+					explosions.push_back(gobjs::Explosion(player.transform.position));
+				for(auto &explosion : explosions)
+					explosion.update(dt);
+				//Update camera
+				game::updateCamera(player);
+				game::generateNewChunks(permutations, chunktables, decorations);
+			
+				totalTime += dt;
+			}
 
-			//Update plane
-			player.update(dt);
-			bool justcrashed = player.crashed;
-			player.checkIfCrashed(dt, permutations);
-			justcrashed = player.crashed ^ justcrashed;
-			//Update explosions
-			if(justcrashed)
-				explosions.push_back(gobjs::Explosion(player.transform.position));
-
-			for(auto &explosion : explosions)
-				explosion.update(dt);
-			//Update camera
-			game::updateCamera(player);
-			game::generateNewChunks(permutations, chunktables, decorations);	
 
 			state->updateKeyStates();
+			nk_glfw3_render(state->getNkGlfw(), NK_ANTI_ALIASING_ON, 512 * 1024, 128 * 1024);
+			glEnable(GL_CULL_FACE);
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_BLEND);
 			glfwSwapBuffers(state->getWindow());
-			gfx::outputErrors();
 			glfwPollEvents();
-			totalTime += dt;
-			outputFps(dt, chunksPerSecond);
+			gfx::outputErrors();
+			fps = outputFps(dt, chunksPerSecond);	
 			dt = glfwGetTime() - start;
 		}
 

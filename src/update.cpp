@@ -6,7 +6,7 @@ constexpr float ROTATION_Z_SPEED = 0.5f;
 constexpr float MAX_ROTATION_Z = glm::radians(15.0f);
 constexpr float ROTATION_Y_SPEED = 0.7f;
 constexpr float ROTATION_X_SPEED = 0.6f;
-constexpr float MAX_ROTATION_X = glm::radians(40.0f);
+constexpr float MAX_ROTATION_X = glm::radians(50.0f);
 
 namespace gobjs = gameobjects;
 
@@ -22,8 +22,10 @@ namespace gameobjects {
 
 	void Player::update(float dt) 
 	{
-		if(crashed)
+		if(crashed) {
+			deathtimer += dt;
 			return;
+		}
 
 		State* state = State::get();	
 

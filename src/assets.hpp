@@ -4,7 +4,18 @@
  * */
 
 #pragma once
+
 #include "gfx.hpp"
+#define NK_INCLUDE_FIXED_TYPES
+#define NK_INCLUDE_STANDARD_IO
+#define NK_INCLUDE_STANDARD_VARARGS
+#define NK_INCLUDE_DEFAULT_ALLOCATOR
+#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+#define NK_INCLUDE_FONT_BAKING
+#define NK_INCLUDE_DEFAULT_FONT
+#define NK_KEYSTATE_BASED_INPUT
+#include <nuklear/nuklear.h>
+#include <nuklear/nuklear_glfw_gl3.h>
 #include "importfile.hpp"
 #include "shader.hpp"
 #include <unordered_map>
@@ -33,6 +44,12 @@ namespace assets {
 	struct ModelMetaData {
 		std::string name;
 		std::string path;
+	};
+
+	struct FontMetaData {
+		std::string name;
+		std::string path;
+		unsigned int fontsize;
 	};
 
 	class TextureManager {
@@ -74,6 +91,17 @@ namespace assets {
 		ShaderProgram& getShader(const std::string &name);
 	};
 
+	class FontManager {
+		std::unordered_map<std::string, nk_font*> fonts = {};
+		nk_font_atlas* fontatlas;
+		FontManager() {}
+	public:
+		void importFromFile(const char *path);
+		static FontManager* get();
+		void pushFont(const std::string &fontname);
+		void popFont();
+	};
+
 	//assumes the entry has the following variables:
 	//path, target, flip
 	//path is the path to the texture (relative to the executable)
@@ -95,8 +123,14 @@ namespace assets {
 	//path
 	//'path' is the path to an obj file relative to the executable
 	ModelMetaData entryToModelMetaData(const impfile::Entry &entry);
+	//Assumes that the entry has the following variables:
+	//path, fontsz
+	//'path' is the path to a ttf file relative to the executable,
+	//fontsz is the font size
+	FontMetaData entryToFontMetaData(const impfile::Entry &entry);
 }
 
 #define TEXTURES assets::TextureManager::get()
 #define SHADERS assets::ShaderManager::get()
 #define VAOS assets::VaoManager::get()
+#define FONTS assets::FontManager::get()

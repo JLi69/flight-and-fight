@@ -16,6 +16,12 @@ constexpr int RANGE = 4;
 const glm::vec3 LIGHT = glm::normalize(glm::vec3(-1.0f));
 
 namespace game {
+	enum GameMode {
+		CASUAL,
+		CREDITS,
+		NONE_SELECTED,
+	};
+
 	struct Transform {
 		glm::vec3 position;
 		glm::vec3 scale;
@@ -43,6 +49,9 @@ namespace game {
 	//In casual mode, you simply fly your plane around to explore the world
 	//and avoid crashing into the terrain
 	void casualModeGameLoop();
+	//Main menu
+	//Returns the game mode selected
+	game::GameMode mainMenu();
 }
 
 namespace gameobjects {
@@ -93,9 +102,15 @@ namespace gfx {
 }
 
 namespace gui {
+	std::vector<std::string> readTextFile(const char *path);
 	void displayFPSCounter(unsigned int fps);
 	//Returns action taken by the user on the pause menu
 	std::string displayPauseMenu();
 	//Returns the action taken by the user on the death screen
 	void displayDeathScreen();
+	//returns the selected game mode
+	game::GameMode displayMainMenu();
+	//Display credits
+	//returns true if user closed out of credits, false otherwise
+	bool displayCredits(const std::vector<std::string> &credits);
 }

@@ -1,19 +1,33 @@
-TEXTURES CREDITS:
+Flight Simulator
 
+by Nullptr Error ("JLi69")
+Made with <3 and C++
+License: GPLv3
+
+Third Party Libraries Used:
+---------------------------
+GLFW
+glm
+glad
+nuklear
+stb_image
+fast_obj
+
+Font used:
+----------
+"Armata" - (c) Sorkin Type Co
+(Licensed under SIL Open Font License)
+
+Textures used:
+--------------
+used in terraintextures.png:
 grass.png: https://opengameart.org/content/seamless-grass-texture
-used in terraintextures.png
-
 sand.png: https://opengameart.org/content/seamless-beach-sand
-used in terraintextures.png
-
 stone.png: https://opengameart.org/node/15623
-used in terraintextures.png
-
 snow.png: https://opengameart.org/content/seamless-snow-texture-0
-used in terraintextures.png
 
+used in watermaps.png:
 waternormals.png: https://watersimulation.tumblr.com/post/115928250077/scrolling-normal-maps
-
 waterdudv.png: https://www.dropbox.com/sh/lwvm5i223cwd5ue/AADedi_y3XTQ_j2aD2oH4DLKa?dl=0
 (linked from this wonderful video by ThinMatrix: https://www.youtube.com/watch?v=7T5o4vZXAvI)
 
@@ -36,12 +50,12 @@ used part of the leaves texture for leaves in "treetexture.png"
 also modified to be more "green"
 (https://creativecommons.org/licenses/by-sa/3.0/)
 
-Consider all textures used to be distributed under the CC-BY-SA 3.0 license
-(https://creativecommons.org/licenses/by-sa/3.0/)
-
 used "metall010-new-tileable.png" for plane texture (https://opengameart.org/node/9070)
 by p0ss
 License: GPL 2.0, GPL 3.0, or CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
 
 used explosion particle by kenney (https://opengameart.org/content/smoke-particle-assets)
 License: CC0
+
+Consider all textures used to be distributed under the CC-BY-SA 3.0 license
+(https://creativecommons.org/licenses/by-sa/3.0/)

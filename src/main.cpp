@@ -47,8 +47,18 @@ int main(int argc, char *argv[])
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
-	game::casualModeGameLoop();	
+
+	while(!glfwWindowShouldClose(state->getWindow())) {
+		game::GameMode gamemode = game::mainMenu();
+		glfwSetInputMode(state->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		switch(gamemode) {
+			case game::CASUAL:
+				game::casualModeGameLoop();	
+				break;
+			default:
+				break;
+		}
+	}
 
 	glfwTerminate();
 }

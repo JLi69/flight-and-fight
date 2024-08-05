@@ -5,6 +5,57 @@
 namespace gobjs = gameobjects;
 
 namespace game {
+	game::GameMode mainMenu()
+	{
+		State* state = State::get();
+		bool showCredits = false;
+		std::vector<std::string> credits = gui::readTextFile("assets/credits.txt");
+
+		glfwSetInputMode(state->getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		
+		float dt = 0.0f;
+		float totalTime = 0.0f;
+		while(!glfwWindowShouldClose(state->getWindow())) {
+			float start = glfwGetTime();
+
+			nk_glfw3_new_frame(state->getNkGlfw());
+
+			//Update perspective matrix
+			state->updatePerspectiveMat(FOVY, ZNEAR, ZFAR);
+
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			game::GameMode selected = gui::displayMainMenu();
+			if(showCredits) {
+				bool close = gui::displayCredits(credits);
+				if(close)
+					showCredits = false;
+			}
+
+			state->updateKeyStates();
+			nk_glfw3_render(state->getNkGlfw(), NK_ANTI_ALIASING_ON, 512 * 1024, 128 * 1024);
+			glEnable(GL_CULL_FACE);
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_BLEND);
+			glfwSwapBuffers(state->getWindow());
+			glfwPollEvents();
+			gfx::outputErrors();
+
+			switch(selected) {
+			case CASUAL:
+				return selected;
+			case CREDITS:
+				showCredits = true;
+			default:
+				break;
+			}
+
+			dt = glfwGetTime() - start;
+		}
+
+		return NONE_SELECTED;
+	}
+
 	void casualModeGameLoop()
 	{
 		State* state = State::get();
@@ -19,8 +70,8 @@ namespace game {
 		decorations.genDecorations(permutations);
 		gfx::generateDecorationOffsets(decorations);
 
-
 		bool paused = false;
+		bool stop = false;
 		//Gameobjects
 		gobjs::Player player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
 		std::vector<gobjs::Explosion> explosions;
@@ -29,7 +80,7 @@ namespace game {
 		float dt = 0.0f;
 		float totalTime = 0.0f;
 		unsigned int chunksPerSecond = 0; //Number of chunks drawn per second
-		while(!glfwWindowShouldClose(state->getWindow())) {
+		while(!glfwWindowShouldClose(state->getWindow()) && !stop) {
 			float start = glfwGetTime();
 
 			nk_glfw3_new_frame(state->getNkGlfw());
@@ -61,6 +112,10 @@ namespace game {
 				if(action == "unpause") {
 					paused = false;
 					glfwSetInputMode(state->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+				}
+				else if(action == "quit") {
+					stop = true;
+					glfwSetInputMode(state->getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 				}
 			}
 			

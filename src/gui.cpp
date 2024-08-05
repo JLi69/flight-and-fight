@@ -120,7 +120,7 @@ namespace gui {
 		int w, h;
 		glfwGetWindowSize(state->getWindow(), &w, &h);
 		nk_style* s = &ctx->style;	
-		s->text.color = nk_rgb(255, 255, 255);
+		s->text.color = nk_rgb(80, 160, 235);
 		s->button.border = 0.0f;
 		s->button.text_hover = nk_rgb(255, 255, 255);
 		s->button.text_normal = nk_rgb(255, 255, 255);

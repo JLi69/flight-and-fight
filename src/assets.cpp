@@ -211,6 +211,12 @@ namespace assets {
 	{
 		State* state = State::get();
 		std::vector<impfile::Entry> entries = impfile::parseFile(path);
+	
+		//For whatever reason Nuklear crashes if I don't include this code here
+		//do not delete this code despite the fact it doesn't load any fonts
+		nk_glfw3_font_stash_begin(state->getNkGlfw(), &fontatlas);
+		nk_glfw3_font_stash_end(state->getNkGlfw());
+
 		nk_glfw3_font_stash_begin(state->getNkGlfw(), &fontatlas);
 		for(const auto &entry : entries) {
 			FontMetaData fontmetadata = entryToFontMetaData(entry);

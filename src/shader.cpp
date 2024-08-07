@@ -128,6 +128,18 @@ int ShaderProgram::getUniformLocation(const char *uniformName)
 	return uniformLocations[uniformName];
 }
 
+int ShaderProgram::getUniformBlockIndex(const char *uniformBlockName)
+{
+	int index = glGetUniformBlockIndex(programid, uniformBlockName);
+	return index;
+}
+
+void ShaderProgram::setBinding(const char *uniformBlockName, unsigned int binding)
+{
+	int index = getUniformBlockIndex(uniformBlockName);
+	glUniformBlockBinding(programid, index, binding);
+}
+
 void ShaderProgram::uniformMat3x3(const char *uniformName, const glm::mat3 &mat)
 {
 	int location = getUniformLocation(uniformName);

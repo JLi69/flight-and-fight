@@ -63,7 +63,7 @@ namespace game {
 		TEXTURES->importFromFile("assets/textures.impfile");
 		//Shaders
 		SHADERS->importFromFile("assets/shaders.impfile");	
-		//Fonts
+		//Fonts	
 		FONTS->importFromFile("assets/fonts.impfile");
 	}
 
@@ -92,5 +92,40 @@ namespace game {
 		bool generated = decorations.genNewDecorations(cam.position.x, cam.position.z, permutations);
 		if(generated)
 			gfx::generateDecorationOffsets(decorations);
+	}
+
+	//This initializes the uniform block of values that should be shared across
+	//all shaders, it should be at binding 0 and for our purposes any values sent
+	//into it should remain constants throughout the execution of the program
+	void initGlobalValUniformBlock()
+	{
+		const float viewdist = 
+			CHUNK_SZ * SCALE * 2.0f * float(RANGE) * std::pow(LOD_SCALE, MAX_LOD - 2);
+		const float globalShaderVals[] = {
+			viewdist,
+		};
+
+		unsigned int globalShaderValsUbo;
+		glGenBuffers(1, &globalShaderValsUbo);
+		glBindBuffer(GL_UNIFORM_BUFFER, globalShaderValsUbo);
+		glBufferData(
+			GL_UNIFORM_BUFFER,
+			sizeof(globalShaderVals),
+			globalShaderVals,
+			GL_STATIC_DRAW
+		);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		SHADERS->getShader("water").setBinding("GlobalVals", 0);
+		SHADERS->getShader("tree").setBinding("GlobalVals", 0);
+		SHADERS->getShader("terrain").setBinding("GlobalVals", 0);
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, globalShaderValsUbo);
+	}
+
+	void initUniforms()
+	{
+		initGlobalValUniformBlock();
+		SHADERS->use("terrain");
+		SHADERS->getShader("terrain").uniformFloat("maxheight", HEIGHT);
+		SHADERS->getShader("terrain").uniformInt("prec", PREC);
 	}
 }

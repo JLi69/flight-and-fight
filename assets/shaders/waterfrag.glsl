@@ -1,5 +1,9 @@
 #version 330 core
 
+layout (std140) uniform GlobalVals {
+	float viewdist;
+};
+
 out vec4 color;
 
 in vec3 fragpos;
@@ -14,8 +18,6 @@ uniform sampler2D watermaps;
 uniform float time;
 uniform vec3 lightdir;
 uniform vec3 camerapos;
-
-uniform float viewdist;
 
 const float FOG_DIST = 10000.0;
 const float WATER_FOG_DIST = 128.0;

@@ -34,6 +34,8 @@ namespace game {
 	};	
 
 	void loadAssets();
+	//Initializes the shader uniforms
+	void initUniforms();
 	void generateChunks(
 		const infworld::worldseed &permutations,
 		infworld::ChunkTable *chunktables,

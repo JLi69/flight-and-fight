@@ -1,5 +1,9 @@
 #version 330 core
 
+layout (std140) uniform GlobalVals {
+	float viewdist;
+};
+
 out vec4 color;
 
 in float lighting;
@@ -11,8 +15,6 @@ uniform vec3 lightdir;
 uniform vec3 camerapos;
 
 uniform sampler2D terraintexture;
-
-uniform float viewdist;
 
 const float FOG_DIST = 10000.0;
 const float WATER_FOG_DIST = 128.0;

@@ -149,17 +149,7 @@ void cursorPosCallback(GLFWwindow *window, double x, double y)
 }
 
 void handleKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods)
-{	
-	//Toggle cursor
-	if(key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
-		int cursorMode = glfwGetInputMode(window, GLFW_CURSOR);
-		glfwSetInputMode(
-			window,
-			GLFW_CURSOR,
-			cursorMode == GLFW_CURSOR_DISABLED ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED
-		);
-	}
-
+{
 	if(action == GLFW_PRESS)
 		State::get()->setKey(key, JUST_PRESSED);
 	else if(action == GLFW_RELEASE)

@@ -32,6 +32,8 @@ public:
 	ShaderProgram(const char *vertpath, const char *fragpath);
 	void use();
 	int getUniformLocation(const char *uniformName);
+	int getUniformBlockIndex(const char *uniformBlockName);
+	void setBinding(const char *uniformBlockName, unsigned int binding);
 	unsigned int getid();
 
 	void uniformMat3x3(const char *uniformName, const glm::mat3 &mat);

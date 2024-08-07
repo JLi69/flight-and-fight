@@ -121,6 +121,7 @@ namespace game {
 			if(player.crashed && !paused && player.deathtimer > 2.5f)
 				gui::displayDeathScreen();
 			if(paused) {
+				glfwSetInputMode(state->getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 				std::string action = gui::displayPauseMenu();
 				if(action == "unpause") {
 					paused = false;
@@ -131,6 +132,8 @@ namespace game {
 					glfwSetInputMode(state->getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 				}
 			}
+			else if(!paused)
+				glfwSetInputMode(state->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 			
 			//Pause/unpause the game
 			if(state->getKeyState(GLFW_KEY_ESCAPE) == JUST_PRESSED)

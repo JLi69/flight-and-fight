@@ -1,5 +1,9 @@
 #version 330 core
 
+layout (std140) uniform GlobalVals {
+	float viewdist;
+};
+
 uniform sampler2D tex;
 
 out vec4 color;
@@ -9,7 +13,6 @@ in vec3 normal;
 
 in vec3 fragpos;
 
-uniform float viewdist;
 uniform vec3 camerapos;
 uniform vec3 lightdir;
 //How strong the specular effect is

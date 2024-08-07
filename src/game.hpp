@@ -18,6 +18,7 @@ const glm::vec3 LIGHT = glm::normalize(glm::vec3(-1.0f));
 namespace game {
 	enum GameMode {
 		CASUAL,
+		FIGHT,
 		CREDITS,
 		NONE_SELECTED,
 	};
@@ -51,6 +52,12 @@ namespace game {
 	//In casual mode, you simply fly your plane around to explore the world
 	//and avoid crashing into the terrain
 	void casualModeGameLoop();
+	//This is the game loop for "Fight Mode"
+	//In fight mode, there are other things in the sky you need to shoot down
+	//and some of those things will shoot back at you so you must try to
+	//destroy as many things as possible before being shot down yourself
+	//returns the final score the player acheives
+	unsigned int fightModeGameLoop();
 	//Main menu
 	//Returns the game mode selected
 	game::GameMode mainMenu();

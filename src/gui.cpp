@@ -149,7 +149,14 @@ namespace gui {
 
 			FONTS->pushFont("armata_medium");
 			nk_layout_row_begin(ctx, NK_STATIC, 64.0f, 2);
-			
+		
+			nk_layout_row_push(ctx, padding);
+			nk_spacing(ctx, 1);
+			nk_layout_row_push(ctx, BUTTON_SZ);
+			if(nk_button_label(ctx, "Fight Mode"))
+				selected = game::FIGHT;
+			nk_layout_row_end(ctx);
+
 			nk_layout_row_push(ctx, padding);
 			nk_spacing(ctx, 1);
 			nk_layout_row_push(ctx, BUTTON_SZ);

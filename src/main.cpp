@@ -37,6 +37,9 @@ int main(int argc, char *argv[])
 			case game::CASUAL:
 				game::casualModeGameLoop();	
 				break;
+			case game::FIGHT:
+				game::fightModeGameLoop();
+				break;
 			default:
 				break;
 		}

@@ -188,13 +188,19 @@ namespace game {
 		infworld::DecorationTable decorations = infworld::DecorationTable(14, CHUNK_SZ);
 		decorations.genDecorations(permutations);
 		gfx::generateDecorationOffsets(decorations);
-
+		
+		std::minstd_rand0 lcg;
+		lcg.seed(randSeed);
 		bool paused = false;
 		bool stop = false;
 		unsigned int score = 0;
+		//Timers
+		TimerManager timers;
+		timers.addTimer("spawn_balloon", 0.0f, 20.0f);
 		//Gameobjects
 		gobjs::Player player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
 		std::vector<gobjs::Explosion> explosions;
+		std::vector<gobjs::Enemy> balloons;
 
 		unsigned int fps = 0;
 		float dt = 0.0f;
@@ -204,7 +210,6 @@ namespace game {
 			float start = glfwGetTime();
 
 			nk_glfw3_new_frame(state->getNkGlfw());
-
 			//Update perspective matrix
 			state->updatePerspectiveMat(FOVY, ZNEAR, ZFAR);
 
@@ -216,9 +221,11 @@ namespace game {
 			gfx::displayDecorations(decorations, totalTime);	
 			//Display plane
 			if(!player.crashed)
-				gfx::displayPlayerPlane(totalTime, player.transform);		
+				gfx::displayPlayerPlane(totalTime, player.transform);
+			//Display balloons
+			gfx::displayBalloons(balloons);
 			//Display water
-			gfx::displayWater(totalTime);	
+			gfx::displayWater(totalTime);
 			//Draw skybox
 			gfx::displaySkybox();
 			//Display explosions
@@ -246,6 +253,17 @@ namespace game {
 			if(state->getKeyState(GLFW_KEY_ESCAPE) == JUST_PRESSED)
 				paused = !paused;
 			if(!paused) {
+				//Update timers
+				timers.update(dt);
+
+				//Spawn balloons
+				if(timers.getTimer("spawn_balloon"))
+					spawnBalloons(player, balloons, lcg, permutations);
+				//Destroy any balloons that are too far away or are destroyed
+				destroyBalloons(player, balloons);
+				//Update balloons
+				for(auto &balloon : balloons)
+					balloon.updateBalloon(dt);
 				//Update plane
 				player.update(dt);
 				bool justcrashed = player.crashed;
@@ -261,8 +279,8 @@ namespace game {
 				game::generateNewChunks(permutations, chunktables, decorations);
 			
 				totalTime += dt;
+				timers.reset();
 			}
-
 
 			state->updateKeyStates();
 			nk_glfw3_render(state->getNkGlfw(), NK_ANTI_ALIASING_ON, 512 * 1024, 128 * 1024);

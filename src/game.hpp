@@ -32,7 +32,22 @@ namespace game {
 		glm::vec3 direction() const; //Forward vector
 		glm::vec3 right() const;
 		glm::vec3 rotate(const glm::vec3 &v) const;
-	};	
+	};
+
+	struct Timer {
+		float time = 0.0f;
+		float maxtime = 0.0f;
+	};
+
+	struct TimerManager {
+		std::unordered_map<std::string, Timer> timers;
+		void addTimer(const std::string& name, float maxtime);
+		void addTimer(const std::string& name, float time, float maxtime);
+		void update(float dt);
+		//Resets all timers that have time below 0.0
+		void reset();
+		bool getTimer(const std::string &name);
+	};
 
 	void loadAssets();
 	//Initializes the shader uniforms
@@ -91,9 +106,32 @@ namespace gameobjects {
 		Explosion(glm::vec3 position);
 		void update(float dt);
 	};
+
+	struct Enemy {
+		game::Transform transform;
+		std::unordered_map<std::string, float> values;
+		int hitpoints;
+		Enemy(glm::vec3 position, int hp);
+		void updateBalloon(float dt);
+		float getVal(const std::string &key);
+		void setVal(const std::string &key, float v);
+	};
+
+	Enemy spawnBalloon(glm::vec3 position, infworld::worldseed &permutations);
 }
 
 namespace game {
+	//Spawns balloons around the player
+	void spawnBalloons(
+		gameobjects::Player &player,
+		std::vector<gameobjects::Enemy> &balloons,
+		std::minstd_rand0 &lcg,
+		infworld::worldseed &permutations
+	);
+	void destroyBalloons(
+		gameobjects::Player &player,
+		std::vector<gameobjects::Enemy> &balloons
+	);
 	//Returns the position the camera should be following
 	glm::vec3 getCameraFollowPos(const Transform &playertransform);
 	//Have the camera follow the player
@@ -108,6 +146,7 @@ namespace gfx {
 	void generateDecorationOffsets(infworld::DecorationTable &decorations);
 	void displayPlayerPlane(float totalTime, const game::Transform &transform);
 	void displayExplosions(const std::vector<gameobjects::Explosion> &explosions);
+	void displayBalloons(const std::vector<gameobjects::Enemy> &balloons);
 }
 
 namespace gui {

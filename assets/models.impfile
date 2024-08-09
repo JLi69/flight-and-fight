@@ -9,3 +9,8 @@
 "propeller" {
 	"path" = "assets/models/propeller.obj";
 }
+
+# Balloon model
+"balloon" {
+	"path" = "assets/models/balloon.obj";
+}

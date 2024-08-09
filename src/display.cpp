@@ -245,5 +245,32 @@ namespace gfx {
 		}
 		glDepthMask(GL_TRUE);
 		glEnable(GL_CULL_FACE);
-	}	
+	}
+
+	void displayBalloons(const std::vector<gameobjects::Enemy> &balloons)
+	{
+		if(balloons.empty())
+			return;
+
+		State* state = State::get();
+
+		glDisable(GL_CULL_FACE);
+		VAOS->bind("balloon");
+		SHADERS->use("textured");
+		TEXTURES->bindTexture("balloon", GL_TEXTURE0);
+		ShaderProgram& shader = SHADERS->getShader("textured");
+		shader.uniformMat4x4("persp", state->getPerspective());
+		shader.uniformMat4x4("view", state->getCamera().viewMatrix());
+		shader.uniformFloat("specularfactor", 0.0f);
+		shader.uniformVec3("lightdir", LIGHT);
+		shader.uniformVec3("camerapos", state->getCamera().position);
+		for(const auto &balloon : balloons) {
+			glm::mat4 transform = balloon.transform.getTransformMat();
+			glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
+			shader.uniformMat4x4("transform", transform);
+			shader.uniformMat3x3("normalmat", normal);
+			VAOS->draw();
+		}
+		glEnable(GL_CULL_FACE);
+	}
 }

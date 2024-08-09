@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include "app.hpp"
 #include <glm/gtc/matrix_transform.hpp>
+#include <algorithm>
 
 constexpr float ROTATION_Z_SPEED = 0.5f;
 constexpr float MAX_ROTATION_Z = glm::radians(15.0f);
@@ -140,6 +141,58 @@ namespace gameobjects {
 		if(timePassed > 2.0f)
 			visible = false;
 	}
+
+	Enemy::Enemy(glm::vec3 position, int hp)
+	{
+		transform.position = position;
+		transform.scale = glm::vec3(1.0f);
+		transform.rotation = glm::vec3(0.0f);
+		hitpoints = hp;
+	}
+
+	void Enemy::updateBalloon(float dt)
+	{
+		if(transform.position.y > values.at("maxy")) {
+			transform.position.y = values.at("maxy");
+			values.at("direction") *= -1.0f;
+		}
+		else if(transform.position.y < values.at("miny")) {
+			transform.position.y = values.at("miny");
+			values.at("direction") *= -1.0f;
+		}
+
+		transform.position.y += 16.0f * dt * values.at("direction");
+	}
+
+	float Enemy::getVal(const std::string &key)
+	{
+		return values[key];
+	}
+
+	void Enemy::setVal(const std::string &key, float v)
+	{
+		values[key] = v;
+	}
+
+	Enemy spawnBalloon(glm::vec3 position, infworld::worldseed &permutations) 
+	{
+		float h = infworld::getHeight(
+			position.z / SCALE * float(PREC + 1) / float(PREC),
+			position.x / SCALE * float(PREC + 1) / float(PREC),
+			permutations
+		) * HEIGHT * SCALE;
+		float y = h + HEIGHT;
+		glm::vec3 pos(position.x, y, position.z);
+		Enemy balloon = Enemy(pos, 5);
+
+		float miny = y;
+		float maxy = y + HEIGHT;
+		float direction = 1.0f;	
+		balloon.setVal("miny", miny);
+		balloon.setVal("maxy", maxy);
+		balloon.setVal("direction", direction);
+		return balloon;
+	}
 }
 
 namespace game {
@@ -181,5 +234,42 @@ namespace game {
 		cam.position = game::getCameraFollowPos(player.transform);
 		cam.yaw = -(player.transform.rotation.y + glm::radians(180.0f));
 		cam.pitch = glm::radians(25.0f) + player.transform.rotation.x * 0.6f;
+	}
+
+	void spawnBalloons(
+		gameobjects::Player &player,
+		std::vector<gameobjects::Enemy> &balloons,
+		std::minstd_rand0 &lcg,
+		infworld::worldseed &permutations
+	) {
+		if(balloons.size() >= 4)
+			return;
+
+		int randval = lcg() % 2;
+		if(randval > 0 && balloons.size() > 1)
+			return;
+
+		glm::vec3 center = player.transform.position;
+		float dist = float(lcg() % 256) / 256.0f * CHUNK_SZ * 12.0f + CHUNK_SZ * 6.0f;
+		float angle = float(lcg() % 256) / 256.0f * glm::radians(360.0f);
+		glm::vec3 position = center + dist * glm::vec3(cosf(angle), 0.0f, sinf(angle));
+		balloons.push_back(gobjs::spawnBalloon(position, permutations));
+	}
+
+	void destroyBalloons(
+		gameobjects::Player &player,
+		std::vector<gobjs::Enemy> &balloons
+	) {
+		if(balloons.empty())
+			return;
+
+		balloons.erase(std::remove_if(
+			balloons.begin(),
+			balloons.end(),
+			[&player](gobjs::Enemy &balloon) {
+				glm::vec3 diff = balloon.transform.position - player.transform.position;
+				return glm::length(diff) > CHUNK_SZ * 32.0f;
+			}
+		), balloons.end());
 	}
 }

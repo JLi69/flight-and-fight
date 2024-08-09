@@ -51,6 +51,13 @@
 	"flip" = "true";
 }
 
+# texture for balloon
+"balloon" {
+	"target" = "texture2d";
+	"path" = "assets/textures/balloontexture.png";
+	"flip" = "true";
+}
+
 # explosion particle
 "explosion_particle" {
 	"target" = "texture2d";

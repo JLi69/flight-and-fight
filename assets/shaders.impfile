@@ -32,3 +32,13 @@
 	"vertex" = "assets/shaders/explosionvert.glsl";
 	"fragment" = "assets/shaders/explosionfrag.glsl";
 }
+
+"minimap" {
+	"vertex" = "assets/shaders/vert2d.glsl";
+	"fragment" = "assets/shaders/minimapfrag.glsl";
+}
+
+"textured2d" {
+	"vertex" = "assets/shaders/vert2d.glsl";
+	"fragment" = "assets/shaders/textured-simple-frag.glsl";
+}

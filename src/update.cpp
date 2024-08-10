@@ -181,7 +181,7 @@ namespace gameobjects {
 			position.x / SCALE * float(PREC + 1) / float(PREC),
 			permutations
 		) * HEIGHT * SCALE;
-		float y = h + HEIGHT;
+		float y = std::max(h, 0.0f) + HEIGHT;
 		glm::vec3 pos(position.x, y, position.z);
 		Enemy balloon = Enemy(pos, 5);
 
@@ -256,20 +256,62 @@ namespace game {
 		balloons.push_back(gobjs::spawnBalloon(position, permutations));
 	}
 
-	void destroyBalloons(
+	void destroyEnemies(
 		gameobjects::Player &player,
-		std::vector<gobjs::Enemy> &balloons
+		std::vector<gobjs::Enemy> &enemies,
+		std::vector<gameobjects::Explosion> &explosions,
+		float crashdist
 	) {
-		if(balloons.empty())
+		if(enemies.empty())
 			return;
 
-		balloons.erase(std::remove_if(
-			balloons.begin(),
-			balloons.end(),
-			[&player](gobjs::Enemy &balloon) {
-				glm::vec3 diff = balloon.transform.position - player.transform.position;
+		enemies.erase(std::remove_if(
+			enemies.begin(),
+			enemies.end(),
+			[&player, &explosions, &crashdist](gobjs::Enemy &enemy) {
+				if(enemy.hitpoints <= 0) {
+					explosions.push_back(gobjs::Explosion(enemy.transform.position));
+					return true;
+				}
+
+				glm::vec3 diff = enemy.transform.position - player.transform.position;
+
+				if(glm::length(diff) < crashdist) {
+					player.crashed = true;
+					explosions.push_back(gobjs::Explosion(enemy.transform.position));
+					return true;
+				}
+
 				return glm::length(diff) > CHUNK_SZ * 32.0f;
 			}
-		), balloons.end());
+		), enemies.end());
+	}
+
+	void updateExplosions(
+		std::vector<gobjs::Explosion> &explosions, 
+		const glm::vec3 &center,
+		float dt
+	) {
+		for(auto &explosion : explosions)
+			explosion.update(dt);
+
+		explosions.erase(std::remove_if(
+			explosions.begin(),
+			explosions.end(),
+			[](gobjs::Explosion &explosion) {
+				return !explosion.visible;
+			}
+		), explosions.end());
+
+		std::sort(
+			explosions.begin(),
+			explosions.end(),
+			[&center](gobjs::Explosion &e1, gobjs::Explosion &e2) {
+				glm::vec3 
+					d1 = e1.transform.position - center,
+					d2 = e2.transform.position - center;
+				return glm::length(d1) < glm::length(d2);
+			}
+		);
 	}
 }

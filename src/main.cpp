@@ -33,6 +33,8 @@ int main(int argc, char *argv[])
 	while(!glfwWindowShouldClose(state->getWindow())) {
 		game::GameMode gamemode = game::mainMenu();
 		glfwSetInputMode(state->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glBindVertexArray(0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		switch(gamemode) {
 			case game::CASUAL:
 				game::casualModeGameLoop();	

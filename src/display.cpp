@@ -14,6 +14,8 @@ constexpr glm::vec3 TERRAIN_LOD_COLORS[] = {
 	glm::vec3(1.0f, 0.0f, 1.0f),
 };
 
+constexpr float MINIMAP_SIZE = 80.0f;
+
 namespace gobjs = gameobjects;
 
 namespace gfx {
@@ -272,5 +274,91 @@ namespace gfx {
 			VAOS->draw();
 		}
 		glEnable(GL_CULL_FACE);
+	}
+
+	void displayMiniMapBackground()
+	{
+		State* state = State::get();
+		int w, h;
+		glfwGetWindowSize(state->getWindow(), &w, &h);	
+		glm::mat4 screenMat = 
+			glm::scale(glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+
+		VAOS->bind("quad");
+		SHADERS->use("minimap");
+	
+		//Display minimap background
+		ShaderProgram& minimapshader = SHADERS->getShader("minimap");
+		minimapshader.uniformMat4x4("screen", screenMat);
+		glm::mat4 transform(1.0f);
+		transform = glm::translate(transform, glm::vec3(100.0f, 100.0f, 0.0f));
+		transform = glm::translate(transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+		transform = glm::scale(transform, glm::vec3(MINIMAP_SIZE, MINIMAP_SIZE, 0.0f));
+		transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		minimapshader.uniformMat4x4("transform", transform);
+		VAOS->draw();
+
+		//Player icon
+		TEXTURES->bindTexture("player_marker", GL_TEXTURE0);
+		SHADERS->use("textured2d");
+		ShaderProgram& texture2dshader = SHADERS->getShader("textured2d");	
+		texture2dshader.uniformMat4x4("screen", screenMat);
+		transform = glm::mat4(1.0f);
+		transform = glm::translate(transform, glm::vec3(100.0f, 100.0f, 0.0f));
+		transform = glm::translate(transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+		transform = glm::scale(transform, glm::vec3(8.0f, 8.0f, 0.0f));
+		transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		texture2dshader.uniformMat4x4("transform", transform);
+		VAOS->draw();
+	}
+
+	void displayEnemyMarkers(
+		const std::vector<gameobjects::Enemy> &enemies,
+		const game::Transform &playertransform
+	) {
+		State* state = State::get();
+		int w, h;
+		glfwGetWindowSize(state->getWindow(), &w, &h);
+		glm::mat4 screenMat = 
+			glm::scale(glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+
+		const float MAX_DIST = CHUNK_SZ * 16.0f;
+	
+		VAOS->bind("quad");
+		SHADERS->use("textured2d");
+		TEXTURES->bindTexture("enemy_marker", GL_TEXTURE0);
+		ShaderProgram& texture2dshader = SHADERS->getShader("textured2d");
+		texture2dshader.uniformMat4x4("screen", screenMat);
+		glm::vec2 center(playertransform.position.x, playertransform.position.z);
+		for(const auto &enemy : enemies) {
+			//Calculate distance to player
+			glm::vec2 enemypos(enemy.transform.position.x, enemy.transform.position.z);
+			glm::vec2 diff = enemypos - center;
+			float dist = glm::length(diff);
+
+			//If we are too far away, don't display the icon
+			if(dist > MAX_DIST)
+				continue;
+
+			//Caclulate angle with enemy
+			glm::vec3 direction = playertransform.direction();
+			float dirAngle = compressNormal(glm::normalize(direction)).x;
+			diff = glm::normalize(diff);
+			float enemyAngle = compressNormal(glm::vec3(diff.x, 0.0f, diff.y)).x;
+			float angle = dirAngle - enemyAngle + glm::radians(90.0f);
+			dist /= MAX_DIST;
+
+			//Display icon
+			glm::mat4 transform = glm::mat4(1.0f);
+			float x = MINIMAP_SIZE * cosf(angle) * dist;
+			float y = MINIMAP_SIZE * sinf(angle) * dist;
+			transform = glm::translate(transform, glm::vec3(x, y, 0.0f));
+			transform = glm::translate(transform, glm::vec3(100.0f, 100.0f, 0.0f));
+			transform = glm::translate(transform, glm::vec3(-float(w) / 2.0f, -float(h) / 2.0f, 0.0f));
+			transform = glm::scale(transform, glm::vec3(8.0f, 8.0f, 0.0f));
+			transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			texture2dshader.uniformMat4x4("transform", transform);
+			VAOS->draw();
+		}
 	}
 }

@@ -93,7 +93,8 @@ namespace game {
 		unsigned int fps = 0;
 		float dt = 0.0f;
 		float totalTime = 0.0f;
-		unsigned int chunksPerSecond = 0; //Number of chunks drawn per second
+		unsigned int chunksPerSecond = 0; //Number of chunks drawn per second	
+		game::updateCamera(player);
 		while(!glfwWindowShouldClose(state->getWindow()) && !stop) {
 			float start = glfwGetTime();
 
@@ -205,7 +206,8 @@ namespace game {
 		unsigned int fps = 0;
 		float dt = 0.0f;
 		float totalTime = 0.0f;
-		unsigned int chunksPerSecond = 0; //Number of chunks drawn per second
+		unsigned int chunksPerSecond = 0; //Number of chunks drawn per second	
+		game::updateCamera(player);
 		while(!glfwWindowShouldClose(state->getWindow()) && !stop) {
 			float start = glfwGetTime();
 
@@ -232,6 +234,13 @@ namespace game {
 			gfx::displayExplosions(explosions);
 			//User Interface
 			gui::displayFPSCounter(fps);
+			glDisable(GL_CULL_FACE);
+			glDepthMask(GL_FALSE);
+			gfx::displayMiniMapBackground();
+			gfx::displayEnemyMarkers(balloons, player.transform);
+			glDepthMask(GL_TRUE);
+			glEnable(GL_CULL_FACE);
+			
 			if(player.crashed && !paused && player.deathtimer > 2.5f)
 				gui::displayDeathScreen();
 			if(paused) {
@@ -258,9 +267,7 @@ namespace game {
 
 				//Spawn balloons
 				if(timers.getTimer("spawn_balloon"))
-					spawnBalloons(player, balloons, lcg, permutations);
-				//Destroy any balloons that are too far away or are destroyed
-				destroyBalloons(player, balloons);
+					spawnBalloons(player, balloons, lcg, permutations);	
 				//Update balloons
 				for(auto &balloon : balloons)
 					balloon.updateBalloon(dt);
@@ -268,16 +275,17 @@ namespace game {
 				player.update(dt);
 				bool justcrashed = player.crashed;
 				player.checkIfCrashed(dt, permutations);
+				//Destroy any balloons that are too far away or are destroyed
+				destroyEnemies(player, balloons, explosions, 24.0f);
 				justcrashed = player.crashed ^ justcrashed;
 				//Update explosions
 				if(justcrashed)
 					explosions.push_back(gobjs::Explosion(player.transform.position));
-				for(auto &explosion : explosions)
-					explosion.update(dt);
+				game::updateExplosions(explosions, player.transform.position, dt);
 				//Update camera
 				game::updateCamera(player);
 				game::generateNewChunks(permutations, chunktables, decorations);
-			
+
 				totalTime += dt;
 				timers.reset();
 			}

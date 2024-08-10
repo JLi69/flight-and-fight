@@ -65,6 +65,20 @@
 	"flip" = "false";
 }
 
+# player marker
+"player_marker" {
+	"target" = "texture2d";
+	"path" = "assets/textures/minimap/playermarker.png";
+	"flip" = "false";
+}
+
+# enemy marker
+"enemy_marker" {
+	"target" = "texture2d";
+	"path" = "assets/textures/minimap/enemymarker.png";
+	"flip" = "false";
+}
+
 # cubemap for skybox
 "skybox" {
 	"target" = "cubemap";

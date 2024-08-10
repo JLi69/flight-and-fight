@@ -128,14 +128,22 @@ namespace game {
 		std::minstd_rand0 &lcg,
 		infworld::worldseed &permutations
 	);
-	void destroyBalloons(
+	void destroyEnemies(
 		gameobjects::Player &player,
-		std::vector<gameobjects::Enemy> &balloons
+		std::vector<gameobjects::Enemy> &enemies,
+		std::vector<gameobjects::Explosion> &explosions,
+		float crashdist
 	);
 	//Returns the position the camera should be following
 	glm::vec3 getCameraFollowPos(const Transform &playertransform);
 	//Have the camera follow the player
 	void updateCamera(gameobjects::Player &player);
+	//Update explosions
+	void updateExplosions(
+		std::vector<gameobjects::Explosion> &explosions, 
+		const glm::vec3 &center,
+		float dt
+	);
 }
 
 namespace gfx {
@@ -147,6 +155,11 @@ namespace gfx {
 	void displayPlayerPlane(float totalTime, const game::Transform &transform);
 	void displayExplosions(const std::vector<gameobjects::Explosion> &explosions);
 	void displayBalloons(const std::vector<gameobjects::Enemy> &balloons);
+	void displayMiniMapBackground();
+	void displayEnemyMarkers(
+		const std::vector<gameobjects::Enemy> &enemies,
+		const game::Transform &playertransform
+	);
 }
 
 namespace gui {

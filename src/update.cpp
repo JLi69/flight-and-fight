@@ -368,4 +368,23 @@ namespace game {
 			}
 		}
 	}
+
+	void checkForBulletTerrainCollision(
+		std::vector<gameobjects::Bullet> &bullets,
+		infworld::worldseed &permutations
+	) {
+		bullets.erase(std::remove_if(
+			bullets.begin(),
+			bullets.end(),
+			[&permutations](gobjs::Bullet &bullet) {
+				glm::vec3 pos = bullet.transform.position;
+				float h = infworld::getHeight(
+					pos.z / SCALE * float(PREC + 1) / float(PREC),
+					pos.x / SCALE * float(PREC + 1) / float(PREC),
+					permutations
+				) * HEIGHT * SCALE;
+				return pos.y < h;
+			}
+		), bullets.end());
+	}
 }

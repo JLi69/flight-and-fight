@@ -279,6 +279,7 @@ namespace game {
 				}
 				//Update bullets
 				updateBullets(bullets, dt);
+				checkForBulletTerrainCollision(bullets, permutations);
 				checkForHit(bullets, balloons, 24.0f);
 				//Spawn balloons
 				if(timers.getTimer("spawn_balloon"))

@@ -161,6 +161,10 @@ namespace game {
 		std::vector<gameobjects::Enemy> &enemies,
 		float hitdist
 	);
+	void checkForBulletTerrainCollision(
+		std::vector<gameobjects::Bullet> &bullets,
+		infworld::worldseed &permutations
+	);
 }
 
 namespace gfx {

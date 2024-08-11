@@ -274,8 +274,8 @@ namespace game {
 				KeyState spacebar = state->getKeyState(GLFW_KEY_SPACE);
 				if(player.shoottimer <= 0.0f && (keyIsHeld(spacebar) || keyIsHeld(leftbutton))) {
 					player.resetShootTimer();
-					bullets.push_back(gobjs::Bullet(player, glm::vec3(-8.5f, 0.0f, 7.5f)));
-					bullets.push_back(gobjs::Bullet(player, glm::vec3(8.5f, 0.0f, 7.5f)));
+					bullets.push_back(gobjs::Bullet(player, glm::vec3(-8.5f, -0.5f, 8.5f)));
+					bullets.push_back(gobjs::Bullet(player, glm::vec3(8.5f, -0.5f, 8.5f)));
 				}
 				//Update bullets
 				updateBullets(bullets, dt);

@@ -4,6 +4,7 @@
 
 //Constants
 constexpr float SPEED = 48.0f;
+constexpr float BULLET_SPEED = 384.0f;
 constexpr unsigned int MAX_LOD = 5;
 constexpr float LOD_SCALE = 2.0f;
 

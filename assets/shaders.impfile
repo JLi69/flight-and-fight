@@ -42,3 +42,8 @@
 	"vertex" = "assets/shaders/vert2d.glsl";
 	"fragment" = "assets/shaders/textured-simple-frag.glsl";
 }
+
+"trail" {
+	"vertex" = "assets/shaders/trailvert.glsl";
+	"fragment" = "assets/shaders/textured-simple-frag.glsl";
+}

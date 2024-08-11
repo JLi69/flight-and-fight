@@ -286,19 +286,37 @@ namespace gfx {
 		VAOS->bind("bullet");
 		SHADERS->use("textured");
 		TEXTURES->bindTexture("bullet", GL_TEXTURE0);
-		ShaderProgram& shader = SHADERS->getShader("textured");
-		shader.uniformMat4x4("persp", state->getPerspective());
-		shader.uniformMat4x4("view", state->getCamera().viewMatrix());
-		shader.uniformFloat("specularfactor", 1.0f);
-		shader.uniformVec3("lightdir", LIGHT);
-		shader.uniformVec3("camerapos", state->getCamera().position);
+		ShaderProgram& texturedshader = SHADERS->getShader("textured");
+		texturedshader.uniformMat4x4("persp", state->getPerspective());
+		texturedshader.uniformMat4x4("view", state->getCamera().viewMatrix());
+		texturedshader.uniformFloat("specularfactor", 1.0f);
+		texturedshader.uniformVec3("lightdir", LIGHT);
+		texturedshader.uniformVec3("camerapos", state->getCamera().position);
 		for(const auto &bullet : bullets) {
 			glm::mat4 transform = bullet.transform.getTransformMat();
 			glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
-			shader.uniformMat4x4("transform", transform);
-			shader.uniformMat3x3("normalmat", normal);
+			texturedshader.uniformMat4x4("transform", transform);
+			texturedshader.uniformMat3x3("normalmat", normal);
 			VAOS->draw();
 		}
+
+		SHADERS->use("trail");
+		ShaderProgram& trailshader = SHADERS->getShader("trail");
+		trailshader.uniformMat4x4("persp", state->getPerspective());
+		trailshader.uniformMat4x4("view", state->getCamera().viewMatrix());
+		trailshader.uniformFloat("specularfactor", 1.0f);
+		trailshader.uniformVec3("lightdir", LIGHT);
+		trailshader.uniformVec3("camerapos", state->getCamera().position);
+		for(const auto &bullet : bullets) {
+			glm::mat4 transform = bullet.transform.getTransformMat();
+			glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
+			glm::vec3 velocity = bullet.transform.direction() * BULLET_SPEED;
+			trailshader.uniformFloat("time", bullet.time);
+			trailshader.uniformVec3("velocity", velocity);
+			trailshader.uniformMat4x4("transform", transform);
+			trailshader.uniformMat3x3("normalmat", normal);	
+			VAOS->drawInstanced(32);
+		}	
 	}
 
 	void displayMiniMapBackground()

@@ -183,7 +183,7 @@ namespace gameobjects {
 
 	Bullet::Bullet(const Player &player, const glm::vec3 &offset)
 	{
-		time = 2.0f;
+		time = 0.0f;
 		transform.position = 
 			player.transform.rotate(offset) +
 			player.transform.position;
@@ -193,9 +193,8 @@ namespace gameobjects {
 
 	void Bullet::update(float dt)
 	{
-		const float speed = 512.0f;
-		time -= dt;
-		transform.position += transform.direction() * dt * speed;
+		time += dt;
+		transform.position += transform.direction() * dt * BULLET_SPEED;
 	}
 
 	Enemy spawnBalloon(const glm::vec3 &position, infworld::worldseed &permutations)
@@ -348,7 +347,7 @@ namespace game {
 			bullets.begin(),
 			bullets.end(),
 			[](gobjs::Bullet &bullet) {
-				return bullet.time <= 0.0f || bullet.destroyed;
+				return bullet.time > 2.0f || bullet.destroyed || bullet.transform.position.y < 0.0f;
 			}
 		), bullets.end());
 	}

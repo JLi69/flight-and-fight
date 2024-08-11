@@ -65,6 +65,13 @@
 	"flip" = "false";
 }
 
+# bullet texture
+"bullet" {
+	"target" = "texture2d";
+	"path" = "assets/textures/bullettexture.png";
+	"flip" = "false";
+}
+
 # player marker
 "player_marker" {
 	"target" = "texture2d";

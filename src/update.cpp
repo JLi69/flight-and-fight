@@ -28,6 +28,8 @@ namespace gameobjects {
 			return;
 		}
 
+		shoottimer -= dt;
+
 		State* state = State::get();	
 
 		if(state->getKeyState(GLFW_KEY_D) == JUST_PRESSED)	
@@ -80,6 +82,11 @@ namespace gameobjects {
 		}
 
 		transform.position += transform.direction() * SPEED * dt;
+	}
+
+	void Player::resetShootTimer()
+	{
+		shoottimer = 0.2f;
 	}
 
 	void Player::checkIfCrashed(float dt, infworld::worldseed &permutations)
@@ -174,7 +181,24 @@ namespace gameobjects {
 		values[key] = v;
 	}
 
-	Enemy spawnBalloon(glm::vec3 position, infworld::worldseed &permutations) 
+	Bullet::Bullet(const Player &player, const glm::vec3 &offset)
+	{
+		time = 2.0f;
+		transform.position = 
+			player.transform.rotate(offset) +
+			player.transform.position;
+		transform.rotation = player.transform.rotation;
+		transform.scale = glm::vec3(1.0f);
+	}
+
+	void Bullet::update(float dt)
+	{
+		const float speed = 512.0f;
+		time -= dt;
+		transform.position += transform.direction() * dt * speed;
+	}
+
+	Enemy spawnBalloon(const glm::vec3 &position, infworld::worldseed &permutations)
 	{
 		float h = infworld::getHeight(
 			position.z / SCALE * float(PREC + 1) / float(PREC),
@@ -313,5 +337,36 @@ namespace game {
 				return glm::length(d1) < glm::length(d2);
 			}
 		);
+	}
+
+	void updateBullets(std::vector<gameobjects::Bullet> &bullets, float dt)
+	{
+		for(auto &bullet : bullets)
+			bullet.update(dt);
+	
+		bullets.erase(std::remove_if(
+			bullets.begin(),
+			bullets.end(),
+			[](gobjs::Bullet &bullet) {
+				return bullet.time <= 0.0f || bullet.destroyed;
+			}
+		), bullets.end());
+	}
+
+	void checkForHit(
+		std::vector<gameobjects::Bullet> &bullets,
+		std::vector<gameobjects::Enemy> &enemies,
+		float hitdist
+	) {
+		for(auto &bullet : bullets) {
+			for(auto &enemy : enemies) {
+				glm::vec3 diff = bullet.transform.position - enemy.transform.position;
+				float dist = glm::length(diff);
+				if(dist < hitdist) {
+					bullet.destroyed = true;
+					enemy.hitpoints--;
+				}
+			}
+		}
 	}
 }

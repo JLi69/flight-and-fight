@@ -202,12 +202,14 @@ namespace game {
 		gobjs::Player player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
 		std::vector<gobjs::Explosion> explosions;
 		std::vector<gobjs::Enemy> balloons;
+		std::vector<gobjs::Bullet> bullets;
 
 		unsigned int fps = 0;
 		float dt = 0.0f;
 		float totalTime = 0.0f;
 		unsigned int chunksPerSecond = 0; //Number of chunks drawn per second	
 		game::updateCamera(player);
+		state->clearMouseState();
 		while(!glfwWindowShouldClose(state->getWindow()) && !stop) {
 			float start = glfwGetTime();
 
@@ -226,6 +228,8 @@ namespace game {
 				gfx::displayPlayerPlane(totalTime, player.transform);
 			//Display balloons
 			gfx::displayBalloons(balloons);
+			//Display bullets
+			gfx::displayBullets(bullets);
 			//Display water
 			gfx::displayWater(totalTime);
 			//Draw skybox
@@ -265,6 +269,17 @@ namespace game {
 				//Update timers
 				timers.update(dt);
 
+				//Shoot bullets
+				KeyState leftbutton = state->getButtonState(GLFW_MOUSE_BUTTON_LEFT);
+				KeyState spacebar = state->getKeyState(GLFW_KEY_SPACE);
+				if(player.shoottimer <= 0.0f && (keyIsHeld(spacebar) || keyIsHeld(leftbutton))) {
+					player.resetShootTimer();
+					bullets.push_back(gobjs::Bullet(player, glm::vec3(-8.5f, 0.0f, 7.5f)));
+					bullets.push_back(gobjs::Bullet(player, glm::vec3(8.5f, 0.0f, 7.5f)));
+				}
+				//Update bullets
+				updateBullets(bullets, dt);
+				checkForHit(bullets, balloons, 24.0f);
 				//Spawn balloons
 				if(timers.getTimer("spawn_balloon"))
 					spawnBalloons(player, balloons, lcg, permutations);	

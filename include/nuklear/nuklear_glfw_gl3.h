@@ -377,7 +377,6 @@ nk_glfw3_init(struct nk_glfw* glfw, GLFWwindow *win, enum nk_glfw_init_state ini
     if (init_state == NK_GLFW3_INSTALL_CALLBACKS) {
         glfwSetScrollCallback(win, nk_gflw3_scroll_callback);
         glfwSetCharCallback(win, nk_glfw3_char_callback);
-        glfwSetMouseButtonCallback(win, nk_glfw3_mouse_button_callback);
     }
     nk_init_default(&glfw->ctx, 0);
     glfw->ctx.clip.copy = nk_glfw3_clipboard_copy;

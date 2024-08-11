@@ -84,16 +84,35 @@ void State::setKey(int key, KeyState keystate)
 	keystates[key] = keystate;
 }
 
+void State::setButton(int button, KeyState buttonstate)
+{
+	mousebuttonstates[button] = buttonstate;
+}
+
 void State::updateKeyStates()
 {
 	for(auto &keystate : keystates)
 		if(keystate.second == JUST_PRESSED)
 			keystate.second = HELD;
+
+	for(auto &buttonstate : mousebuttonstates)
+		if(buttonstate.second == JUST_PRESSED)
+			buttonstate.second = HELD;
+}
+
+void State::clearMouseState()
+{
+	mousebuttonstates = {};
 }
 
 KeyState State::getKeyState(int key)
 {
 	return keystates[key];
+}
+
+KeyState State::getButtonState(int button)
+{
+	return mousebuttonstates[button];
 }
 
 glm::mat4 State::getPerspective()
@@ -156,6 +175,17 @@ void handleKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 		State::get()->setKey(key, RELEASED);
 }
 
+void handleMouseInput(GLFWwindow* window, int button, int action, int mods)
+{
+	//Nuklear
+	nk_glfw3_mouse_button_callback(window, button, action, mods);
+
+	if(action == GLFW_PRESS)
+		State::get()->setButton(button, JUST_PRESSED);
+	else if(action == GLFW_RELEASE)
+		State::get()->setButton(button, RELEASED);
+}
+
 void initMousePos(GLFWwindow *window)
 {
 	double mousex, mousey;
@@ -193,7 +223,7 @@ void initWindow(GLFWwindow* window)
 	glfwSetWindowSizeCallback(window, handleWindowResize);
 	glfwSetKeyCallback(window, handleKeyInput);
 	glfwSetCursorPosCallback(window, cursorPosCallback);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetMouseButtonCallback(window, handleMouseInput);
 
 	//Set icon of window
 	int channels;

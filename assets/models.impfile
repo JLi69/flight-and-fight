@@ -14,3 +14,8 @@
 "balloon" {
 	"path" = "assets/models/balloon.obj";
 }
+
+# Bullet model
+"bullet" {
+	"path" = "assets/models/bullet.obj";
+}

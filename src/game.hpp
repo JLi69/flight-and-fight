@@ -93,9 +93,11 @@ namespace gameobjects {
 			RX_NONE,
 		} xRotationDirection;
 		float deathtimer = 0.0f; //Keeps track of how long the player has been dead
+		float shoottimer = 0.0f;
 		Player(glm::vec3 position);
 
 		void update(float dt);
+		void resetShootTimer();
 		void checkIfCrashed(float dt, infworld::worldseed &permutations);
 	};
 
@@ -117,7 +119,15 @@ namespace gameobjects {
 		void setVal(const std::string &key, float v);
 	};
 
-	Enemy spawnBalloon(glm::vec3 position, infworld::worldseed &permutations);
+	struct Bullet {
+		bool destroyed = false;
+		game::Transform transform;
+		float time;
+		Bullet(const Player &player, const glm::vec3 &offset);
+		void update(float dt);
+	};
+
+	Enemy spawnBalloon(const glm::vec3 &position, infworld::worldseed &permutations);
 }
 
 namespace game {
@@ -144,6 +154,12 @@ namespace game {
 		const glm::vec3 &center,
 		float dt
 	);
+	void updateBullets(std::vector<gameobjects::Bullet> &bullets, float dt);
+	void checkForHit(
+		std::vector<gameobjects::Bullet> &bullets,
+		std::vector<gameobjects::Enemy> &enemies,
+		float hitdist
+	);
 }
 
 namespace gfx {
@@ -155,6 +171,7 @@ namespace gfx {
 	void displayPlayerPlane(float totalTime, const game::Transform &transform);
 	void displayExplosions(const std::vector<gameobjects::Explosion> &explosions);
 	void displayBalloons(const std::vector<gameobjects::Enemy> &balloons);
+	void displayBullets(const std::vector<gameobjects::Bullet> &bullets);
 	void displayMiniMapBackground();
 	void displayEnemyMarkers(
 		const std::vector<gameobjects::Enemy> &enemies,

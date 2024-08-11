@@ -31,6 +31,7 @@ class State {
 	float currentZnear;
 	float currentZfar;
 	std::map<int, KeyState> keystates;
+	std::map<int, KeyState> mousebuttonstates;
 	GLFWwindow* window;
 	nk_glfw glfw = {0};
 	nk_context* ctx;
@@ -48,9 +49,13 @@ public:
 	float getZnear();
 	float getZfar();
 	void setKey(int key, KeyState keystate);
+	void setButton(int button, KeyState buttonstate);
 	//Sets all the JUST_PRESSED keys to HELD
 	void updateKeyStates();
+	//Resets mouse state to be empty
+	void clearMouseState();
 	KeyState getKeyState(int key);
+	KeyState getButtonState(int button);
 	GLFWwindow* getWindow();
 	void createWindow(const char *name, int w, int h);
 	void initNuklear();
@@ -64,6 +69,7 @@ void die(const char *msg);
 void handleWindowResize(GLFWwindow *window, int w, int h);
 void cursorPosCallback(GLFWwindow *window, double x, double y);
 void handleKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods);
+void handleMouseInput(GLFWwindow* window, int button, int action, int mods);
 //Initializes mouse position
 void initMousePos(GLFWwindow *window);
 //Returns the FPS

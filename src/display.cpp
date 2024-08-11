@@ -276,6 +276,31 @@ namespace gfx {
 		glEnable(GL_CULL_FACE);
 	}
 
+	void displayBullets(const std::vector<gameobjects::Bullet> &bullets)
+	{
+		if(bullets.empty())
+			return;
+
+		State* state = State::get();
+
+		VAOS->bind("bullet");
+		SHADERS->use("textured");
+		TEXTURES->bindTexture("bullet", GL_TEXTURE0);
+		ShaderProgram& shader = SHADERS->getShader("textured");
+		shader.uniformMat4x4("persp", state->getPerspective());
+		shader.uniformMat4x4("view", state->getCamera().viewMatrix());
+		shader.uniformFloat("specularfactor", 1.0f);
+		shader.uniformVec3("lightdir", LIGHT);
+		shader.uniformVec3("camerapos", state->getCamera().position);
+		for(const auto &bullet : bullets) {
+			glm::mat4 transform = bullet.transform.getTransformMat();
+			glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
+			shader.uniformMat4x4("transform", transform);
+			shader.uniformMat3x3("normalmat", normal);
+			VAOS->draw();
+		}
+	}
+
 	void displayMiniMapBackground()
 	{
 		State* state = State::get();

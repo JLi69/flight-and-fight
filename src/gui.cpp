@@ -140,7 +140,7 @@ namespace gui {
 			nk_layout_row_push(ctx, padding);
 			nk_spacing(ctx, 1);
 			nk_layout_row_push(ctx, w - padding);
-			nk_label(ctx, "Flight Simulator", NK_TEXT_LEFT);
+			nk_label(ctx, "Flight & Fight", NK_TEXT_LEFT);
 			nk_layout_row_end(ctx);
 			FONTS->popFont();
 

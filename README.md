@@ -1,14 +1,22 @@
-# flightsim
+# Flight & Fight
 
 Work in progress
 
 ## compile
 
 Dependencies:
-[stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) |
-[glad](https://github.com/Dav1dde/glad) |
-[glfw](https://github.com/glfw/glfw) |
+
+[stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) (included)
+
+[glad](https://github.com/Dav1dde/glad) (included)
+
+[glfw](https://github.com/glfw/glfw)
+
 [glm](https://github.com/g-truc/glm)
+
+[nuklear](https://github.com/Immediate-Mode-UI/Nuklear) (included)
+
+[fast_obj](https://github.com/thisistherk/fast_obj) (included)
 
 Linux:
 

@@ -1,4 +1,4 @@
 # ignore build files
 *.o
-flightsim
-flightsim.exe
+flight-and-fight
+flight-and-fight.exe

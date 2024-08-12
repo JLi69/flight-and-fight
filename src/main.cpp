@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 	//Initialize glfw and glad, if any of this fails, kill the program
 	if(!glfwInit()) 
 		die("Failed to init glfw!");
-	state->createWindow("flight sim", 960, 720);
+	state->createWindow("Flight & Fight", 960, 720);
 	initWindow(state->getWindow());
 	state->initNuklear();
 

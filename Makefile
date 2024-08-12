@@ -8,7 +8,8 @@ FLAGS=$(INCLUDE) -std=c++17 -O2
 LD_FLAGS=-lglfw3
 
 ifeq ($(OS), Windows_NT)
-	LD_FLAGS+=-static-libgcc -static-libstdc++ -lopengl32 -lgdi32
+	LD_FLAGS+=-static-libgcc -static-libstdc++ -lopengl32 -lgdi32 -mwindows
+	OBJ+=flight-and-fight.res
 else
 	LD_FLAGS+=-lGL
 endif
@@ -21,6 +22,9 @@ output: $(OBJ)
 
 %.c.o: %.c $(HEADER)
 	$(CPP) $(FLAGS) -c $< -o $@ 
+
+flight-and-fight.res: flight-and-fight.rc
+	windres flight-and-fight.rc -O coff -o flight-and-fight.res
 
 clean:
 	rm -f $(OBJ) $(BIN_NAME)

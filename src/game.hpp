@@ -111,10 +111,12 @@ namespace gameobjects {
 	};
 
 	struct Enemy {
+		//How many points the player gets if they kill the enemy
+		unsigned int scorevalue;
 		game::Transform transform;
 		std::unordered_map<std::string, float> values;
 		int hitpoints;
-		Enemy(glm::vec3 position, int hp);
+		Enemy(glm::vec3 position, int hp, unsigned int scoreval);
 		void updateBalloon(float dt);
 		float getVal(const std::string &key);
 		void setVal(const std::string &key, float v);
@@ -143,7 +145,8 @@ namespace game {
 		gameobjects::Player &player,
 		std::vector<gameobjects::Enemy> &enemies,
 		std::vector<gameobjects::Explosion> &explosions,
-		float crashdist
+		float crashdist,
+		unsigned int &score
 	);
 	//Returns the position the camera should be following
 	glm::vec3 getCameraFollowPos(const Transform &playertransform);
@@ -187,10 +190,11 @@ namespace gfx {
 namespace gui {
 	std::vector<std::string> readTextFile(const char *path);
 	void displayFPSCounter(unsigned int fps);
+	void displayHUD(unsigned int score);
 	//Returns action taken by the user on the pause menu
 	std::string displayPauseMenu();
 	//Returns the action taken by the user on the death screen
-	void displayDeathScreen();
+	void displayDeathScreen(unsigned int finalscore);
 	//returns the selected game mode
 	game::GameMode displayMainMenu();
 	//Display credits

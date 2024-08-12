@@ -149,12 +149,13 @@ namespace gameobjects {
 			visible = false;
 	}
 
-	Enemy::Enemy(glm::vec3 position, int hp)
+	Enemy::Enemy(glm::vec3 position, int hp, unsigned int scoreval)
 	{
 		transform.position = position;
 		transform.scale = glm::vec3(1.0f);
 		transform.rotation = glm::vec3(0.0f);
 		hitpoints = hp;
+		scorevalue = scoreval;
 	}
 
 	void Enemy::updateBalloon(float dt)
@@ -206,7 +207,7 @@ namespace gameobjects {
 		) * HEIGHT * SCALE;
 		float y = std::max(h, 0.0f) + HEIGHT;
 		glm::vec3 pos(position.x, y, position.z);
-		Enemy balloon = Enemy(pos, 5);
+		Enemy balloon = Enemy(pos, 5, 10);
 
 		float miny = y;
 		float maxy = y + HEIGHT;
@@ -283,7 +284,8 @@ namespace game {
 		gameobjects::Player &player,
 		std::vector<gobjs::Enemy> &enemies,
 		std::vector<gameobjects::Explosion> &explosions,
-		float crashdist
+		float crashdist,
+		unsigned int &score
 	) {
 		if(enemies.empty())
 			return;
@@ -291,9 +293,10 @@ namespace game {
 		enemies.erase(std::remove_if(
 			enemies.begin(),
 			enemies.end(),
-			[&player, &explosions, &crashdist](gobjs::Enemy &enemy) {
+			[&player, &explosions, &crashdist, &score](gobjs::Enemy &enemy) {
 				if(enemy.hitpoints <= 0) {
 					explosions.push_back(gobjs::Explosion(enemy.transform.position));
+					score += enemy.scorevalue;
 					return true;
 				}
 

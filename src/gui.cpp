@@ -20,6 +20,28 @@ namespace gui {
 		nk_end(ctx);
 	}
 
+	void displayHUD(unsigned int score) 
+	{
+		State* state = State::get();
+		int w, h;
+		glfwGetWindowSize(state->getWindow(), &w, &h);
+
+		nk_context* ctx = state->getNkContext();
+		nk_style* s = &ctx->style;
+		ctx->style.text.color = nk_rgb(255, 255, 0);
+		nk_style_push_style_item(ctx, &s->window.fixed_background, nk_style_item_color(nk_rgba(0, 0, 0, 0)));
+		if(nk_begin(ctx, "hud", nk_rect(w - 256, 8, 256, 64), NK_WINDOW_NO_SCROLLBAR)) {
+			FONTS->pushFont("armata_medium");
+            nk_layout_row_static(ctx, 32, 240, 1);
+			char str[32];
+			snprintf(str, 31, "SCORE %06u", score);
+			nk_label(ctx, str, NK_TEXT_ALIGN_RIGHT);
+			FONTS->popFont();
+		}
+		nk_end(ctx);
+		nk_style_pop_style_item(ctx);
+	}
+
 	std::string displayPauseMenu()
 	{
 		std::string action = "";
@@ -75,7 +97,7 @@ namespace gui {
 		return action;
 	}
 
-	void displayDeathScreen()
+	void displayDeathScreen(unsigned int finalscore)
 	{
 		State* state = State::get();
 		nk_context* ctx = state->getNkContext();
@@ -101,8 +123,13 @@ namespace gui {
 			nk_spacing(ctx, 1);
 			nk_layout_row_end(ctx);
 
+			char str[32];
+			snprintf(str, 31, "Final Score: %u", finalscore);
+
 			FONTS->pushFont("armata_medium");	
-			nk_layout_row_dynamic(ctx, 64.0f, 1);	
+			nk_layout_row_dynamic(ctx, 64.0f, 1);
+			if(finalscore > 0)
+				nk_label(ctx, str, NK_TEXT_CENTERED);
 			nk_label(ctx, "press ESC to return to main menu", NK_TEXT_CENTERED);
 			FONTS->popFont();
 		}

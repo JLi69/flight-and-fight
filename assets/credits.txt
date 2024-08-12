@@ -1,4 +1,4 @@
-Flight Simulator
+Flight & Fight
 
 by Nullptr Error ("JLi69")
 Made with <3 and C++

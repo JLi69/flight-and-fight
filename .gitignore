@@ -1,4 +1,5 @@
 # ignore build files
 *.o
+*.res
 flight-and-fight
 flight-and-fight.exe

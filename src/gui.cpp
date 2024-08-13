@@ -34,7 +34,7 @@ namespace gui {
 			FONTS->pushFont("armata_medium");
             nk_layout_row_static(ctx, 32, 240, 1);
 			char str[32];
-			snprintf(str, 31, "SCORE %06u", score);
+			snprintf(str, 31, "SCORE: %05u", score);
 			nk_label(ctx, str, NK_TEXT_ALIGN_RIGHT);
 			FONTS->popFont();
 		}
@@ -182,20 +182,24 @@ namespace gui {
 			nk_layout_row_push(ctx, BUTTON_SZ);
 			if(nk_button_label(ctx, "Fight Mode"))
 				selected = game::FIGHT;
-			nk_layout_row_end(ctx);
 
 			nk_layout_row_push(ctx, padding);
 			nk_spacing(ctx, 1);
 			nk_layout_row_push(ctx, BUTTON_SZ);
 			if(nk_button_label(ctx, "Casual Mode"))
 				selected = game::CASUAL;
-			nk_layout_row_end(ctx);
 
 			nk_layout_row_push(ctx, padding);
 			nk_spacing(ctx, 1);
 			nk_layout_row_push(ctx, BUTTON_SZ);
 			if(nk_button_label(ctx, "Credits"))
 				selected = game::CREDITS;
+
+			nk_layout_row_push(ctx, padding);
+			nk_spacing(ctx, 1);
+			nk_layout_row_push(ctx, BUTTON_SZ);
+			if(nk_button_label(ctx, "High Scores"))
+				selected = game::HIGH_SCORE_SCREEN;
 			
 			nk_layout_row_push(ctx, padding);
 			nk_spacing(ctx, 1);
@@ -253,6 +257,66 @@ namespace gui {
 		nk_style_pop_style_item(ctx);
 		nk_style_pop_style_item(ctx);
 		nk_end(ctx);
+
+		return close;
+	}
+
+	bool displayHighScores(const HighScoreTable &highscores)
+	{
+		bool close = false;
+		State* state = State::get();
+		nk_context* ctx = state->getNkContext();
+		int w, h;
+		glfwGetWindowSize(state->getWindow(), &w, &h);
+		nk_style* s = &ctx->style;
+		s->text.color = nk_rgb(80, 160, 235);
+		s->button.text_hover = nk_rgb(255, 255, 255);
+		s->button.text_normal = nk_rgb(255, 255, 255);
+		s->button.text_active = nk_rgb(255, 255, 255);
+		nk_style_push_style_item(ctx, &s->window.fixed_background, nk_style_item_color(nk_rgba(0, 0, 0, 0)));
+		nk_style_push_style_item(ctx, &s->button.hover, nk_style_item_color(nk_rgba(80, 160, 255, 255)));
+		nk_style_push_style_item(ctx, &s->button.normal, nk_style_item_color(nk_rgba(100, 180, 255, 255)));	
+		nk_style_push_style_item(ctx, &s->button.active, nk_style_item_color(nk_rgba(80, 160, 255, 255)));
+		s->button.border = 0.0f;
+		if(nk_begin(ctx, "deathscreen", nk_rect(0, 0, w, h), NK_WINDOW_NO_SCROLLBAR)) {
+			nk_layout_row_dynamic(ctx, h / 32, 1);	
+			nk_spacing(ctx, 1);
+			
+			nk_layout_row_dynamic(ctx, 64.0f, 1);	
+			FONTS->pushFont("armata_large");
+			nk_label(ctx, "High Scores", NK_TEXT_CENTERED);
+			FONTS->popFont(); 
+
+			s->text.color = nk_rgb(60, 120, 235);
+			nk_layout_row_dynamic(ctx, 32.0f, 1);
+			FONTS->pushFont("armata_medium");
+			nk_spacing(ctx, 1);
+			char str[32];
+			int index = 1;
+			for(auto &score : highscores) {
+				snprintf(str, 32, "%2d: %05u", index, score);
+				nk_label(ctx, str, NK_TEXT_CENTERED);
+				index++;
+			}
+
+			nk_layout_row_dynamic(ctx, 4.0f, 1);
+			nk_spacing(ctx, 1);
+
+			nk_layout_row_begin(ctx, NK_STATIC, 64.0f, 2);
+			nk_layout_row_push(ctx, w / 2 - BUTTON_SZ / 2);
+			nk_spacing(ctx, 1);
+			nk_layout_row_push(ctx, BUTTON_SZ);
+			if(nk_button_label(ctx, "Main Menu"))
+				close = true;
+			nk_layout_row_end(ctx);
+
+			FONTS->popFont();
+		}
+		nk_end(ctx);
+		nk_style_pop_style_item(ctx);	
+		nk_style_pop_style_item(ctx);
+		nk_style_pop_style_item(ctx);
+		nk_style_pop_style_item(ctx);
 
 		return close;
 	}

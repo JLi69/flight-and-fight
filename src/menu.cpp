@@ -54,6 +54,7 @@ namespace game {
 			totalTime += dt;
 
 			switch(selected) {
+			case HIGH_SCORE_SCREEN: //Fall through
 			case CASUAL: //Fall through
 			case FIGHT:
 				return selected;
@@ -67,5 +68,40 @@ namespace game {
 		}
 
 		return NONE_SELECTED;
-	}	
+	}
+
+	void highScoreTableScreen(const HighScoreTable &highscores)
+	{
+		State* state = State::get();
+
+		glfwSetInputMode(state->getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+		state->getCamera().pitch = 0.0f;
+		state->getCamera().yaw = 0.0f;
+		state->getCamera().position = glm::vec3(0.0f);
+
+		bool quit = false;
+		while(!glfwWindowShouldClose(state->getWindow()) && !quit) {
+			nk_glfw3_new_frame(state->getNkGlfw());
+
+			//Update perspective matrix
+			state->updatePerspectiveMat(FOVY, ZNEAR, ZFAR);
+
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			//Display skybox
+			gfx::displaySkybox();
+			//GUI
+			quit = gui::displayHighScores(highscores);
+
+			state->updateKeyStates();
+			nk_glfw3_render(state->getNkGlfw(), NK_ANTI_ALIASING_ON, 512 * 1024, 128 * 1024);
+			glEnable(GL_CULL_FACE);
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_BLEND);
+			glfwSwapBuffers(state->getWindow());
+			glfwPollEvents();
+			gfx::outputErrors();
+		}
+	}
 }

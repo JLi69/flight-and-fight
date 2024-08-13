@@ -1,6 +1,7 @@
 #pragma once
 
 #include "infworld.hpp"
+#include "hiscore.hpp"
 
 //Constants
 constexpr float SPEED = 48.0f;
@@ -21,6 +22,7 @@ namespace game {
 		CASUAL,
 		FIGHT,
 		CREDITS,
+		HIGH_SCORE_SCREEN,
 		NONE_SELECTED,
 	};
 
@@ -77,6 +79,9 @@ namespace game {
 	//Main menu
 	//Returns the game mode selected
 	game::GameMode mainMenu();
+	//High Score Table screen
+	//returns true if the user exited the screen
+	void highScoreTableScreen(const HighScoreTable &highscores);
 }
 
 namespace gameobjects {
@@ -200,4 +205,6 @@ namespace gui {
 	//Display credits
 	//returns true if user closed out of credits, false otherwise
 	bool displayCredits(const std::vector<std::string> &credits);
+	//Display High Scores
+	bool displayHighScores(const HighScoreTable &highscores);
 }

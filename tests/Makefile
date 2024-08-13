@@ -8,5 +8,5 @@ test: $(TEST_BIN)
 	@$(CPP) $< ../src/$<.o -o $@
 	@echo testing $<\...
 	@./$@
-	@echo TEST PASSED!
+	@echo "\033[32;49;1mTEST PASSED\033[0m"
 	@rm -f $@

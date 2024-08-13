@@ -1,12 +1,14 @@
 #include <glad/glad.h>
 #include <stdio.h>
-#include "camera.hpp"
 #include "infworld.hpp"
 #include "gfx.hpp"
 #include "app.hpp"
 #include "plants.hpp"
 #include "assets.hpp"
 #include "game.hpp"
+#include "hiscore.hpp"
+
+const char highScoreTablePath[] = "hiscores";
 
 int main(int argc, char *argv[])
 {
@@ -22,6 +24,9 @@ int main(int argc, char *argv[])
 	game::loadAssets();	
 	game::initUniforms();
 
+	//High score table
+	HighScoreTable highscores = loadHighScores(highScoreTablePath);
+
 	//Set OpenGL state
 	glClearColor(0.5f, 0.8f, 1.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
@@ -35,17 +40,24 @@ int main(int argc, char *argv[])
 		glfwSetInputMode(state->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		glBindVertexArray(0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		unsigned int score;
 		switch(gamemode) {
+			case game::HIGH_SCORE_SCREEN:
+				game::highScoreTableScreen(highscores);
+				break;
 			case game::CASUAL:
 				game::casualModeGameLoop();	
 				break;
 			case game::FIGHT:
-				game::fightModeGameLoop();
+				score = game::fightModeGameLoop();
+				addHighScore(highscores, score);
+				saveHighScores(highScoreTablePath, highscores);
 				break;
 			default:
 				break;
 		}
 	}
 
+	saveHighScores(highScoreTablePath, highscores);
 	glfwTerminate();
 }

@@ -3,3 +3,5 @@
 *.res
 flight-and-fight
 flight-and-fight.exe
+# ignore high score table file
+hiscores

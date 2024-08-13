@@ -86,7 +86,7 @@ namespace game {
 				for(auto &explosion : explosions)
 					explosion.update(dt);
 				//Update camera
-				game::updateCamera(player);
+				game::updateCamera(player, dt);
 				game::generateNewChunks(permutations, chunktables, decorations);
 			
 				totalTime += dt;

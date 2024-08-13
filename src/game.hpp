@@ -158,8 +158,9 @@ namespace game {
 	);
 	//Returns the position the camera should be following
 	glm::vec3 getCameraFollowPos(const Transform &playertransform);
-	//Have the camera follow the player
+	//Have the camera follow the player	
 	void updateCamera(gameobjects::Player &player);
+	void updateCamera(gameobjects::Player &player, float dt);
 	//Update explosions
 	void updateExplosions(
 		std::vector<gameobjects::Explosion> &explosions, 

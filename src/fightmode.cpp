@@ -128,7 +128,7 @@ namespace game {
 					explosions.push_back(gobjs::Explosion(player.transform.position));
 				game::updateExplosions(explosions, player.transform.position, dt);
 				//Update camera
-				game::updateCamera(player);
+				game::updateCamera(player, dt);
 				game::generateNewChunks(permutations, chunktables, decorations);
 
 				totalTime += dt;

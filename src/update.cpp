@@ -4,10 +4,10 @@
 #include <algorithm>
 
 constexpr float ROTATION_Z_SPEED = 0.5f;
-constexpr float MAX_ROTATION_Z = glm::radians(15.0f);
-constexpr float ROTATION_Y_SPEED = 0.7f;
+constexpr float MAX_ROTATION_Z = glm::radians(20.0f);
+constexpr float ROTATION_Y_SPEED = 0.8f;
 constexpr float ROTATION_X_SPEED = 0.6f;
-constexpr float MAX_ROTATION_X = glm::radians(50.0f);
+constexpr float MAX_ROTATION_X = glm::radians(70.0f);
 
 namespace gobjs = gameobjects;
 
@@ -70,9 +70,9 @@ namespace gameobjects {
 		}
 	
 		//Change pitch
-		if(state->getKeyState(GLFW_KEY_W) == JUST_PRESSED)
+		if(state->getKeyState(GLFW_KEY_S) == JUST_PRESSED)
 			xRotationDirection = gobjs::Player::RX_UP;
-		else if(state->getKeyState(GLFW_KEY_S) == JUST_PRESSED)
+		else if(state->getKeyState(GLFW_KEY_W) == JUST_PRESSED)
 			xRotationDirection = gobjs::Player::RX_DOWN;
 		else if(state->getKeyState(GLFW_KEY_S) == RELEASED &&
 				state->getKeyState(GLFW_KEY_W) == RELEASED)
@@ -244,42 +244,29 @@ namespace gameobjects {
 namespace game {
 	glm::vec3 getCameraFollowPos(const Transform &playertransform)
 	{
-		glm::mat4 transformMat(1.0f);
-		transformMat = glm::translate(transformMat, playertransform.position);	
-		transformMat = glm::rotate(
-			transformMat, 
-			playertransform.rotation.z / 3.0f,
-			glm::vec3(0.0f, 0.0f, 1.0f)
-		);
-		transformMat = glm::rotate(
-			transformMat, 
-			playertransform.rotation.y,
-			glm::vec3(0.0f, 1.0f, 0.0f)
-		);	
-		transformMat = glm::rotate(
-			transformMat, 
-			playertransform.rotation.x / 2.0f,
-			glm::vec3(1.0f, 0.0f, 0.0f)
-		);
-
-		float yoffset = (playertransform.rotation.x - MAX_ROTATION_X) / (2.0f * MAX_ROTATION_X) * 36.0f;
-		const float dist = sqrtf(48.0f * 48.0f + 40.0f * 40.0f);
-		float y = 48.0f + yoffset;
-		float z = -sqrtf(dist * dist - y * y);
-		glm::vec3 cameraOffset = glm::vec3(0.0f, y, z);
-		glm::mat4 cameraTransform =
-			glm::translate(glm::mat4(1.0f), cameraOffset);
-
-		return glm::vec3(transformMat * cameraTransform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		glm::vec3 offset = playertransform.rotate(glm::vec3(0.0f, 28.0f, -60.0f));
+		return playertransform.position + offset;
 	}
 
-	void updateCamera(gobjs::Player &player)
+	void updateCamera(gameobjects::Player &player)
 	{
 		Camera& cam = State::get()->getCamera();
 		//Update camera
 		cam.position = game::getCameraFollowPos(player.transform);
 		cam.yaw = -(player.transform.rotation.y + glm::radians(180.0f));
-		cam.pitch = glm::radians(25.0f) + player.transform.rotation.x * 0.6f;
+		cam.pitch = player.transform.rotation.x;
+	}
+
+	void updateCamera(gobjs::Player &player, float dt)
+	{
+		Camera& cam = State::get()->getCamera();
+		//Update camera
+		cam.position = game::getCameraFollowPos(player.transform);
+		float
+			yaw = -(player.transform.rotation.y + glm::radians(180.0f)),
+			pitch = player.transform.rotation.x;
+		cam.yaw += (yaw - cam.yaw) * 6.0f * dt;
+		cam.pitch += (pitch - cam.pitch) * 7.0f * dt;
 	}
 
 	void spawnBalloons(
@@ -358,7 +345,7 @@ namespace game {
 				glm::vec3 
 					d1 = e1.transform.position - center,
 					d2 = e2.transform.position - center;
-				return glm::length(d1) < glm::length(d2);
+				return glm::length(d1) > glm::length(d2);
 			}
 		);
 	}

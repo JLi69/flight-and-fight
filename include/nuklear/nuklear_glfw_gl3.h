@@ -66,7 +66,7 @@ NK_API void                 nk_glfw3_device_destroy(struct nk_glfw* glfw);
 NK_API void                 nk_glfw3_device_create(struct nk_glfw* glfw);
 
 NK_API void                 nk_glfw3_char_callback(GLFWwindow *win, unsigned int codepoint);
-NK_API void                 nk_gflw3_scroll_callback(GLFWwindow *win, double xoff, double yoff);
+NK_API void                 nk_glfw3_scroll_callback(GLFWwindow *win, double xoff, double yoff);
 NK_API void                 nk_glfw3_mouse_button_callback(GLFWwindow *win, int button, int action, int mods);
 
 #endif
@@ -320,7 +320,7 @@ nk_glfw3_char_callback(GLFWwindow *win, unsigned int codepoint)
 }
 
 NK_API void
-nk_gflw3_scroll_callback(GLFWwindow *win, double xoff, double yoff)
+nk_glfw3_scroll_callback(GLFWwindow *win, double xoff, double yoff)
 {
     struct nk_glfw* glfw = (nk_glfw*)glfwGetWindowUserPointer(win);
     (void)xoff;
@@ -375,7 +375,6 @@ nk_glfw3_init(struct nk_glfw* glfw, GLFWwindow *win, enum nk_glfw_init_state ini
     glfwSetWindowUserPointer(win, glfw);
     glfw->win = win;
     if (init_state == NK_GLFW3_INSTALL_CALLBACKS) {
-        glfwSetScrollCallback(win, nk_gflw3_scroll_callback);
         glfwSetCharCallback(win, nk_glfw3_char_callback);
     }
     nk_init_default(&glfw->ctx, 0);

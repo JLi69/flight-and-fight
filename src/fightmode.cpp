@@ -66,7 +66,7 @@ namespace game {
 			gfx::displayExplosions(explosions);
 			//User Interface
 			gui::displayFPSCounter(fps);
-			gui::displayHUD(score);
+			gui::displayHUD(score, player.speed);
 			glDisable(GL_CULL_FACE);
 			glDepthMask(GL_FALSE);
 			gfx::displayMiniMapBackground();
@@ -103,8 +103,8 @@ namespace game {
 				KeyState spacebar = state->getKeyState(GLFW_KEY_SPACE);
 				if(player.shoottimer <= 0.0f && (keyIsHeld(spacebar) || keyIsHeld(leftbutton))) {
 					player.resetShootTimer();
-					bullets.push_back(gobjs::Bullet(player, glm::vec3(-8.5f, -0.5f, 8.5f)));
-					bullets.push_back(gobjs::Bullet(player, glm::vec3(8.5f, -0.5f, 8.5f)));
+					bullets.push_back(gobjs::Bullet(player, glm::vec3(-8.5f, -0.75f, 8.5f)));
+					bullets.push_back(gobjs::Bullet(player, glm::vec3(8.5f, -0.75f, 8.5f)));
 				}
 				//Update bullets
 				updateBullets(bullets, dt);

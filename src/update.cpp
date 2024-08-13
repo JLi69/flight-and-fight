@@ -19,19 +19,25 @@ namespace gameobjects {
 		xRotationDirection = RX_NONE;
 		yRotationDirection = RY_NONE;
 		crashed = false;
+		speed = SPEED;
 	}
 
 	void Player::update(float dt) 
 	{
+		//Keep track of how long the player has crashed,
+		//this is so that the game can delay showing the death screen until
+		//the explosion animation is done playing
 		if(crashed) {
 			deathtimer += dt;
 			return;
 		}
 
+		//Shooting cooldown
 		shoottimer -= dt;
 
 		State* state = State::get();	
 
+		//Turn left/right
 		if(state->getKeyState(GLFW_KEY_D) == JUST_PRESSED)	
 			yRotationDirection = gobjs::Player::RY_RIGHT;	
 		else if(state->getKeyState(GLFW_KEY_A) == JUST_PRESSED)	
@@ -40,6 +46,7 @@ namespace gameobjects {
 				state->getKeyState(GLFW_KEY_D) == RELEASED)
 			yRotationDirection = gobjs::Player::RY_NONE;			
 
+		//Rotate on the y axis
 		if(yRotationDirection == gobjs::Player::RY_RIGHT) {
 			transform.rotation.z += dt * ROTATION_Z_SPEED;
 			transform.rotation.z =
@@ -61,7 +68,8 @@ namespace gameobjects {
 			if(std::abs(transform.rotation.z) < glm::radians(0.5f))
 				transform.rotation.z = 0.0f;
 		}
-		
+	
+		//Change pitch
 		if(state->getKeyState(GLFW_KEY_W) == JUST_PRESSED)
 			xRotationDirection = gobjs::Player::RX_UP;
 		else if(state->getKeyState(GLFW_KEY_S) == JUST_PRESSED)
@@ -70,6 +78,7 @@ namespace gameobjects {
 				state->getKeyState(GLFW_KEY_W) == RELEASED)
 			xRotationDirection = gobjs::Player::RX_NONE;
 
+		//Rotate
 		if(xRotationDirection == gobjs::Player::RX_UP) {
 			transform.rotation.x -= dt * ROTATION_X_SPEED;
 			transform.rotation.x =
@@ -81,7 +90,19 @@ namespace gameobjects {
 				std::min(transform.rotation.x, MAX_ROTATION_X);
 		}
 
-		transform.position += transform.direction() * SPEED * dt;
+		transform.position += transform.direction() * speed / 2.0f * dt;
+		//Acceleration
+		if(keyIsHeld(state->getKeyState(GLFW_KEY_LEFT_SHIFT)))
+			speed += ACCELERATION * dt;
+		else if(state->getScrollSpeed() > 0.0)
+			speed += ACCELERATION * 4.0f * dt;
+		else if(keyIsHeld(state->getKeyState(GLFW_KEY_LEFT_CONTROL)))
+			speed -= ACCELERATION * dt;
+		else if(state->getScrollSpeed() < 0.0)
+			speed -= ACCELERATION * 4.0f * dt;
+		speed = std::min(speed, SPEED * 3.0f);
+		speed = std::max(speed, SPEED);
+		transform.position += transform.direction() * speed / 2.0f * dt;
 	}
 
 	void Player::resetShootTimer()
@@ -190,12 +211,13 @@ namespace gameobjects {
 			player.transform.position;
 		transform.rotation = player.transform.rotation;
 		transform.scale = glm::vec3(1.0f);
+		speed = BULLET_SPEED + player.speed - SPEED;
 	}
 
 	void Bullet::update(float dt)
 	{
 		time += dt;
-		transform.position += transform.direction() * dt * BULLET_SPEED;
+		transform.position += transform.direction() * dt * speed;
 	}
 
 	Enemy spawnBalloon(const glm::vec3 &position, infworld::worldseed &permutations)

@@ -5,6 +5,7 @@
 
 //Constants
 constexpr float SPEED = 48.0f;
+constexpr float ACCELERATION = 12.0f;
 constexpr float BULLET_SPEED = 384.0f;
 constexpr unsigned int MAX_LOD = 5;
 constexpr float LOD_SCALE = 2.0f;
@@ -100,6 +101,7 @@ namespace gameobjects {
 		} xRotationDirection;
 		float deathtimer = 0.0f; //Keeps track of how long the player has been dead
 		float shoottimer = 0.0f;
+		float speed = 0.0f;
 		Player(glm::vec3 position);
 
 		void update(float dt);
@@ -131,6 +133,7 @@ namespace gameobjects {
 		bool destroyed = false;
 		game::Transform transform;
 		float time;
+		float speed;
 		Bullet(const Player &player, const glm::vec3 &offset);
 		void update(float dt);
 	};
@@ -195,7 +198,7 @@ namespace gfx {
 namespace gui {
 	std::vector<std::string> readTextFile(const char *path);
 	void displayFPSCounter(unsigned int fps);
-	void displayHUD(unsigned int score);
+	void displayHUD(unsigned int score, float speed);
 	//Returns action taken by the user on the pause menu
 	std::string displayPauseMenu();
 	//Returns the action taken by the user on the death screen

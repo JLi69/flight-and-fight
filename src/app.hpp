@@ -35,6 +35,7 @@ class State {
 	GLFWwindow* window;
 	nk_glfw glfw = {0};
 	nk_context* ctx;
+	double scrollspeed;
 	State();
 public:
 	static State* get();
@@ -50,6 +51,8 @@ public:
 	float getZfar();
 	void setKey(int key, KeyState keystate);
 	void setButton(int button, KeyState buttonstate);
+	void setScrollSpeed(double yoff);
+	double getScrollSpeed();
 	//Sets all the JUST_PRESSED keys to HELD
 	void updateKeyStates();
 	//Resets mouse state to be empty
@@ -69,7 +72,8 @@ void die(const char *msg);
 void handleWindowResize(GLFWwindow *window, int w, int h);
 void cursorPosCallback(GLFWwindow *window, double x, double y);
 void handleKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods);
-void handleMouseInput(GLFWwindow* window, int button, int action, int mods);
+void handleMouseInput(GLFWwindow *window, int button, int action, int mods);
+void scrollCallback(GLFWwindow *window, double xoff, double yoff);
 //Initializes mouse position
 void initMousePos(GLFWwindow *window);
 //Returns the FPS

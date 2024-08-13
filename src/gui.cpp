@@ -20,7 +20,7 @@ namespace gui {
 		nk_end(ctx);
 	}
 
-	void displayHUD(unsigned int score) 
+	void displayHUD(unsigned int score, float speed) 
 	{
 		State* state = State::get();
 		int w, h;
@@ -30,11 +30,13 @@ namespace gui {
 		nk_style* s = &ctx->style;
 		ctx->style.text.color = nk_rgb(255, 255, 0);
 		nk_style_push_style_item(ctx, &s->window.fixed_background, nk_style_item_color(nk_rgba(0, 0, 0, 0)));
-		if(nk_begin(ctx, "hud", nk_rect(w - 256, 8, 256, 64), NK_WINDOW_NO_SCROLLBAR)) {
+		if(nk_begin(ctx, "hud", nk_rect(w - 256, 8, 256, 96), NK_WINDOW_NO_SCROLLBAR)) {
 			FONTS->pushFont("armata_medium");
             nk_layout_row_static(ctx, 32, 240, 1);
 			char str[32];
 			snprintf(str, 31, "SCORE: %05u", score);
+			nk_label(ctx, str, NK_TEXT_ALIGN_RIGHT);
+			snprintf(str, 31, "SPEED: %.2f", speed);
 			nk_label(ctx, str, NK_TEXT_ALIGN_RIGHT);
 			FONTS->popFont();
 		}

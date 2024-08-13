@@ -16,6 +16,8 @@ State::State()
 	currentZnear = 0.0f;
 	currentZfar = 0.0f;
 
+	scrollspeed = 0.0f;
+
 	window = nullptr;
 }
 
@@ -33,6 +35,11 @@ double State::getMouseX()
 double State::getMouseY() 
 {
 	return mousey;
+}
+
+double State::getScrollSpeed()
+{
+	return scrollspeed;
 }
 
 void State::setMousePos(double x, double y)
@@ -89,6 +96,11 @@ void State::setButton(int button, KeyState buttonstate)
 	mousebuttonstates[button] = buttonstate;
 }
 
+void State::setScrollSpeed(double yoff)
+{
+	scrollspeed = yoff;
+}
+
 void State::updateKeyStates()
 {
 	for(auto &keystate : keystates)
@@ -98,6 +110,8 @@ void State::updateKeyStates()
 	for(auto &buttonstate : mousebuttonstates)
 		if(buttonstate.second == JUST_PRESSED)
 			buttonstate.second = HELD;
+
+	scrollspeed = 0.0;
 }
 
 void State::clearMouseState()
@@ -175,7 +189,7 @@ void handleKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 		State::get()->setKey(key, RELEASED);
 }
 
-void handleMouseInput(GLFWwindow* window, int button, int action, int mods)
+void handleMouseInput(GLFWwindow *window, int button, int action, int mods)
 {
 	//Nuklear
 	nk_glfw3_mouse_button_callback(window, button, action, mods);
@@ -184,6 +198,12 @@ void handleMouseInput(GLFWwindow* window, int button, int action, int mods)
 		State::get()->setButton(button, JUST_PRESSED);
 	else if(action == GLFW_RELEASE)
 		State::get()->setButton(button, RELEASED);
+}
+
+void scrollCallback(GLFWwindow *window, double xoff, double yoff)
+{
+	nk_glfw3_scroll_callback(window, xoff, yoff);
+	State::get()->setScrollSpeed(yoff);
 }
 
 void initMousePos(GLFWwindow *window)
@@ -224,6 +244,7 @@ void initWindow(GLFWwindow* window)
 	glfwSetKeyCallback(window, handleKeyInput);
 	glfwSetCursorPosCallback(window, cursorPosCallback);
 	glfwSetMouseButtonCallback(window, handleMouseInput);
+	glfwSetScrollCallback(window, scrollCallback);
 
 	//Set icon of window
 	int channels;

@@ -41,6 +41,7 @@ void main()
 	vec3 reflected = normalize(reflect(lightdir, normal));
 	float spec = pow(dot(reflected, normalize(camerapos - fragpos)), 16.0) * specularfactor;
 	color += vec4(1.0, 1.0, 1.0, 0.0) * spec;
+	color = clamp(color, 0.0, 1.0);
 
 	//fog
 	vec4 fogeffect = mix(color, vec4(0.5, 0.8, 1.0, 1.0), min(max(0.0, d - viewdist) / FOG_DIST, 1.0));

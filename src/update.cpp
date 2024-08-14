@@ -3,183 +3,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <algorithm>
 
-constexpr float ROTATION_Z_SPEED = 0.5f;
-constexpr float MAX_ROTATION_Z = glm::radians(15.0f);
-constexpr float ROTATION_Y_SPEED = 0.8f;
-constexpr float ROTATION_X_SPEED = 0.6f;
-constexpr float MAX_ROTATION_X = glm::radians(70.0f);
-
 namespace gobjs = gameobjects;
 
-namespace gameobjects {
-	Player::Player(glm::vec3 position) {
-		transform.position = position;
-		transform.rotation = glm::vec3(0.0f);
-		transform.scale = glm::vec3(1.0f);
-		xRotationDirection = RX_NONE;
-		yRotationDirection = RY_NONE;
-		crashed = false;
-		speed = SPEED;
-	}
-
-	void Player::rotateWithMouse(float dt)
-	{
-		State* state = State::get();
-		double 
-			dx = state->getMouseDX(),
-			dy = state->getMouseDY();
-
-		float
-			speedx = 0.0f,
-			speedy = ROTATION_Y_SPEED / 5.0f * dx;
-
-		speedx = -ROTATION_X_SPEED * dy;
-
-		speedx = std::min(speedx, ROTATION_X_SPEED / 2.0f);
-		speedx = std::max(speedx, -ROTATION_X_SPEED / 2.0f);
-		speedy = std::min(speedy, ROTATION_Y_SPEED / 3.0f);
-		speedy = std::max(speedy, -ROTATION_Y_SPEED / 3.0f);
-
-		if(yRotationDirection == gobjs::Player::RY_NONE)
-			transform.rotation.y -= speedy * dt;
-
-		if(xRotationDirection == gobjs::Player::RX_NONE) {
-			transform.rotation.x -= speedx * dt;
-			transform.rotation.x = std::min(transform.rotation.x, MAX_ROTATION_X);
-			transform.rotation.x = std::max(transform.rotation.x, -MAX_ROTATION_X);
-		}
-	}
-
-	void Player::update(float dt) 
-	{
-		//Keep track of how long the player has crashed,
-		//this is so that the game can delay showing the death screen until
-		//the explosion animation is done playing
-		if(crashed) {
-			deathtimer += dt;
-			return;
-		}
-
-		//Shooting cooldown
-		shoottimer -= dt;
-
-		State* state = State::get();	
-
-		//Turn left/right
-		if(state->getKeyState(GLFW_KEY_D) == JUST_PRESSED)	
-			yRotationDirection = gobjs::Player::RY_RIGHT;	
-		else if(state->getKeyState(GLFW_KEY_A) == JUST_PRESSED)	
-			yRotationDirection = gobjs::Player::RY_LEFT;
-		else if(state->getKeyState(GLFW_KEY_A) == RELEASED && 
-				state->getKeyState(GLFW_KEY_D) == RELEASED)
-			yRotationDirection = gobjs::Player::RY_NONE;
-	
-		//Change pitch
-		if(state->getKeyState(GLFW_KEY_S) == JUST_PRESSED)
-			xRotationDirection = gobjs::Player::RX_UP;
-		else if(state->getKeyState(GLFW_KEY_W) == JUST_PRESSED)
-			xRotationDirection = gobjs::Player::RX_DOWN;
-		else if(state->getKeyState(GLFW_KEY_S) == RELEASED &&
-				state->getKeyState(GLFW_KEY_W) == RELEASED)
-			xRotationDirection = gobjs::Player::RX_NONE;
-
-		//Rotate with mouse
-		rotateWithMouse(dt);
-
-		//Rotate on the y axis
-		if(yRotationDirection == gobjs::Player::RY_RIGHT) {
-			transform.rotation.z += dt * ROTATION_Z_SPEED;
-			transform.rotation.z =
-				std::min(transform.rotation.z, MAX_ROTATION_Z);
-			transform.rotation.y -= ROTATION_Y_SPEED * dt;
-		}
-		else if(yRotationDirection == gobjs::Player::RY_LEFT) {
-			transform.rotation.z -= dt * ROTATION_Z_SPEED;
-			transform.rotation.z =
-				std::max(transform.rotation.z, -MAX_ROTATION_Z);
-			transform.rotation.y += ROTATION_Y_SPEED * dt;
-		}
-		else {
-			if(transform.rotation.z < 0.0f)
-				transform.rotation.z += dt * ROTATION_Z_SPEED / 2.0f;
-			else if(transform.rotation.z > 0.0f)
-				transform.rotation.z -= dt * ROTATION_Z_SPEED / 2.0f;
-		
-			if(std::abs(transform.rotation.z) < glm::radians(0.5f))
-				transform.rotation.z = 0.0f;
-		}	
-
-		//Rotate on the x axis
-		if(xRotationDirection == gobjs::Player::RX_UP) {
-			transform.rotation.x -= dt * ROTATION_X_SPEED;
-			transform.rotation.x =
-				std::max(transform.rotation.x, -MAX_ROTATION_X);
-		}
-		else if(xRotationDirection == gobjs::Player::RX_DOWN) {
-			transform.rotation.x += dt * ROTATION_X_SPEED;
-			transform.rotation.x =
-				std::min(transform.rotation.x, MAX_ROTATION_X);
-		}
-
-		transform.position += transform.direction() * speed / 2.0f * dt;
-		//Acceleration
-		if(keyIsHeld(state->getKeyState(GLFW_KEY_LEFT_SHIFT)))
-			speed += ACCELERATION * dt;
-		else if(state->getScrollSpeed() > 0.0)
-			speed += ACCELERATION * 4.0f * dt;
-		else if(keyIsHeld(state->getKeyState(GLFW_KEY_LEFT_CONTROL)))
-			speed -= ACCELERATION * dt;
-		else if(state->getScrollSpeed() < 0.0)
-			speed -= ACCELERATION * 4.0f * dt;
-		speed = std::min(speed, SPEED * 3.0f);
-		speed = std::max(speed, SPEED);
-		transform.position += transform.direction() * speed / 2.0f * dt;
-	}
-
-	void Player::resetShootTimer()
-	{
-		shoottimer = 0.2f;
-	}
-
-	void Player::checkIfCrashed(float dt, infworld::worldseed &permutations)
-	{
-		if(crashed)
-			return;
-
-		glm::vec3 pos = transform.position + transform.direction() * SPEED * dt;
-		float h = infworld::getHeight(
-			pos.z / SCALE * float(PREC + 1) / float(PREC),
-			pos.x / SCALE * float(PREC + 1) / float(PREC),
-			permutations
-		) * HEIGHT * SCALE;
-		//Maximum height difference between
-		const float MAX_HEIGHT_DIFF = 8.0f;
-		if(pos.y - h < MAX_HEIGHT_DIFF || pos.y < MAX_HEIGHT_DIFF / 2.0f) {
-			crashed = true;
-			return;
-		}
-
-		glm::vec3 positions[] = {
-			transform.position + transform.rotate(glm::vec3(-9.0f, 0.0f, 0.0f)),
-			transform.position + transform.rotate(glm::vec3(10.0f, 0.0f, 0.0f)),
-			transform.position + transform.rotate(glm::vec3(-13.0f, -5.0f, 0.0f)),
-			transform.position + transform.rotate(glm::vec3(13.0f, -5.0f, 0.0f)),
-		};
-
-		for(int i = 0; i < 4; i++) {
-			glm::vec3 pos = positions[i];
-			h = infworld::getHeight(
-				pos.z / SCALE * float(PREC + 1) / float(PREC),
-				pos.x / SCALE * float(PREC + 1) / float(PREC),
-				permutations
-			) * HEIGHT * SCALE;
-			if(pos.y - h < MAX_HEIGHT_DIFF || pos.y < MAX_HEIGHT_DIFF / 2.0f) {
-				crashed = true;
-				return;
-			}
-		}
-	}
-
+namespace gameobjects {	
 	Explosion::Explosion(glm::vec3 position)
 	{
 		transform.position = position;
@@ -199,40 +25,7 @@ namespace gameobjects {
 
 		if(timePassed > 2.0f)
 			visible = false;
-	}
-
-	Enemy::Enemy(glm::vec3 position, int hp, unsigned int scoreval)
-	{
-		transform.position = position;
-		transform.scale = glm::vec3(1.0f);
-		transform.rotation = glm::vec3(0.0f);
-		hitpoints = hp;
-		scorevalue = scoreval;
-	}
-
-	void Enemy::updateBalloon(float dt)
-	{
-		if(transform.position.y > values.at("maxy")) {
-			transform.position.y = values.at("maxy");
-			values.at("direction") *= -1.0f;
-		}
-		else if(transform.position.y < values.at("miny")) {
-			transform.position.y = values.at("miny");
-			values.at("direction") *= -1.0f;
-		}
-
-		transform.position.y += 16.0f * dt * values.at("direction");
-	}
-
-	float Enemy::getVal(const std::string &key)
-	{
-		return values[key];
-	}
-
-	void Enemy::setVal(const std::string &key, float v)
-	{
-		values[key] = v;
-	}
+	}	
 
 	Bullet::Bullet(const Player &player, const glm::vec3 &offset)
 	{
@@ -279,7 +72,7 @@ namespace game {
 		return playertransform.position + offset;
 	}
 
-	void updateCamera(gameobjects::Player &player)
+	void updateCamera(gobjs::Player &player)
 	{
 		Camera& cam = State::get()->getCamera();
 		//Update camera
@@ -298,60 +91,7 @@ namespace game {
 			pitch = player.transform.rotation.x;
 		cam.yaw += (yaw - cam.yaw) * 6.0f * dt;
 		cam.pitch += (pitch - cam.pitch) * 7.0f * dt;
-	}
-
-	void spawnBalloons(
-		gameobjects::Player &player,
-		std::vector<gameobjects::Enemy> &balloons,
-		std::minstd_rand0 &lcg,
-		infworld::worldseed &permutations
-	) {
-		if(balloons.size() >= 4)
-			return;
-
-		int randval = lcg() % 2;
-		if(randval > 0 && balloons.size() > 1)
-			return;
-
-		glm::vec3 center = player.transform.position;
-		float dist = float(lcg() % 256) / 256.0f * CHUNK_SZ * 12.0f + CHUNK_SZ * 6.0f;
-		float angle = float(lcg() % 256) / 256.0f * glm::radians(360.0f);
-		glm::vec3 position = center + dist * glm::vec3(cosf(angle), 0.0f, sinf(angle));
-		balloons.push_back(gobjs::spawnBalloon(position, permutations));
-	}
-
-	void destroyEnemies(
-		gameobjects::Player &player,
-		std::vector<gobjs::Enemy> &enemies,
-		std::vector<gameobjects::Explosion> &explosions,
-		float crashdist,
-		unsigned int &score
-	) {
-		if(enemies.empty())
-			return;
-
-		enemies.erase(std::remove_if(
-			enemies.begin(),
-			enemies.end(),
-			[&player, &explosions, &crashdist, &score](gobjs::Enemy &enemy) {
-				if(enemy.hitpoints <= 0) {
-					explosions.push_back(gobjs::Explosion(enemy.transform.position));
-					score += enemy.scorevalue;
-					return true;
-				}
-
-				glm::vec3 diff = enemy.transform.position - player.transform.position;
-
-				if(glm::length(diff) < crashdist) {
-					player.crashed = true;
-					explosions.push_back(gobjs::Explosion(enemy.transform.position));
-					return true;
-				}
-
-				return glm::length(diff) > CHUNK_SZ * 32.0f;
-			}
-		), enemies.end());
-	}
+	}	
 
 	void updateExplosions(
 		std::vector<gobjs::Explosion> &explosions, 
@@ -381,7 +121,7 @@ namespace game {
 		);
 	}
 
-	void updateBullets(std::vector<gameobjects::Bullet> &bullets, float dt)
+	void updateBullets(std::vector<gobjs::Bullet> &bullets, float dt)
 	{
 		for(auto &bullet : bullets)
 			bullet.update(dt);
@@ -396,8 +136,8 @@ namespace game {
 	}
 
 	void checkForHit(
-		std::vector<gameobjects::Bullet> &bullets,
-		std::vector<gameobjects::Enemy> &enemies,
+		std::vector<gobjs::Bullet> &bullets,
+		std::vector<gobjs::Enemy> &enemies,
 		float hitdist
 	) {
 		for(auto &bullet : bullets) {
@@ -413,7 +153,7 @@ namespace game {
 	}
 
 	void checkForBulletTerrainCollision(
-		std::vector<gameobjects::Bullet> &bullets,
+		std::vector<gobjs::Bullet> &bullets,
 		infworld::worldseed &permutations
 	) {
 		bullets.erase(std::remove_if(

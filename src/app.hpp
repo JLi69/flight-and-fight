@@ -25,6 +25,7 @@ enum KeyState {
 class State {
 	Camera cam;
 	double mousex, mousey; //Mouse position
+	double mousedx = 0.0, mousedy = 0.0;
 	glm::mat4 persp; //Global perspective matrix
 	float currentFovy;
 	float currentAspect;
@@ -41,7 +42,10 @@ public:
 	static State* get();
 	double getMouseX();
 	double getMouseY();
+	double getMouseDX();
+	double getMouseDY();
 	void setMousePos(double x, double y);
+	void setMouseDiff(double dx, double dy);
 	Camera& getCamera();
 	void updatePerspectiveMat(float fovy, float znear, float zfar);
 	glm::mat4 getPerspective();

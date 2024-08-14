@@ -4,7 +4,7 @@
 #include <algorithm>
 
 constexpr float ROTATION_Z_SPEED = 0.5f;
-constexpr float MAX_ROTATION_Z = glm::radians(20.0f);
+constexpr float MAX_ROTATION_Z = glm::radians(15.0f);
 constexpr float ROTATION_Y_SPEED = 0.8f;
 constexpr float ROTATION_X_SPEED = 0.6f;
 constexpr float MAX_ROTATION_X = glm::radians(70.0f);
@@ -20,6 +20,34 @@ namespace gameobjects {
 		yRotationDirection = RY_NONE;
 		crashed = false;
 		speed = SPEED;
+	}
+
+	void Player::rotateWithMouse(float dt)
+	{
+		State* state = State::get();
+		double 
+			dx = state->getMouseDX(),
+			dy = state->getMouseDY();
+
+		float
+			speedx = 0.0f,
+			speedy = ROTATION_Y_SPEED / 5.0f * dx;
+
+		speedx = -ROTATION_X_SPEED * dy;
+
+		speedx = std::min(speedx, ROTATION_X_SPEED / 2.0f);
+		speedx = std::max(speedx, -ROTATION_X_SPEED / 2.0f);
+		speedy = std::min(speedy, ROTATION_Y_SPEED / 3.0f);
+		speedy = std::max(speedy, -ROTATION_Y_SPEED / 3.0f);
+
+		if(yRotationDirection == gobjs::Player::RY_NONE)
+			transform.rotation.y -= speedy * dt;
+
+		if(xRotationDirection == gobjs::Player::RX_NONE) {
+			transform.rotation.x -= speedx * dt;
+			transform.rotation.x = std::min(transform.rotation.x, MAX_ROTATION_X);
+			transform.rotation.x = std::max(transform.rotation.x, -MAX_ROTATION_X);
+		}
 	}
 
 	void Player::update(float dt) 
@@ -44,7 +72,19 @@ namespace gameobjects {
 			yRotationDirection = gobjs::Player::RY_LEFT;
 		else if(state->getKeyState(GLFW_KEY_A) == RELEASED && 
 				state->getKeyState(GLFW_KEY_D) == RELEASED)
-			yRotationDirection = gobjs::Player::RY_NONE;			
+			yRotationDirection = gobjs::Player::RY_NONE;
+	
+		//Change pitch
+		if(state->getKeyState(GLFW_KEY_S) == JUST_PRESSED)
+			xRotationDirection = gobjs::Player::RX_UP;
+		else if(state->getKeyState(GLFW_KEY_W) == JUST_PRESSED)
+			xRotationDirection = gobjs::Player::RX_DOWN;
+		else if(state->getKeyState(GLFW_KEY_S) == RELEASED &&
+				state->getKeyState(GLFW_KEY_W) == RELEASED)
+			xRotationDirection = gobjs::Player::RX_NONE;
+
+		//Rotate with mouse
+		rotateWithMouse(dt);
 
 		//Rotate on the y axis
 		if(yRotationDirection == gobjs::Player::RY_RIGHT) {
@@ -67,18 +107,9 @@ namespace gameobjects {
 		
 			if(std::abs(transform.rotation.z) < glm::radians(0.5f))
 				transform.rotation.z = 0.0f;
-		}
-	
-		//Change pitch
-		if(state->getKeyState(GLFW_KEY_S) == JUST_PRESSED)
-			xRotationDirection = gobjs::Player::RX_UP;
-		else if(state->getKeyState(GLFW_KEY_W) == JUST_PRESSED)
-			xRotationDirection = gobjs::Player::RX_DOWN;
-		else if(state->getKeyState(GLFW_KEY_S) == RELEASED &&
-				state->getKeyState(GLFW_KEY_W) == RELEASED)
-			xRotationDirection = gobjs::Player::RX_NONE;
+		}	
 
-		//Rotate
+		//Rotate on the x axis
 		if(xRotationDirection == gobjs::Player::RX_UP) {
 			transform.rotation.x -= dt * ROTATION_X_SPEED;
 			transform.rotation.x =
@@ -397,6 +428,6 @@ namespace game {
 				) * HEIGHT * SCALE;
 				return pos.y < h;
 			}
-		), bullets.end());
-	}
+		), bullets.end());	
+	}	
 }

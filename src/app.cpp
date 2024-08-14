@@ -37,6 +37,16 @@ double State::getMouseY()
 	return mousey;
 }
 
+double State::getMouseDX()
+{
+	return mousedx;
+}
+
+double State::getMouseDY()
+{
+	return mousedy;
+}
+
 double State::getScrollSpeed()
 {
 	return scrollspeed;
@@ -46,6 +56,12 @@ void State::setMousePos(double x, double y)
 {
 	mousex = x;
 	mousey = y;
+}
+
+void State::setMouseDiff(double dx, double dy)
+{
+	mousedx = dx;
+	mousedy = dy;
 }
 
 Camera& State::getCamera()
@@ -112,6 +128,9 @@ void State::updateKeyStates()
 			buttonstate.second = HELD;
 
 	scrollspeed = 0.0;
+	
+	mousedx = 0.0;
+	mousedy = 0.0;
 }
 
 void State::clearMouseState()
@@ -179,6 +198,7 @@ void cursorPosCallback(GLFWwindow *window, double x, double y)
 		dx = x - state->getMouseX(),
 		dy = y - state->getMouseY();
 	state->setMousePos(x, y);
+	state->setMouseDiff(dx, dy);
 }
 
 void handleKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods)

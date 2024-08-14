@@ -104,6 +104,7 @@ namespace gameobjects {
 		float speed = 0.0f;
 		Player(glm::vec3 position);
 
+		void rotateWithMouse(float dt);
 		void update(float dt);
 		void resetShootTimer();
 		void checkIfCrashed(float dt, infworld::worldseed &permutations);

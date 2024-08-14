@@ -5,3 +5,5 @@ flight-and-fight
 flight-and-fight.exe
 # ignore high score table file
 hiscores
+# ignore release folder
+release

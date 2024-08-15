@@ -62,6 +62,7 @@ namespace game {
 				if(action == "unpause") {
 					paused = false;
 					glfwSetInputMode(state->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+					state->clearInputState();
 				}
 				else if(action == "quit") {
 					stop = true;

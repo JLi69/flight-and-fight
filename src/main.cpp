@@ -37,10 +37,11 @@ int main(int argc, char *argv[])
 
 	while(!glfwWindowShouldClose(state->getWindow())) {
 		game::GameMode gamemode = game::mainMenu();
+		state->clearInputState();
 		glfwSetInputMode(state->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		glBindVertexArray(0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		unsigned int score;
+		unsigned int score;	
 		switch(gamemode) {
 			case game::HIGH_SCORE_SCREEN:
 				game::highScoreTableScreen(highscores);

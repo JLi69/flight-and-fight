@@ -59,8 +59,8 @@ public:
 	double getScrollSpeed();
 	//Sets all the JUST_PRESSED keys to HELD
 	void updateKeyStates();
-	//Resets mouse state to be empty
-	void clearMouseState();
+	//Resets mouse state and key state to be empty
+	void clearInputState();
 	KeyState getKeyState(int key);
 	KeyState getButtonState(int button);
 	GLFWwindow* getWindow();

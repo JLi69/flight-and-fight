@@ -133,8 +133,9 @@ void State::updateKeyStates()
 	mousedy = 0.0;
 }
 
-void State::clearMouseState()
+void State::clearInputState()
 {
+	keystates = {};
 	mousebuttonstates = {};
 }
 

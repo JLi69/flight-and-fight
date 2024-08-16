@@ -242,6 +242,7 @@ namespace gfx {
 			if(!explosion.visible)
 				continue;
 			shader.uniformFloat("time", explosion.timePassed);
+			shader.uniformFloat("scale", explosion.explosionScale);
 			shader.uniformMat4x4("transform", explosion.transform.getTransformMat());
 			VAOS->drawInstanced(128);
 		}
@@ -274,6 +275,31 @@ namespace gfx {
 			VAOS->draw();
 		}
 		glEnable(GL_CULL_FACE);
+	}
+
+	void displayBlimps(const std::vector<gameobjects::Enemy> &blimps)
+	{
+		if(blimps.empty())
+			return;
+	
+		State* state = State::get();
+
+		VAOS->bind("blimp");
+		SHADERS->use("textured");
+		TEXTURES->bindTexture("blimp", GL_TEXTURE0);
+		ShaderProgram& shader = SHADERS->getShader("textured");
+		shader.uniformMat4x4("persp", state->getPerspective());
+		shader.uniformMat4x4("view", state->getCamera().viewMatrix());
+		shader.uniformFloat("specularfactor", 0.1f);
+		shader.uniformVec3("lightdir", LIGHT);
+		shader.uniformVec3("camerapos", state->getCamera().position);
+		for(const auto &blimp : blimps) {
+			glm::mat4 transform = blimp.transform.getTransformMat();
+			glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
+			shader.uniformMat4x4("transform", transform);
+			shader.uniformMat3x3("normalmat", normal);
+			VAOS->draw();
+		}
 	}
 
 	void displayBullets(const std::vector<gameobjects::Bullet> &bullets)

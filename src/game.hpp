@@ -36,6 +36,7 @@ namespace game {
 		glm::vec3 direction() const; //Forward vector
 		glm::vec3 right() const;
 		glm::vec3 rotate(const glm::vec3 &v) const;
+		glm::vec3 invRotate(const glm::vec3 &v) const;
 	};
 
 	struct Timer {
@@ -113,8 +114,10 @@ namespace gameobjects {
 	struct Explosion {
 		game::Transform transform;
 		float timePassed;
+		float explosionScale;
 		bool visible;
 		Explosion(glm::vec3 position);
+		Explosion(glm::vec3 position, float scale);
 		void update(float dt);
 	};
 
@@ -126,6 +129,7 @@ namespace gameobjects {
 		int hitpoints;
 		Enemy(glm::vec3 position, int hp, unsigned int scoreval);
 		void updateBalloon(float dt);
+		void updateBlimp(float dt);
 		float getVal(const std::string &key);
 		void setVal(const std::string &key, float v);
 	};
@@ -140,6 +144,7 @@ namespace gameobjects {
 	};
 
 	Enemy spawnBalloon(const glm::vec3 &position, infworld::worldseed &permutations);
+	Enemy spawnBlimp(const glm::vec3 &position, float rotation);
 }
 
 namespace game {
@@ -150,12 +155,27 @@ namespace game {
 		std::minstd_rand0 &lcg,
 		infworld::worldseed &permutations
 	);
+	//Spawns blimps around the player
+	void spawnBlimps(
+		gameobjects::Player &player,
+		std::vector<gameobjects::Enemy> &blimps,
+		std::minstd_rand0 &lcg,
+		infworld::worldseed &permutations
+	);
 	void destroyEnemies(
 		gameobjects::Player &player,
 		std::vector<gameobjects::Enemy> &enemies,
 		std::vector<gameobjects::Explosion> &explosions,
+		float explosionscale,
 		float crashdist,
 		unsigned int &score
+	);
+	void checkForCollision(
+		gameobjects::Player &player,
+		std::vector<gameobjects::Enemy> &enemies,
+		std::vector<gameobjects::Explosion> &explosions,
+		float explosionscale,
+		const glm::vec3 &extents
 	);
 	//Returns the position the camera should be following
 	glm::vec3 getCameraFollowPos(const Transform &playertransform);
@@ -189,6 +209,7 @@ namespace gfx {
 	void displayPlayerPlane(float totalTime, const game::Transform &transform);
 	void displayExplosions(const std::vector<gameobjects::Explosion> &explosions);
 	void displayBalloons(const std::vector<gameobjects::Enemy> &balloons);
+	void displayBlimps(const std::vector<gameobjects::Enemy> &blimps);
 	void displayBullets(const std::vector<gameobjects::Bullet> &bullets);
 	void displayMiniMapBackground();
 	void displayEnemyMarkers(

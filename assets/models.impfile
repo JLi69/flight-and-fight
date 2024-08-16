@@ -15,6 +15,11 @@
 	"path" = "assets/models/balloon.obj";
 }
 
+# Blimp model
+"blimp" {
+	"path" = "assets/models/blimp.obj";
+}
+
 # Bullet model
 "bullet" {
 	"path" = "assets/models/bullet.obj";

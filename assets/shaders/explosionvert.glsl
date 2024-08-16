@@ -6,6 +6,7 @@ uniform mat4 persp;
 uniform mat4 view;
 uniform mat4 transform;
 uniform float time;
+uniform float scale;
 
 const float SPEED = 16.0;
 
@@ -19,7 +20,7 @@ void main()
 	vec3 cameraUpWorldSpace = vec3(view[0][1], view[1][1], view[2][1]);
 	vec4 center = transform * vec4(0.0, 0.0, 0.0, 1.0);
 	float maxsz = 16.0 + cos(id) * 6.0;
-	float sz = maxsz - maxsz * pow(1.0 - time, 2.0);
+	float sz = (maxsz - maxsz * pow(1.0 - time, 2.0)) * scale;
 
 	float rotationSpeed = sin(id * cos(id)) * 3.14 / 4.0;
 	float rotation = rotationSpeed * time;
@@ -36,7 +37,7 @@ void main()
 
 	float angle1 = sin(id * cos(id)) * 2.0 * 3.14;
 	float angle2 = cos(sin(id) + cos(id)) * 2.0 * 3.14;
-	float d = fract(id * 31.75414) * 10.0 + 10.0;
+	float d = (fract(id * 31.75414) * 10.0 + 10.0) * scale;
 	vertPosWorldSpace += vec3(
 		cos(angle1) * cos(angle2), 
 		sin(angle1), 
@@ -46,7 +47,7 @@ void main()
 		cos(angle1) * cos(angle2) * SPEED, 
 		SPEED / 2.0,
 		cos(angle1) * sin(angle2) * SPEED
-	) * time;
+	) * time * scale;
 
 	gl_Position = persp * view * vec4(vertPosWorldSpace.xyz, 1.0);
 

@@ -50,6 +50,17 @@ namespace game {
 		return glm::vec3(transformed.x, transformed.y, transformed.z);
 	}
 
+	glm::vec3 Transform::invRotate(const glm::vec3 &v) const
+	{
+		glm::mat4 rotationMat(1.0f);
+		rotationMat = glm::rotate(rotationMat, -rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+		rotationMat = glm::rotate(rotationMat, -rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+		rotationMat = glm::rotate(rotationMat, -rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::vec4 transformed(v.x, v.y, v.z, 1.0f);
+		transformed = rotationMat * transformed;
+		return glm::vec3(transformed.x, transformed.y, transformed.z);
+	}
+
 	void loadAssets()
 	{
 		//Vaos

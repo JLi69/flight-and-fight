@@ -28,6 +28,13 @@ namespace gameobjects {
 		transform.position.y += 16.0f * dt * values.at("direction");
 	}
 
+	void Enemy::updateBlimp(float dt)
+	{
+		transform.position += transform.direction() * 24.0f * dt;
+		transform.position.y += sinf(values.at("time") / 4.0f) * 8.0f * dt;
+		values.at("time") += dt;
+	}
+
 	float Enemy::getVal(const std::string &key)
 	{
 		return values[key];
@@ -36,6 +43,35 @@ namespace gameobjects {
 	void Enemy::setVal(const std::string &key, float v)
 	{
 		values[key] = v;
+	}
+
+	Enemy spawnBalloon(const glm::vec3 &position, infworld::worldseed &permutations)
+	{
+		float h = infworld::getHeight(
+			position.z / SCALE * float(PREC + 1) / float(PREC),
+			position.x / SCALE * float(PREC + 1) / float(PREC),
+			permutations
+		) * HEIGHT * SCALE;
+		float y = std::max(h, 0.0f) + HEIGHT;
+		glm::vec3 pos(position.x, y, position.z);
+		Enemy balloon = Enemy(pos, 5, 10);
+
+		float miny = y;
+		float maxy = y + HEIGHT;
+		float direction = 1.0f;	
+		balloon.setVal("miny", miny);
+		balloon.setVal("maxy", maxy);
+		balloon.setVal("direction", direction);
+		return balloon;
+	}
+
+	Enemy spawnBlimp(const glm::vec3 &position, float rotation)
+	{
+		glm::vec3 pos(position.x, HEIGHT * SCALE, position.z);
+		Enemy blimp = Enemy(pos, 16, 30);
+		blimp.setVal("time", 0.0f);
+		blimp.transform.rotation.y = rotation;
+		return blimp;
 	}
 }
 
@@ -60,10 +96,32 @@ namespace game {
 		balloons.push_back(gobjs::spawnBalloon(position, permutations));
 	}
 
+	void spawnBlimps(
+		gobjs::Player &player,
+		std::vector<gobjs::Enemy> &blimps,
+		std::minstd_rand0 &lcg,
+		infworld::worldseed &permutations
+	) {
+		if(blimps.size() >= 2)
+			return;
+
+		int randval = lcg() % 2;
+		if(randval > 0)
+			return;
+
+		glm::vec3 center = player.transform.position;
+		float dist = float(lcg() % 256) / 256.0f * CHUNK_SZ * 12.0f + CHUNK_SZ * 6.0f;
+		float angle = float(lcg() % 256) / 256.0f * glm::radians(360.0f);
+		glm::vec3 position = center + dist * glm::vec3(cosf(angle), 0.0f, sinf(angle));
+		float rotation = float(lcg() % 256) / 256.0f * glm::radians(360.0f);
+		blimps.push_back(gobjs::spawnBlimp(position, rotation));
+	}
+
 	void destroyEnemies(
 		gobjs::Player &player,
 		std::vector<gobjs::Enemy> &enemies,
 		std::vector<gobjs::Explosion> &explosions,
+		float explosionscale,
 		float crashdist,
 		unsigned int &score
 	) {
@@ -73,9 +131,9 @@ namespace game {
 		enemies.erase(std::remove_if(
 			enemies.begin(),
 			enemies.end(),
-			[&player, &explosions, &crashdist, &score](gobjs::Enemy &enemy) {
+			[&player, &explosions, &crashdist, &score, &explosionscale](gobjs::Enemy &enemy) {
 				if(enemy.hitpoints <= 0) {
-					explosions.push_back(gobjs::Explosion(enemy.transform.position));
+					explosions.push_back(gobjs::Explosion(enemy.transform.position, explosionscale));
 					score += enemy.scorevalue;
 					return true;
 				}
@@ -84,11 +142,41 @@ namespace game {
 
 				if(glm::length(diff) < crashdist) {
 					player.crashed = true;
-					explosions.push_back(gobjs::Explosion(enemy.transform.position));
+					explosions.push_back(gobjs::Explosion(enemy.transform.position, explosionscale));
 					return true;
 				}
 
 				return glm::length(diff) > CHUNK_SZ * 32.0f;
+			}
+		), enemies.end());
+	}
+
+	void checkForCollision(
+		gameobjects::Player &player,
+		std::vector<gobjs::Enemy> &enemies,
+		std::vector<gobjs::Explosion> &explosions,
+		float explosionscale,
+		const glm::vec3 &extents
+	) {
+		if(enemies.empty())
+			return;
+
+		enemies.erase(std::remove_if(
+			enemies.begin(),
+			enemies.end(),
+			[&player, &explosions, &extents, &explosionscale](gobjs::Enemy &enemy) {
+				glm::vec3 diff = player.transform.position - enemy.transform.position;
+				diff = enemy.transform.invRotate(diff);
+
+				if(std::abs(diff.x) < extents.x && 
+					std::abs(diff.y) < extents.y &&
+					std::abs(diff.z) < extents.z) {
+					player.crashed = true;
+					explosions.push_back(gobjs::Explosion(enemy.transform.position, explosionscale));
+					return true;
+				}
+
+				return false;
 			}
 		), enemies.end());
 	}

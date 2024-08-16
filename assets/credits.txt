@@ -50,7 +50,8 @@ used part of the leaves texture for leaves in "treetexture.png"
 also modified to be more "green"
 (https://creativecommons.org/licenses/by-sa/3.0/)
 
-used "metall010-new-tileable.png" for plane texture (https://opengameart.org/node/9070)
+used "metall010-new-tileable.png" for plane and blimp texture 
+(https://opengameart.org/node/9070)
 by p0ss
 License: GPL 2.0, GPL 3.0, or CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
 

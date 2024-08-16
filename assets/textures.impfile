@@ -58,6 +58,13 @@
 	"flip" = "true";
 }
 
+# texture for blimp
+"blimp" {
+	"target" = "texture2d";
+	"path" = "assets/textures/blimptexture.png";
+	"flip" = "true";
+}
+
 # explosion particle
 "explosion_particle" {
 	"target" = "texture2d";

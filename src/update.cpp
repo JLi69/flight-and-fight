@@ -12,6 +12,17 @@ namespace gameobjects {
 		transform.scale = glm::vec3(1.0f);
 		transform.rotation = glm::vec3(0.0f);
 		timePassed = 0.0f;
+		explosionScale = 1.0f;
+		visible = true;
+	}
+
+	Explosion::Explosion(glm::vec3 position, float scale)
+	{
+		transform.position = position;
+		transform.scale = glm::vec3(1.0f);
+		explosionScale = scale;
+		transform.rotation = glm::vec3(0.0f);
+		timePassed = 0.0f;
 		visible = true;
 	}
 
@@ -21,7 +32,7 @@ namespace gameobjects {
 			return;
 		
 		timePassed += dt;
-		transform.scale = glm::vec3(10.0f) * timePassed + glm::vec3(1.0f);
+		transform.scale = (glm::vec3(10.0f) * timePassed + glm::vec3(1.0f)) * explosionScale;
 
 		if(timePassed > 2.0f)
 			visible = false;
@@ -42,27 +53,7 @@ namespace gameobjects {
 	{
 		time += dt;
 		transform.position += transform.direction() * dt * speed;
-	}
-
-	Enemy spawnBalloon(const glm::vec3 &position, infworld::worldseed &permutations)
-	{
-		float h = infworld::getHeight(
-			position.z / SCALE * float(PREC + 1) / float(PREC),
-			position.x / SCALE * float(PREC + 1) / float(PREC),
-			permutations
-		) * HEIGHT * SCALE;
-		float y = std::max(h, 0.0f) + HEIGHT;
-		glm::vec3 pos(position.x, y, position.z);
-		Enemy balloon = Enemy(pos, 5, 10);
-
-		float miny = y;
-		float maxy = y + HEIGHT;
-		float direction = 1.0f;	
-		balloon.setVal("miny", miny);
-		balloon.setVal("maxy", maxy);
-		balloon.setVal("direction", direction);
-		return balloon;
-	}
+	}	
 }
 
 namespace game {

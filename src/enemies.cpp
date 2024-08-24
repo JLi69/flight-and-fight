@@ -31,13 +31,13 @@ namespace gameobjects {
 	void Enemy::updateBlimp(float dt)
 	{
 		transform.position += transform.direction() * 24.0f * dt;
-		transform.position.y += sinf(values.at("time") / 4.0f) * 8.0f * dt;
-		values.at("time") += dt;
 	}
 
-	float Enemy::getVal(const std::string &key)
+	float Enemy::getVal(const std::string &key) const
 	{
-		return values[key];
+		if(!values.count(key))
+			return 0.0f;
+		return values.at(key);
 	}
 
 	void Enemy::setVal(const std::string &key, float v)
@@ -69,7 +69,6 @@ namespace gameobjects {
 	{
 		glm::vec3 pos(position.x, HEIGHT * SCALE, position.z);
 		Enemy blimp = Enemy(pos, 16, 30);
-		blimp.setVal("time", 0.0f);
 		blimp.transform.rotation.y = rotation;
 		return blimp;
 	}
@@ -179,5 +178,5 @@ namespace game {
 				return false;
 			}
 		), enemies.end());
-	}
+	}	
 }

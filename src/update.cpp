@@ -49,6 +49,12 @@ namespace gameobjects {
 		speed = BULLET_SPEED + player.speed - SPEED;
 	}
 
+	Bullet::Bullet()
+	{
+		time = 0.0f;
+		speed = BULLET_SPEED;
+	}
+
 	void Bullet::update(float dt)
 	{
 		time += dt;
@@ -139,6 +145,21 @@ namespace game {
 					bullet.destroyed = true;
 					enemy.hitpoints--;
 				}
+			}
+		}
+	}
+
+	void checkForHit(
+		std::vector<gobjs::Bullet> &bullets,
+		gobjs::Player &player,
+		float hitdist
+	) {
+		for(auto &bullet : bullets) {
+			glm::vec3 diff = bullet.transform.position - player.transform.position;
+			float dist = glm::length(diff);
+			if(dist < hitdist) {
+				bullet.destroyed = true;
+				player.damage(1);
 			}
 		}
 	}

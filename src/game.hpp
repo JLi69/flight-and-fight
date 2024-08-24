@@ -103,8 +103,13 @@ namespace gameobjects {
 		float deathtimer = 0.0f; //Keeps track of how long the player has been dead
 		float shoottimer = 0.0f;
 		float speed = 0.0f;
+		float damagetimer = 0.0f;
+		unsigned int health;
 		Player(glm::vec3 position);
 
+		void damage(unsigned int amount);
+		//Returns the percentage of health left, rounded down
+		unsigned int hpPercent();
 		void rotateWithMouse(float dt);
 		void update(float dt);
 		void resetShootTimer();
@@ -130,7 +135,7 @@ namespace gameobjects {
 		Enemy(glm::vec3 position, int hp, unsigned int scoreval);
 		void updateBalloon(float dt);
 		void updateBlimp(float dt);
-		float getVal(const std::string &key);
+		float getVal(const std::string &key) const;
 		void setVal(const std::string &key, float v);
 	};
 
@@ -140,6 +145,7 @@ namespace gameobjects {
 		float time;
 		float speed;
 		Bullet(const Player &player, const glm::vec3 &offset);
+		Bullet();
 		void update(float dt);
 	};
 
@@ -194,6 +200,11 @@ namespace game {
 		std::vector<gameobjects::Enemy> &enemies,
 		float hitdist
 	);
+	void checkForHit(
+		std::vector<gameobjects::Bullet> &bullets,
+		gameobjects::Player &player,
+		float hitdist
+	);
 	void checkForBulletTerrainCollision(
 		std::vector<gameobjects::Bullet> &bullets,
 		infworld::worldseed &permutations
@@ -221,7 +232,7 @@ namespace gfx {
 namespace gui {
 	std::vector<std::string> readTextFile(const char *path);
 	void displayFPSCounter(unsigned int fps);
-	void displayHUD(unsigned int score, float speed);
+	void displayHUD(unsigned int score, float speed, unsigned int health);
 	//Returns action taken by the user on the pause menu
 	std::string displayPauseMenu();
 	//Returns the action taken by the user on the death screen

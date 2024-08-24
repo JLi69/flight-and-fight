@@ -20,7 +20,7 @@ namespace gui {
 		nk_end(ctx);
 	}
 
-	void displayHUD(unsigned int score, float speed) 
+	void displayHUD(unsigned int score, float speed, unsigned int health) 
 	{
 		State* state = State::get();
 		int w, h;
@@ -28,12 +28,21 @@ namespace gui {
 
 		nk_context* ctx = state->getNkContext();
 		nk_style* s = &ctx->style;
-		ctx->style.text.color = nk_rgb(255, 255, 0);
 		nk_style_push_style_item(ctx, &s->window.fixed_background, nk_style_item_color(nk_rgba(0, 0, 0, 0)));
-		if(nk_begin(ctx, "hud", nk_rect(w - 256, h - 80, 256, 96), NK_WINDOW_NO_SCROLLBAR)) {
+		if(nk_begin(ctx, "hud", nk_rect(w - 256, h - 120, 256, 144), NK_WINDOW_NO_SCROLLBAR)) {
 			FONTS->pushFont("armata_medium");
             nk_layout_row_static(ctx, 32, 240, 1);
 			char str[32];
+			//Change color of HP text based on how much health is left
+			if(health <= 25)
+				ctx->style.text.color = nk_rgb(255, 0, 0);
+			else if(health <= 50)	
+				ctx->style.text.color = nk_rgb(255, 128, 0);
+			else	
+				ctx->style.text.color = nk_rgb(255, 255, 255);
+			snprintf(str, 31, "HP: %u%%", health);
+			nk_label(ctx, str, NK_TEXT_ALIGN_RIGHT);
+			ctx->style.text.color = nk_rgb(255, 255, 0);
 			snprintf(str, 31, "SPEED: %.2f", speed);
 			nk_label(ctx, str, NK_TEXT_ALIGN_RIGHT);
 			snprintf(str, 31, "SCORE: %05u", score);

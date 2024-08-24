@@ -31,7 +31,7 @@ namespace game {
 		gobjs::Player player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
 		std::vector<gobjs::Explosion> explosions;
 		std::vector<gobjs::Enemy> balloons, blimps;
-		std::vector<gobjs::Bullet> bullets;
+		std::vector<gobjs::Bullet> bullets, enemybullets;
 
 		unsigned int fps = 0;
 		float dt = 0.0f;
@@ -60,6 +60,7 @@ namespace game {
 			gfx::displayBlimps(blimps);
 			//Display bullets
 			gfx::displayBullets(bullets);
+			gfx::displayBullets(enemybullets);
 			//Display water
 			gfx::displayWater(totalTime);
 			//Draw skybox
@@ -68,7 +69,7 @@ namespace game {
 			gfx::displayExplosions(explosions);
 			//User Interface
 			gui::displayFPSCounter(fps);
-			gui::displayHUD(score, player.speed);
+			gui::displayHUD(score, player.speed, player.hpPercent());
 			glDisable(GL_CULL_FACE);
 			glDepthMask(GL_FALSE);
 			gfx::displayMiniMapBackground();
@@ -116,7 +117,11 @@ namespace game {
 				updateBullets(bullets, dt);
 				checkForBulletTerrainCollision(bullets, permutations);
 				checkForHit(bullets, balloons, 24.0f);
-				checkForHit(bullets, blimps, 36.0f);
+				checkForHit(bullets, blimps, 32.0f);
+				//Update enemy bullets
+				updateBullets(enemybullets, dt);
+				checkForBulletTerrainCollision(enemybullets, permutations);
+				checkForHit(enemybullets, player, 20.0f);
 				//Spawn balloons
 				if(timers.getTimer("spawn_balloon"))
 					spawnBalloons(player, balloons, lcg, permutations);	

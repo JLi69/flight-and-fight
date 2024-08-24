@@ -1,6 +1,8 @@
 #include "game.hpp"
 #include "app.hpp"
 
+constexpr unsigned int DEFAULT_HEALTH = 64;
+constexpr float DAMAGE_COOLDOWN = 3.0f;
 constexpr float ROTATION_Z_SPEED = 0.5f;
 constexpr float MAX_ROTATION_Z = glm::radians(15.0f);
 constexpr float ROTATION_Y_SPEED = 0.8f;
@@ -16,6 +18,24 @@ namespace gameobjects {
 		yRotationDirection = RY_NONE;
 		crashed = false;
 		speed = SPEED;
+		health = DEFAULT_HEALTH;
+	}
+
+	void Player::damage(unsigned int amount) 
+	{
+		if(damagetimer > 0.0f)
+			return;
+
+		if(health < amount)
+			health = 0;
+		else
+			health -= amount;
+		damagetimer = DEFAULT_HEALTH;
+	}
+
+	unsigned int Player::hpPercent() 
+	{
+		return (unsigned int)(float(health) / float(DEFAULT_HEALTH) * 100.0f);
 	}
 
 	void Player::rotateWithMouse(float dt)
@@ -58,6 +78,8 @@ namespace gameobjects {
 
 		//Shooting cooldown
 		shoottimer -= dt;
+		//Damage cooldown
+		damagetimer -= dt;
 
 		State* state = State::get();	
 
@@ -141,6 +163,12 @@ namespace gameobjects {
 	{
 		if(crashed)
 			return;
+
+		//Check if we ran out of health
+		if(health <= 0) {
+			crashed = true;
+			return;
+		}
 
 		glm::vec3 pos = transform.position + transform.direction() * SPEED * dt;
 		float h = infworld::getHeight(

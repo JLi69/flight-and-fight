@@ -302,6 +302,31 @@ namespace gfx {
 		}
 	}
 
+	void displayUfos(const std::vector<gameobjects::Enemy> &ufos)
+	{
+		if(ufos.empty())
+			return;
+
+		State* state = State::get();
+	
+		VAOS->bind("ufo");
+		SHADERS->use("textured");
+		TEXTURES->bindTexture("ufo", GL_TEXTURE0);
+		ShaderProgram& shader = SHADERS->getShader("textured");
+		shader.uniformMat4x4("persp", state->getPerspective());
+		shader.uniformMat4x4("view", state->getCamera().viewMatrix());
+		shader.uniformFloat("specularfactor", 1.0f);
+		shader.uniformVec3("lightdir", LIGHT);
+		shader.uniformVec3("camerapos", state->getCamera().position);
+		for(const auto &ufo : ufos) {
+			glm::mat4 transform = ufo.transform.getTransformMat();
+			glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
+			shader.uniformMat4x4("transform", transform);
+			shader.uniformMat3x3("normalmat", normal);
+			VAOS->draw();
+		}
+	}
+
 	void displayBullets(const std::vector<gameobjects::Bullet> &bullets)
 	{
 		if(bullets.empty())

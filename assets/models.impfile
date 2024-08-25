@@ -20,6 +20,11 @@
 	"path" = "assets/models/blimp.obj";
 }
 
+# UFO model
+"ufo" {
+	"path" = "assets/models/ufo.obj";
+}
+
 # Bullet model
 "bullet" {
 	"path" = "assets/models/bullet.obj";

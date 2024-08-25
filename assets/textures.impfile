@@ -65,6 +65,13 @@
 	"flip" = "true";
 }
 
+# ufo texture
+"ufo" {
+	"target" = "texture2d";
+	"path" = "assets/textures/ufotexture.png";
+	"flip" = "true";
+}
+
 # explosion particle
 "explosion_particle" {
 	"target" = "texture2d";

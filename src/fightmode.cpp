@@ -27,10 +27,11 @@ namespace game {
 		TimerManager timers;
 		timers.addTimer("spawn_balloon", 0.0f, 20.0f);
 		timers.addTimer("spawn_blimp", 20.0f, 45.0f);
+		timers.addTimer("spawn_ufo", 30.0f, 60.0f);
 		//Gameobjects
 		gobjs::Player player(glm::vec3(0.0f, HEIGHT * SCALE * 0.5f, 0.0f));
 		std::vector<gobjs::Explosion> explosions;
-		std::vector<gobjs::Enemy> balloons, blimps;
+		std::vector<gobjs::Enemy> balloons, blimps, ufos;
 		std::vector<gobjs::Bullet> bullets, enemybullets;
 
 		unsigned int fps = 0;
@@ -58,6 +59,8 @@ namespace game {
 			gfx::displayBalloons(balloons);
 			//Display blimps
 			gfx::displayBlimps(blimps);
+			//Display ufos
+			gfx::displayUfos(ufos);
 			//Display bullets
 			gfx::displayBullets(bullets);
 			gfx::displayBullets(enemybullets);
@@ -75,6 +78,7 @@ namespace game {
 			gfx::displayMiniMapBackground();
 			gfx::displayEnemyMarkers(balloons, player.transform);
 			gfx::displayEnemyMarkers(blimps, player.transform);
+			gfx::displayEnemyMarkers(ufos, player.transform);
 			glDepthMask(GL_TRUE);
 			glEnable(GL_CULL_FACE);
 			
@@ -118,6 +122,7 @@ namespace game {
 				checkForBulletTerrainCollision(bullets, permutations);
 				checkForHit(bullets, balloons, 24.0f);
 				checkForHit(bullets, blimps, 32.0f);
+				checkForHit(bullets, ufos, 14.0f);
 				//Update enemy bullets
 				updateBullets(enemybullets, dt);
 				checkForBulletTerrainCollision(enemybullets, permutations);
@@ -126,13 +131,18 @@ namespace game {
 				if(timers.getTimer("spawn_balloon"))
 					spawnBalloons(player, balloons, lcg, permutations);	
 				if(timers.getTimer("spawn_blimp"))
-					spawnBlimps(player, blimps, lcg, permutations);	
+					spawnBlimps(player, blimps, lcg);
+				if(timers.getTimer("spawn_ufo"))
+					spawnUfos(player, ufos, lcg, permutations);
 				//Update balloons
 				for(auto &balloon : balloons)
 					balloon.updateBalloon(dt);
 				//Update blimps
 				for(auto &blimp : blimps)
 					blimp.updateBlimp(dt);
+				//Update ufos
+				for(auto &ufo : ufos)
+					ufo.updateUfo(dt, permutations);
 				//Update plane
 				player.update(dt);
 				bool justcrashed = player.crashed;
@@ -140,6 +150,7 @@ namespace game {
 				//Destroy any balloons that are too far away or are destroyed
 				destroyEnemies(player, balloons, explosions, 1.0f, 24.0f, score);
 				destroyEnemies(player, blimps, explosions, 2.5f, 36.0f, score);
+				destroyEnemies(player, ufos, explosions, 1.0f, 14.0f, score);
 				checkForCollision(player, blimps, explosions, 2.5f, glm::vec3(26.0f, 26.0f, 72.0f));
 				justcrashed = player.crashed ^ justcrashed;
 				//Update explosions

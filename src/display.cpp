@@ -327,6 +327,46 @@ namespace gfx {
 		}
 	}
 
+	void displayPlanes(float totalTime, const std::vector<gameobjects::Enemy> &planes)
+	{
+		if(planes.empty())
+			return;
+
+		State* state = State::get();
+
+		VAOS->bind("plane");
+		SHADERS->use("textured");
+		TEXTURES->bindTexture("enemy_plane", GL_TEXTURE0);
+		ShaderProgram& shader = SHADERS->getShader("textured");
+		shader.uniformMat4x4("persp", state->getPerspective());
+		shader.uniformMat4x4("view", state->getCamera().viewMatrix());
+		shader.uniformFloat("specularfactor", 0.5f);
+		shader.uniformVec3("lightdir", LIGHT);
+		shader.uniformVec3("camerapos", state->getCamera().position);
+		for(const auto &plane : planes) {
+			glm::mat4 transform = plane.transform.getTransformMat();
+			glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
+			shader.uniformMat4x4("transform", transform);
+			shader.uniformMat3x3("normalmat", normal);
+			VAOS->draw();
+		}
+
+		shader.uniformFloat("specularfactor", 0.0f);
+		VAOS->bind("propeller");
+		TEXTURES->bindTexture("propeller", GL_TEXTURE0);
+		for(const auto &plane : planes) {
+			glm::mat4 propellerTransform = glm::mat4(1.0f);
+			propellerTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 13.888f));
+			float rotation = totalTime * 16.0f;
+			propellerTransform = glm::rotate(propellerTransform, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+			propellerTransform = plane.transform.getTransformMat() * propellerTransform;
+			glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(propellerTransform)));
+			shader.uniformMat4x4("transform", propellerTransform);
+			shader.uniformMat3x3("normalmat", normal);
+			VAOS->draw();
+		}
+	}
+
 	void displayBullets(const std::vector<gameobjects::Bullet> &bullets)
 	{
 		if(bullets.empty())

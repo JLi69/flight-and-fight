@@ -159,7 +159,7 @@ namespace gameobjects {
 		shoottimer = 0.2f;
 	}
 
-	void Player::checkIfCrashed(float dt, infworld::worldseed &permutations)
+	void Player::checkIfCrashed(float dt, const infworld::worldseed &permutations)
 	{
 		if(crashed)
 			return;

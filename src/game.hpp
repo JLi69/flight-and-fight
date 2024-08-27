@@ -113,7 +113,7 @@ namespace gameobjects {
 		void rotateWithMouse(float dt);
 		void update(float dt);
 		void resetShootTimer();
-		void checkIfCrashed(float dt, infworld::worldseed &permutations);
+		void checkIfCrashed(float dt, const infworld::worldseed &permutations);
 	};
 
 	struct Explosion {
@@ -123,6 +123,16 @@ namespace gameobjects {
 		bool visible;
 		Explosion(glm::vec3 position);
 		Explosion(glm::vec3 position, float scale);
+		void update(float dt);
+	};
+
+	struct Bullet {
+		bool destroyed = false;
+		game::Transform transform;
+		float time;
+		float speed;
+		Bullet(const Player &player, const glm::vec3 &offset);
+		Bullet();
 		void update(float dt);
 	};
 
@@ -136,26 +146,28 @@ namespace gameobjects {
 		void updateBalloon(float dt);
 		void updateBlimp(float dt);
 		void updateUfo(float dt, const infworld::worldseed &permutations);
+		void updatePlane(
+			float dt,
+			const Player &player,
+			std::vector<Bullet> &bullets,
+			const infworld::worldseed &permutations
+		);
+		void checkIfPlaneCrashed(const infworld::worldseed &permutations);
 		float getVal(const std::string &key) const;
 		void setVal(const std::string &key, float v);
 	};
 
-	struct Bullet {
-		bool destroyed = false;
-		game::Transform transform;
-		float time;
-		float speed;
-		Bullet(const Player &player, const glm::vec3 &offset);
-		Bullet();
-		void update(float dt);
-	};
-
-	Enemy spawnBalloon(const glm::vec3 &position, infworld::worldseed &permutations);
+	Enemy spawnBalloon(const glm::vec3 &position, const infworld::worldseed &permutations);
 	Enemy spawnBlimp(const glm::vec3 &position, float rotation);
 	Enemy spawnUfo(
 		const glm::vec3 &position,
 		float rotation,
-		infworld::worldseed &permutations
+		const infworld::worldseed &permutations
+	);
+	Enemy spawnPlane(
+		const glm::vec3 &position,
+		float rotation,
+		const infworld::worldseed &permutations
 	);
 }
 
@@ -165,7 +177,7 @@ namespace game {
 		gameobjects::Player &player,
 		std::vector<gameobjects::Enemy> &balloons,
 		std::minstd_rand0 &lcg,
-		infworld::worldseed &permutations
+		const infworld::worldseed &permutations
 	);
 	//Spawns blimps around the player
 	void spawnBlimps(
@@ -178,7 +190,14 @@ namespace game {
 		gameobjects::Player &player,
 		std::vector<gameobjects::Enemy> &ufos,
 		std::minstd_rand0 &lcg,
-		infworld::worldseed &permutations
+		const infworld::worldseed &permutations
+	);
+	//Spawn planes around the player
+	void spawnPlanes(
+		gameobjects::Player &player,
+		std::vector<gameobjects::Enemy> &planes,
+		std::minstd_rand0 &lcg,
+		const infworld::worldseed &permutations
 	);
 	void destroyEnemies(
 		gameobjects::Player &player,
@@ -234,6 +253,7 @@ namespace gfx {
 	void displayBalloons(const std::vector<gameobjects::Enemy> &balloons);
 	void displayBlimps(const std::vector<gameobjects::Enemy> &blimps);
 	void displayUfos(const std::vector<gameobjects::Enemy> &ufos);
+	void displayPlanes(float totalTime, const std::vector<gameobjects::Enemy> &planes);
 	void displayBullets(const std::vector<gameobjects::Bullet> &bullets);
 	void displayMiniMapBackground();
 	void displayEnemyMarkers(

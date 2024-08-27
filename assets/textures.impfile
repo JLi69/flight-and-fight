@@ -44,6 +44,13 @@
 	"flip" = "true";
 }
 
+# texture for enemy plane
+"enemy_plane" {
+	"target" = "texture2d";
+	"path" = "assets/textures/enemyplanetexture.png";
+	"flip" = "true";
+}
+
 # texture for propeller
 "propeller" {
 	"target" = "texture2d";

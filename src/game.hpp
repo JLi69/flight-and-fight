@@ -197,7 +197,8 @@ namespace game {
 		gameobjects::Player &player,
 		std::vector<gameobjects::Enemy> &planes,
 		std::minstd_rand0 &lcg,
-		const infworld::worldseed &permutations
+		const infworld::worldseed &permutations,
+		float totalTime
 	);
 	void destroyEnemies(
 		gameobjects::Player &player,

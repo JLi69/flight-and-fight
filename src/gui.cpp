@@ -45,7 +45,7 @@ namespace gui {
 			ctx->style.text.color = nk_rgb(255, 255, 0);
 			snprintf(str, 31, "SPEED: %.2f", speed);
 			nk_label(ctx, str, NK_TEXT_ALIGN_RIGHT);
-			snprintf(str, 31, "SCORE: %05u", score);
+			snprintf(str, 31, "SCORE: %u", score);
 			nk_label(ctx, str, NK_TEXT_ALIGN_RIGHT);	
 			FONTS->popFont();
 		}
@@ -305,7 +305,7 @@ namespace gui {
 			char str[32];
 			int index = 1;
 			for(auto &score : highscores) {
-				snprintf(str, 32, "%2d: %05u", index, score);
+				snprintf(str, 32, "%2d: %u", index, score);
 				nk_label(ctx, str, NK_TEXT_CENTERED);
 				index++;
 			}

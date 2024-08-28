@@ -37,7 +37,8 @@ namespace gameobjects {
 			dirxz = glm::normalize(glm::vec2(dir.x, dir.z));
 		float dotprod = glm::dot(glm::normalize(diff), dir);
 
-		if(dist < CHUNK_SZ * 2.0f && dotprod > 0.98f && values.at("rotationtimer") < 0.0f) {
+		if(dist < CHUNK_SZ * 2.0f && dotprod > 0.98f && values.at("rotationtimer") < 0.0f
+			|| dist < CHUNK_SZ / 2.0f) {
 			values.at("rotationdirection") = -3.0f;
 			values.at("rotationtimer") = 6.0f;
 		}
@@ -66,7 +67,7 @@ namespace gameobjects {
 		transform.rotation.y = rotationy;
 
 		if((!(dotprod < 0.0f && rotationdirection < 0.0f && dist > CHUNK_SZ) &&
-			!(dotprod > 0.995f && rotationdirection > 0.0f))) {
+			!(dotprod > 0.99f && rotationdirection > 0.0f))) {
 			if(dotprod1 <= dotprod2) {
 				transform.rotation.y -= ROTATION_Y * dt * rotationdirection;
 				transform.rotation.z += ROTATION_Z * dt * rotationdirection;
@@ -80,7 +81,7 @@ namespace gameobjects {
 			if(transform.rotation.z > 0.0f)
 				transform.rotation.z -= ROTATION_Z * dt;
 			else if(transform.rotation.z < 0.0f)
-				transform.rotation.z += ROTATION_Z * dt;
+				transform.rotation.z += ROTATION_Z * dt;	
 		}
 		transform.rotation.z = std::max(transform.rotation.z, -MAX_ROTATION_Z);
 		transform.rotation.z = std::min(transform.rotation.z, MAX_ROTATION_Z);
@@ -96,11 +97,20 @@ namespace gameobjects {
 		
 		if(transform.position.y - y <= 80.0f)
 			transform.rotation.x -= ROTATION_X * 4.0f * dt;
-		else if(values.at("rotationdirection") < 0.0f)
+		else if(values.at("rotationdirection") < 0.0f && dist > CHUNK_SZ) {
 			transform.rotation.x -= transform.rotation.x * dt;
-		else if(dotprod1 <= dotprod2 && values.at("rotationdirection") > 0.0f)
+			if(std::abs(transform.rotation.x) < 0.02f)
+				transform.rotation.x = 0.0f;
+		}
+		else if(dist <= CHUNK_SZ) {
+			if(dotprod1 <= dotprod2)
+				transform.rotation.x += ROTATION_X * dt * 2.0f;
+			else if(dotprod1 > dotprod2)
+				transform.rotation.x -= ROTATION_X * dt * 2.0f;
+		}
+		else if(dotprod1 <= dotprod2 && values.at("rotationdirection") > 0.0f && dotprod < 0.98f)
 			transform.rotation.x -= ROTATION_X * dt;
-		else if(dotprod1 > dotprod2 && values.at("rotationdirection") > 0.0f)
+		else if(dotprod1 > dotprod2 && values.at("rotationdirection") > 0.0f && dotprod < 0.98f)
 			transform.rotation.x += ROTATION_X * dt;
 
 		transform.rotation.x = std::max(transform.rotation.x, -glm::radians(70.0f));
@@ -174,7 +184,8 @@ namespace game {
 		gameobjects::Player &player,
 		std::vector<gameobjects::Enemy> &planes,
 		std::minstd_rand0 &lcg,
-		const infworld::worldseed &permutations
+		const infworld::worldseed &permutations,
+		float totalTime
 	) {
 		if(planes.size() >= 6)
 			return;
@@ -182,12 +193,29 @@ namespace game {
 		int randval = lcg() % 3;
 		if(randval == 0 && planes.size() > 2)
 			return;
-	
-		glm::vec3 center = player.transform.position;
-		float dist = float(lcg() % 256) / 256.0f * CHUNK_SZ * 12.0f + CHUNK_SZ * 6.0f;
-		float angle = float(lcg() % 256) / 256.0f * glm::radians(360.0f);
-		glm::vec3 position = center + dist * glm::vec3(cosf(angle), 0.0f, sinf(angle));
-		float rotation = float(lcg() % 256) / 256.0f * glm::radians(360.0f);
-		planes.push_back(gobjs::spawnPlane(position, rotation, permutations));
+
+		unsigned int mincount = 1, maxcount = 1;
+		if(totalTime < 180.0f) {
+			mincount = 1;
+			maxcount = 1;
+		}
+		else if(totalTime < 300.0f) {
+			mincount = 1;
+			maxcount = 2;
+		}
+		else {
+			mincount = 2;
+			maxcount = 4;
+		}
+
+		unsigned int count = lcg() % (maxcount - mincount + 1) + mincount;
+		for(int i = 0; i < count; i++) {
+			glm::vec3 center = player.transform.position;
+			float dist = float(lcg() % 256) / 256.0f * CHUNK_SZ * 12.0f + CHUNK_SZ * 6.0f;
+			float angle = float(lcg() % 256) / 256.0f * glm::radians(360.0f);
+			glm::vec3 position = center + dist * glm::vec3(cosf(angle), 0.0f, sinf(angle));
+			float rotation = float(lcg() % 256) / 256.0f * glm::radians(360.0f);
+			planes.push_back(gobjs::spawnPlane(position, rotation, permutations));
+		}
 	}
 }

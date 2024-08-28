@@ -140,7 +140,7 @@ namespace game {
 				if(timers.getTimer("spawn_ufo"))
 					spawnUfos(player, ufos, lcg, permutations);
 				if(timers.getTimer("spawn_plane"))
-					spawnPlanes(player, planes, lcg, permutations);
+					spawnPlanes(player, planes, lcg, permutations, totalTime);
 				//Update balloons
 				for(auto &balloon : balloons)
 					balloon.updateBalloon(dt);

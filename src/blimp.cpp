@@ -11,7 +11,7 @@ namespace gameobjects {
 	Enemy spawnBlimp(const glm::vec3 &position, float rotation)
 	{
 		glm::vec3 pos(position.x, HEIGHT * SCALE * 1.1f, position.z);
-		Enemy blimp = Enemy(pos, 24, 30);
+		Enemy blimp = Enemy(pos, 24, 60);
 		blimp.transform.rotation.y = rotation;
 		return blimp;
 	}

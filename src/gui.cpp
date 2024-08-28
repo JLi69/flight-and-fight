@@ -53,6 +53,24 @@ namespace gui {
 		nk_style_pop_style_item(ctx);
 	}
 
+	void displayDamage(float damagetimer)
+	{
+		if(damagetimer <= 0.0f)
+			return;
+
+		State* state = State::get();
+		int w, h;
+		glfwGetWindowSize(state->getWindow(), &w, &h);
+	
+		nk_context* ctx = state->getNkContext();
+		nk_style* s = &ctx->style;
+		nk_color background = nk_rgba(255, 0, 0, int(96.0f * damagetimer));
+		nk_style_push_style_item(ctx, &s->window.fixed_background, nk_style_item_color(background));
+		nk_begin(ctx, "damage", nk_rect(0, 0, w, h), NK_WINDOW_NO_SCROLLBAR);
+		nk_end(ctx);
+		nk_style_pop_style_item(ctx);
+	}
+
 	std::string displayPauseMenu()
 	{
 		std::string action = "";

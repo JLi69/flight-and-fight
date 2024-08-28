@@ -7,6 +7,7 @@ constexpr float ROTATION_X = 0.3f;
 constexpr float ROTATION_Y = 0.8f;
 constexpr float ROTATION_Z = 0.5f;
 constexpr float MAX_ROTATION_Z = glm::radians(15.0f);
+constexpr float SHOOT_COOLDOWN = 0.5f;
 
 namespace gameobjects {
 	void Enemy::updatePlane(
@@ -28,6 +29,7 @@ namespace gameobjects {
 			velocity *= 1.5f;
 		transform.position += velocity * dt;
 		values.at("rotationtimer") -= dt;
+		values.at("shoottimer") -= dt;
 		//Difference between player position and object position 
 		glm::vec3 diff = player.transform.position - transform.position;
 		float dist = glm::length(diff);
@@ -36,6 +38,17 @@ namespace gameobjects {
 			diffxz = glm::normalize(glm::vec2(diff.x, diff.z)),
 			dirxz = glm::normalize(glm::vec2(dir.x, dir.z));
 		float dotprod = glm::dot(glm::normalize(diff), dir);
+
+		//Shoot
+		if(values.at("shoottimer") < 0.0f && 
+			dotprod > 0.8f && 
+			values.at("rotationdirection") > 0.0f &&
+			dist < CHUNK_SZ * 12.0f &&
+			!player.crashed) {
+			values.at("shoottimer") = SHOOT_COOLDOWN;
+			bullets.push_back(gobjs::Bullet(transform, speed, glm::vec3(-8.5f, -0.75f, 8.5f)));
+			bullets.push_back(gobjs::Bullet(transform, speed, glm::vec3(8.5f, -0.75f, 8.5f)));
+		}
 
 		if(dist < CHUNK_SZ * 2.0f && dotprod > 0.98f && values.at("rotationtimer") < 0.0f
 			|| dist < CHUNK_SZ / 2.0f) {
@@ -67,7 +80,7 @@ namespace gameobjects {
 		transform.rotation.y = rotationy;
 
 		if((!(dotprod < 0.0f && rotationdirection < 0.0f && dist > CHUNK_SZ) &&
-			!(dotprod > 0.99f && rotationdirection > 0.0f))) {
+			!(dotprod > 0.995f && rotationdirection > 0.0f))) {
 			if(dotprod1 <= dotprod2) {
 				transform.rotation.y -= ROTATION_Y * dt * rotationdirection;
 				transform.rotation.z += ROTATION_Z * dt * rotationdirection;
@@ -108,9 +121,9 @@ namespace gameobjects {
 			else if(dotprod1 > dotprod2)
 				transform.rotation.x -= ROTATION_X * dt * 2.0f;
 		}
-		else if(dotprod1 <= dotprod2 && values.at("rotationdirection") > 0.0f && dotprod < 0.98f)
+		else if(dotprod1 <= dotprod2 && values.at("rotationdirection") > 0.0f && dotprod < 0.995f)
 			transform.rotation.x -= ROTATION_X * dt;
-		else if(dotprod1 > dotprod2 && values.at("rotationdirection") > 0.0f && dotprod < 0.98f)
+		else if(dotprod1 > dotprod2 && values.at("rotationdirection") > 0.0f && dotprod < 0.995f)
 			transform.rotation.x += ROTATION_X * dt;
 
 		transform.rotation.x = std::max(transform.rotation.x, -glm::radians(70.0f));
@@ -174,6 +187,7 @@ namespace gameobjects {
 		Enemy plane = Enemy(pos, 12, 50);
 		plane.setVal("rotationdirection", 1.0f);
 		plane.setVal("rotationtimer", 0.0f);
+		plane.setVal("shoottimer", 0.0f);
 		plane.transform.rotation.y = rotation;
 		return plane;
 	}

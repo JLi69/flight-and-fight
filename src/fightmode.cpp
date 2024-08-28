@@ -85,6 +85,8 @@ namespace game {
 			gfx::displayEnemyMarkers(planes, player.transform);
 			glDepthMask(GL_TRUE);
 			glEnable(GL_CULL_FACE);
+			if(player.health > 0)
+				gui::displayDamage(player.damageTimerProgress());
 			
 			if(player.crashed && !paused && player.deathtimer > 2.5f)
 				gui::displayDeathScreen(score);
@@ -122,6 +124,7 @@ namespace game {
 					bullets.push_back(gobjs::Bullet(player, glm::vec3(8.5f, -0.75f, 8.5f)));
 				}
 				//Update bullets
+				checkBulletDist(bullets, player);
 				updateBullets(bullets, dt);
 				checkForBulletTerrainCollision(bullets, permutations);
 				checkForHit(bullets, balloons, 24.0f);
@@ -129,6 +132,7 @@ namespace game {
 				checkForHit(bullets, ufos, 14.0f);
 				checkForHit(bullets, planes, 8.0f);
 				//Update enemy bullets
+				checkBulletDist(enemybullets, player);
 				updateBullets(enemybullets, dt);
 				checkForBulletTerrainCollision(enemybullets, permutations);
 				checkForHit(enemybullets, player, 14.0f);
@@ -152,7 +156,7 @@ namespace game {
 					ufo.updateUfo(dt, permutations);
 				//Update enemy planes
 				for(auto &plane : planes)
-					plane.updatePlane(dt, player, bullets, permutations);
+					plane.updatePlane(dt, player, enemybullets, permutations);
 				//Update plane
 				player.update(dt);
 				bool justcrashed = player.crashed;

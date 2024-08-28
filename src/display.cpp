@@ -375,22 +375,7 @@ namespace gfx {
 		State* state = State::get();
 
 		VAOS->bind("bullet");
-		SHADERS->use("textured");
 		TEXTURES->bindTexture("bullet", GL_TEXTURE0);
-		ShaderProgram& texturedshader = SHADERS->getShader("textured");
-		texturedshader.uniformMat4x4("persp", state->getPerspective());
-		texturedshader.uniformMat4x4("view", state->getCamera().viewMatrix());
-		texturedshader.uniformFloat("specularfactor", 1.0f);
-		texturedshader.uniformVec3("lightdir", LIGHT);
-		texturedshader.uniformVec3("camerapos", state->getCamera().position);
-		for(const auto &bullet : bullets) {
-			glm::mat4 transform = bullet.transform.getTransformMat();
-			glm::mat3 normal = glm::mat3(glm::transpose(glm::inverse(transform)));
-			texturedshader.uniformMat4x4("transform", transform);
-			texturedshader.uniformMat3x3("normalmat", normal);
-			VAOS->draw();
-		}
-
 		SHADERS->use("trail");
 		ShaderProgram& trailshader = SHADERS->getShader("trail");
 		trailshader.uniformMat4x4("persp", state->getPerspective());

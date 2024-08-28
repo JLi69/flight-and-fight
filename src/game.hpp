@@ -103,13 +103,19 @@ namespace gameobjects {
 		float deathtimer = 0.0f; //Keeps track of how long the player has been dead
 		float shoottimer = 0.0f;
 		float speed = 0.0f;
+		//This is used to keep track of the time left for displaying a red screen
+		//to indicate to the player that they took damage
 		float damagetimer = 0.0f;
+		//This keeps track of how long the player has damage immunity
+		float damagecooldown = 0.0f;
 		unsigned int health;
 		Player(glm::vec3 position);
 
 		void damage(unsigned int amount);
 		//Returns the percentage of health left, rounded down
 		unsigned int hpPercent();
+		//Returns the damagetimer amount left
+		float damageTimerProgress();
 		void rotateWithMouse(float dt);
 		void update(float dt);
 		void resetShootTimer();
@@ -132,6 +138,7 @@ namespace gameobjects {
 		float time;
 		float speed;
 		Bullet(const Player &player, const glm::vec3 &offset);
+		Bullet(const game::Transform &t, float addspeed, const glm::vec3 &offset);
 		Bullet();
 		void update(float dt);
 	};
@@ -226,6 +233,13 @@ namespace game {
 		const glm::vec3 &center,
 		float dt
 	);
+	//Check if the bullet is too far away from the player, if it is, then
+	//mark it to be deleted
+	//This should preferably be called before `updateBullets`
+	void checkBulletDist(
+		std::vector<gameobjects::Bullet> &bullets,
+		const gameobjects::Player &player
+	);
 	void updateBullets(std::vector<gameobjects::Bullet> &bullets, float dt);
 	void checkForHit(
 		std::vector<gameobjects::Bullet> &bullets,
@@ -267,6 +281,9 @@ namespace gui {
 	std::vector<std::string> readTextFile(const char *path);
 	void displayFPSCounter(unsigned int fps);
 	void displayHUD(unsigned int score, float speed, unsigned int health);
+	//If the player got hit, then display a semi-transparent red background
+	//on top of the screen to show that
+	void displayDamage(float damagetimer);
 	//Returns action taken by the user on the pause menu
 	std::string displayPauseMenu();
 	//Returns the action taken by the user on the death screen

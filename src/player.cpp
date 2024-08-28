@@ -1,8 +1,9 @@
 #include "game.hpp"
 #include "app.hpp"
 
-constexpr unsigned int DEFAULT_HEALTH = 64;
-constexpr float DAMAGE_COOLDOWN = 3.0f;
+constexpr unsigned int DEFAULT_HEALTH = 50;
+constexpr float DAMAGE_COOLDOWN = 0.2f;
+constexpr float DAMAGE_TIMER = 1.0f;
 constexpr float ROTATION_Z_SPEED = 0.5f;
 constexpr float MAX_ROTATION_Z = glm::radians(15.0f);
 constexpr float ROTATION_Y_SPEED = 0.8f;
@@ -23,19 +24,25 @@ namespace gameobjects {
 
 	void Player::damage(unsigned int amount) 
 	{
-		if(damagetimer > 0.0f)
+		if(damagecooldown > 0.0f)
 			return;
 
 		if(health < amount)
 			health = 0;
 		else
 			health -= amount;
-		damagetimer = DEFAULT_HEALTH;
+		damagecooldown = DAMAGE_COOLDOWN;
+		damagetimer = DAMAGE_TIMER;
 	}
 
 	unsigned int Player::hpPercent() 
 	{
 		return (unsigned int)(float(health) / float(DEFAULT_HEALTH) * 100.0f);
+	}
+
+	float Player::damageTimerProgress()
+	{
+		return damagetimer / DAMAGE_TIMER;
 	}
 
 	void Player::rotateWithMouse(float dt)
@@ -79,6 +86,7 @@ namespace gameobjects {
 		//Shooting cooldown
 		shoottimer -= dt;
 		//Damage cooldown
+		damagecooldown -= dt;
 		damagetimer -= dt;
 
 		State* state = State::get();	

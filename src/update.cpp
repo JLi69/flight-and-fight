@@ -49,6 +49,17 @@ namespace gameobjects {
 		speed = BULLET_SPEED + player.speed - SPEED;
 	}
 
+	Bullet::Bullet(const game::Transform &t, float addspeed, const glm::vec3 &offset)
+	{
+		time = 0.0f;
+		transform.position = 
+			t.rotate(offset) +
+			t.position;
+		transform.rotation = t.rotation;
+		transform.scale = glm::vec3(1.0f);
+		speed = BULLET_SPEED + addspeed - SPEED;
+	}
+
 	Bullet::Bullet()
 	{
 		time = 0.0f;
@@ -127,9 +138,21 @@ namespace game {
 			bullets.begin(),
 			bullets.end(),
 			[](gobjs::Bullet &bullet) {
-				return bullet.time > 2.0f || bullet.destroyed || bullet.transform.position.y < 0.0f;
+				return bullet.destroyed || bullet.transform.position.y < 0.0f;
 			}
 		), bullets.end());
+	}
+
+	void checkBulletDist(
+		std::vector<gobjs::Bullet> &bullets,
+		const gobjs::Player &player
+	) {
+		for(auto &bullet : bullets) {
+			glm::vec3 diff = bullet.transform.position - player.transform.position;
+			float dist = glm::length(diff);
+			if(dist > BULLET_SPEED * 3.0f)
+				bullet.destroyed = true;
+		}
 	}
 
 	void checkForHit(

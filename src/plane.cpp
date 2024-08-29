@@ -209,11 +209,11 @@ namespace game {
 			return;
 
 		unsigned int mincount = 1, maxcount = 1;
-		if(totalTime < 180.0f) {
+		if(totalTime < 90.0f) {
 			mincount = 1;
 			maxcount = 1;
 		}
-		else if(totalTime < 300.0f) {
+		else if(totalTime < 180.0f) {
 			mincount = 1;
 			maxcount = 2;
 		}

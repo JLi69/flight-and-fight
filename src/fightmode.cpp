@@ -130,7 +130,7 @@ namespace game {
 				checkForHit(bullets, balloons, 24.0f);
 				checkForHit(bullets, blimps, 32.0f);
 				checkForHit(bullets, ufos, 14.0f);
-				checkForHit(bullets, planes, 8.0f);
+				checkForHit(bullets, planes, 12.0f);
 				//Update enemy bullets
 				checkBulletDist(enemybullets, player);
 				updateBullets(enemybullets, dt);
@@ -161,7 +161,9 @@ namespace game {
 				player.update(dt);
 				bool justcrashed = player.crashed;
 				player.checkIfCrashed(dt, permutations);
-				//Destroy any balloons that are too far away or are destroyed
+				//Check if any planes have collided with each other
+				checkForCollision(planes, 16.0f);
+				//Destroy any enemies that are too far away or have run out of health
 				destroyEnemies(player, balloons, explosions, 1.0f, 24.0f, score);
 				destroyEnemies(player, blimps, explosions, 2.5f, 36.0f, score);
 				destroyEnemies(player, ufos, explosions, 1.0f, 14.0f, score);

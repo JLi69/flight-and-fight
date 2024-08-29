@@ -222,6 +222,8 @@ namespace game {
 		float explosionscale,
 		const glm::vec3 &extents
 	);
+	//Check for collision among enemies
+	void checkForCollision(std::vector<gameobjects::Enemy> &enemies, float hitdist);
 	//Returns the position the camera should be following
 	glm::vec3 getCameraFollowPos(const Transform &playertransform);
 	//Have the camera follow the player	

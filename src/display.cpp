@@ -480,4 +480,35 @@ namespace gfx {
 			VAOS->draw();
 		}
 	}
+
+	void displayCrosshair(const game::Transform &playertransform)
+	{
+		State* state = State::get();
+		int w, h;
+		glfwGetWindowSize(state->getWindow(), &w, &h);
+		glm::mat4 screenMat = 
+			glm::scale(glm::mat4(1.0f), glm::vec3(2.0f / float(w), 2.0f / float(h), 0.0f));
+
+		VAOS->bind("quad");
+		SHADERS->use("textured2d");
+		TEXTURES->bindTexture("crosshair", GL_TEXTURE0);
+		ShaderProgram& texture2dshader = SHADERS->getShader("textured2d");
+		texture2dshader.uniformMat4x4("screen", screenMat);
+
+		//Calculate the screen position of the crosshair based on where the
+		//player is facing
+		glm::vec3 worldpos = 
+			playertransform.position + 
+			playertransform.direction();
+		glm::mat4 view = state->getCamera().viewMatrix();
+		glm::vec4 screenpos = state->getPerspective() * view * glm::vec4(worldpos, 1.0f);
+
+		//Display
+		glm::mat4 transform = glm::mat4(1.0f);
+		transform = glm::translate(transform, glm::vec3(screenpos.x, screenpos.y, 0.0f));
+		transform = glm::scale(transform, glm::vec3(8.0f, 8.0f, 0.0f));
+		transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		texture2dshader.uniformMat4x4("transform", transform);
+		VAOS->draw();
+	}
 }

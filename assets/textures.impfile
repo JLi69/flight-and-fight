@@ -107,6 +107,13 @@
 	"flip" = "false";
 }
 
+# crosshair
+"crosshair" {
+	"target" = "texture2d";
+	"path" = "assets/textures/crosshair.png";
+	"flip" = "false";
+}
+
 # cubemap for skybox
 "skybox" {
 	"target" = "cubemap";

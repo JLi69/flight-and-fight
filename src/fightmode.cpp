@@ -22,6 +22,7 @@ namespace game {
 		lcg.seed(randSeed);
 		bool paused = false;
 		bool stop = false;
+		bool displaycrosshair = true;
 		unsigned int score = 0;
 		//Timers
 		TimerManager timers;
@@ -83,6 +84,8 @@ namespace game {
 			gfx::displayEnemyMarkers(blimps, player.transform);
 			gfx::displayEnemyMarkers(ufos, player.transform);
 			gfx::displayEnemyMarkers(planes, player.transform);
+			if(displaycrosshair)
+				gfx::displayCrosshair(player.transform);
 			glDepthMask(GL_TRUE);
 			glEnable(GL_CULL_FACE);
 			if(player.health > 0)
@@ -113,6 +116,9 @@ namespace game {
 				//Update timers
 				timers.update(dt);
 
+				//Toggle crosshair
+				if(state->getKeyState(GLFW_KEY_T) == JUST_PRESSED)
+					displaycrosshair = !displaycrosshair;
 				//Shoot bullets
 				KeyState leftbutton = state->getButtonState(GLFW_MOUSE_BUTTON_LEFT);
 				KeyState spacebar = state->getKeyState(GLFW_KEY_SPACE);

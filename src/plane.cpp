@@ -184,7 +184,7 @@ namespace gameobjects {
 		float y = std::max(h, 0.0f) + HEIGHT;
 		glm::vec3 pos(position.x, y, position.z);
 
-		Enemy plane = Enemy(pos, 12, 50);
+		Enemy plane = Enemy(pos, 14, 50);
 		plane.setVal("rotationdirection", 1.0f);
 		plane.setVal("rotationtimer", 0.0f);
 		plane.setVal("shoottimer", 0.0f);

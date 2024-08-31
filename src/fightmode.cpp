@@ -13,7 +13,7 @@ namespace game {
 		int randSeed = rd();
 		infworld::worldseed permutations = infworld::makePermutations(randSeed, 9);
 		infworld::ChunkTable chunktables[MAX_LOD];
-		game::generateChunks(permutations, chunktables, RANGE);
+		generateChunks(permutations, chunktables, RANGE);
 		infworld::DecorationTable decorations = infworld::DecorationTable(14, CHUNK_SZ);
 		decorations.genDecorations(permutations);
 		gfx::generateDecorationOffsets(decorations);
@@ -40,7 +40,7 @@ namespace game {
 		float dt = 0.0f;
 		float totalTime = 0.0f;
 		unsigned int chunksPerSecond = 0; //Number of chunks drawn per second	
-		game::updateCamera(player);
+		updateCamera(player);
 		while(!glfwWindowShouldClose(state->getWindow()) && !stop) {
 			float start = glfwGetTime();
 
@@ -179,10 +179,10 @@ namespace game {
 				//Update explosions
 				if(justcrashed)
 					explosions.push_back(gobjs::Explosion(player.transform.position));
-				game::updateExplosions(explosions, player.transform.position, dt);
+				updateExplosions(explosions, player.transform.position, dt);
 				//Update camera
-				game::updateCamera(player, dt);
-				game::generateNewChunks(permutations, chunktables, decorations);
+				updateCamera(player, dt);
+				generateNewChunks(permutations, chunktables, decorations);
 
 				totalTime += dt;
 				timers.reset();

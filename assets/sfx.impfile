@@ -5,3 +5,8 @@
 	"path" = "assets/sfx/click.wav";
 	"gain" = "4.0";
 }
+
+"explosion" {
+	"path" = "assets/sfx/explosion.wav";
+	"gain" = "96.0";
+}

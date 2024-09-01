@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "app.hpp"
+#include "audio.hpp"
 #include <algorithm>
 
 namespace gobjs = gameobjects;
@@ -44,6 +45,7 @@ namespace game {
 			enemies.end(),
 			[&player, &explosions, &crashdist, &score, &explosionscale](gobjs::Enemy &enemy) {
 				if(enemy.hitpoints <= 0) {
+					SNDSRC->playid("explosion", enemy.transform.position);
 					explosions.push_back(gobjs::Explosion(enemy.transform.position, explosionscale));
 					score += enemy.scorevalue;
 					return true;
@@ -52,6 +54,11 @@ namespace game {
 				glm::vec3 diff = enemy.transform.position - player.transform.position;
 
 				if(glm::length(diff) < crashdist && !player.crashed) {
+					SNDSRC->playid(
+						"explosion",
+						enemy.transform.position,
+						explosionscale
+					);
 					player.crashed = true;
 					explosions.push_back(gobjs::Explosion(enemy.transform.position, explosionscale));
 					return true;

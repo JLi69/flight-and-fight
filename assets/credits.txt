@@ -72,3 +72,9 @@ Sound Effects Used:
 "click.wav" by Kenney (www.kenney.nl) from "51 UI Sound Effects"
 License: CC0
 (https://opengameart.org/content/51-ui-sound-effects-buttons-switches-and-clicks)
+
+"explosion.wav" by Marcelo Fernandez (http://www.marcelofernandezmusic.com)
+Taken from "Single and Multi Explosion"  
+Modifications made: Cut out multi-explosion and sped up audio
+License: CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
+(https://opengameart.org/content/single-and-multi-explosion)

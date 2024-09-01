@@ -47,6 +47,11 @@ namespace game {
 
 			//Clear sound effect sources
 			SNDSRC->clearSources();
+			//Update listener
+			audio::updateListener(
+				player.transform.position, 
+				player.transform.direction()
+			);
 
 			nk_glfw3_new_frame(state->getNkGlfw());
 			//Update perspective matrix
@@ -97,6 +102,8 @@ namespace game {
 			
 			if(player.crashed && !paused && player.deathtimer > 2.5f)
 				gui::displayDeathScreen(score);
+			
+			bool prevpaused = paused;
 			if(paused) {
 				glfwSetInputMode(state->getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 				std::string action = gui::displayPauseMenu();
@@ -116,6 +123,13 @@ namespace game {
 			//Pause/unpause the game
 			if(state->getKeyState(GLFW_KEY_ESCAPE) == JUST_PRESSED)
 				paused = !paused;
+
+			//Just unpaused/paused
+			if(prevpaused && !paused)
+				SNDSRC->unpauseAll();
+			else if(!prevpaused && paused)
+				SNDSRC->pauseAll();
+
 			if(!paused) {
 				//Update timers
 				timers.update(dt);
@@ -181,8 +195,10 @@ namespace game {
 				checkForCollision(player, blimps, explosions, 2.5f, glm::vec3(26.0f, 26.0f, 72.0f));
 				justcrashed = player.crashed ^ justcrashed;
 				//Update explosions
-				if(justcrashed)
+				if(justcrashed) {
 					explosions.push_back(gobjs::Explosion(player.transform.position));
+					SNDSRC->playid("explosion", player.transform.position);	
+				}
 				updateExplosions(explosions, player.transform.position, dt);
 				//Update camera
 				updateCamera(player, dt);
@@ -205,6 +221,7 @@ namespace game {
 		}
 
 		//Clean up	
+		SNDSRC->stopAll();
 		for(int i = 0; i < MAX_LOD; i++)
 			chunktables[i].clearBuffers();
 

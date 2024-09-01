@@ -161,6 +161,7 @@ namespace audio {
 	{
 		buffer = bufferToPlay;
 		alGenSources(1, &source);
+		alSourcef(source, AL_ROLLOFF_FACTOR, 0.0f);
 		alSourcef(source, AL_PITCH, 1.0f);
 		alSourcef(source, AL_GAIN, 1.0f);
 		alSource3f(source, AL_POSITION, 0.0f, 0.0f, 0.0f);
@@ -177,6 +178,7 @@ namespace audio {
 	{
 		buffer = bufferToPlay;
 		alGenSources(1, &source);
+		alSourcef(source, AL_ROLLOFF_FACTOR, 0.0f);
 		alSourcef(source, AL_PITCH, pitch);
 		alSourcef(source, AL_GAIN, gain);
 		alSource3f(source, AL_POSITION, 0.0f, 0.0f, 0.0f);
@@ -187,6 +189,23 @@ namespace audio {
 		ALenum err = alGetError();
 		if(err != AL_NO_ERROR)
 			fprintf(stderr, "OpenAL Error: %s\n", alGetString(err));
+	}
+
+	SoundSource::SoundSource(
+		ALuint bufferToPlay,
+		float gain,
+		float pitch,
+		const glm::vec3 &position
+	) {
+		buffer = bufferToPlay;
+		alGenSources(1, &source);
+		alSourcef(source, AL_ROLLOFF_FACTOR, 1.0f);
+		alSourcef(source, AL_PITCH, pitch);
+		alSourcef(source, AL_GAIN, gain);
+		alSource3f(source, AL_POSITION, position.x, position.y, position.z);
+		alSource3f(source, AL_VELOCITY, 0.0f, 0.0f, 0.0f);
+		alSourcei(source, AL_LOOPING, false);
+		alSourcei(source, AL_BUFFER, buffer);
 	}
 
 	void SoundSource::play()
@@ -206,6 +225,16 @@ namespace audio {
 		return source;
 	}
 
+	void SoundSource::pause()
+	{
+		alSourcePause(source);
+	}
+
+	void SoundSource::stop()
+	{
+		alSourceStop(source);
+	}
+
 	SoundSourceManager* SoundSourceManager::get()
 	{
 		static SoundSourceManager* sourcemanager = new SoundSourceManager;
@@ -219,9 +248,31 @@ namespace audio {
 		sources.push_back(src);
 	}
 
+	void SoundSourceManager::play(const Sfx &sfx, const glm::vec3 &position)
+	{
+		SoundSource src = SoundSource(sfx.buffer, sfx.gain, sfx.pitch, position);
+		src.play();
+		sources.push_back(src);
+	}
+
 	void SoundSourceManager::playid(const std::string &id)
 	{
 		play(SFX->getSfx(id));
+	}
+
+	void SoundSourceManager::playid(const std::string &id, const glm::vec3 &position)
+	{
+		play(SFX->getSfx(id), position);
+	}
+
+	void SoundSourceManager::playid(
+		const std::string &id,
+		const glm::vec3 &position,
+		float gainfactor
+	) {
+		Sfx sfx = SFX->getSfx(id);
+		sfx.gain *= gainfactor;
+		play(sfx, position);
 	}
 
 	void SoundSourceManager::clearSources()
@@ -231,17 +282,60 @@ namespace audio {
 
 		std::vector<ALuint> sourcesToDelete;
 		for(auto &src : sources)
-			if(src.getState() != AL_PLAYING)
+			if(src.getState() != AL_PLAYING && src.getState() != AL_PAUSED)
 				sourcesToDelete.push_back(src.getSrc());
 
 		sources.erase(std::remove_if(
 			sources.begin(),
 			sources.end(),
 			[](SoundSource &src) {
-				return src.getState() != AL_PLAYING;
+				return src.getState() != AL_PLAYING && src.getState() != AL_PAUSED;
 			}
 		), sources.end());
 
 		alDeleteSources(sourcesToDelete.size(), &sourcesToDelete[0]);
+	}
+
+	void SoundSourceManager::pauseAll()
+	{
+		for(auto &source : sources)
+			source.pause();
+	}
+
+	void SoundSourceManager::unpauseAll()
+	{
+		for(auto &source : sources)
+			source.play();
+	}
+
+	void SoundSourceManager::stopAll()
+	{
+		for(auto &source : sources)
+			source.stop();
+	}
+
+	void updateListener(
+		const glm::vec3 &listenerpos,
+		const glm::vec3 &direction
+	) {
+		alListener3f(AL_POSITION, listenerpos.x, listenerpos.y, listenerpos.z);
+
+		float orientation[6] = {
+			direction.x,
+			direction.y,
+			direction.z,
+			0.0f,
+			1.0f,
+			0.0f,
+		};
+		alListenerfv(AL_ORIENTATION, orientation);
+	}
+
+	void resetListener()
+	{
+		alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
+		alListener3f(AL_VELOCITY, 0.0f, 0.0f, 0.0f);
+		float orientation[6] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
+		alListenerfv(AL_ORIENTATION, orientation);
 	}
 }

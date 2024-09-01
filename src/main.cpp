@@ -60,6 +60,7 @@ int main(int argc, char *argv[])
 			default:
 				break;
 		}
+		audio::resetListener();
 	}
 
 	saveHighScores(highScoreTablePath, highscores);

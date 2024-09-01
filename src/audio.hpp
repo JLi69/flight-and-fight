@@ -3,6 +3,7 @@
 #include <string>
 #include <AL/al.h>
 #include <AL/alc.h>
+#include <glm/glm.hpp>
 #include "importfile.hpp"
 
 namespace audio {
@@ -51,8 +52,16 @@ namespace audio {
 	public:
 		SoundSource(ALuint bufferToPlay);
 		SoundSource(ALuint bufferToPlay, float gain, float pitch);
+		SoundSource(
+			ALuint bufferToPlay,
+			float gain,
+			float pitch,
+			const glm::vec3 &position
+		);
 		ALint getState();
 		void play();
+		void pause();
+		void stop();
 		ALuint getSrc();
 	};
 
@@ -62,9 +71,21 @@ namespace audio {
 	public:
 		static SoundSourceManager* get();
 		void play(const Sfx &sfx);
+		void play(const Sfx &sfx, const glm::vec3 &position);
 		void playid(const std::string &id);
+		void playid(const std::string &id, const glm::vec3 &position);
+		void playid(const std::string &id, const glm::vec3 &position, float gainfactor);
+		void pauseAll();
+		void unpauseAll();
+		void stopAll();
 		void clearSources();
 	};
+
+	void updateListener(
+		const glm::vec3 &listenerpos,
+		const glm::vec3 &direction
+	);
+	void resetListener();
 }
 
 #define SFX audio::SfxManager::get()

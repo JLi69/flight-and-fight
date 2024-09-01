@@ -18,6 +18,15 @@ Dependencies:
 
 [fast_obj](https://github.com/thisistherk/fast_obj) (included)
 
+[dr_wav](https://github.com/mackron/dr_libs/blob/master/dr_wav.h) (included)
+
+[openal-soft](https://github.com/kcat/openal-soft)
+
+openal-soft, GLFW, and glm are provided as submodules that you can clone using
+`git clone --recursive` and you can then manually build and install them yourself
+should you need them. If it's possible you can also install them through a
+package manager if they are available for your distro.
+
 Linux:
 
 ```

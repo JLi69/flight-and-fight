@@ -88,5 +88,5 @@ License: CC0
 (https://opengameart.org/content/impact)
 
 "shoot.wav" by KuraiWolf (https://opengameart.org/content/light-machine-gun)
-Modifications made: Cut audio and converted to wav file format
+Modifications made: Cut and sped up audio and converted to wav file format
 License: CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/)

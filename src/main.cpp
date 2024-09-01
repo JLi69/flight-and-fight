@@ -7,12 +7,14 @@
 #include "assets.hpp"
 #include "game.hpp"
 #include "hiscore.hpp"
+#include "audio.hpp"
 
 const char highScoreTablePath[] = "hiscores";
 
 int main(int argc, char *argv[])
 {
 	State* state = State::get();
+	audio::SoundDevice* device = audio::SoundDevice::get();
 
 	//Initialize glfw and glad, if any of this fails, kill the program
 	if(!glfwInit()) 
@@ -36,6 +38,7 @@ int main(int argc, char *argv[])
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	while(!glfwWindowShouldClose(state->getWindow())) {
+		SNDSRC->clearSources();
 		game::GameMode gamemode = game::mainMenu();
 		state->clearInputState();
 		glfwSetInputMode(state->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);

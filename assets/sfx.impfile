@@ -1,0 +1,7 @@
+# This is a list of sound effects to be imported
+# Sound effects have one variable: 'path', the path the sfx file (a .wav file)
+
+"click" {
+	"path" = "assets/sfx/click.wav";
+	"gain" = "4.0";
+}

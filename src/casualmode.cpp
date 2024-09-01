@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "app.hpp"
+#include "audio.hpp"
 
 namespace gobjs = gameobjects;
 
@@ -31,6 +32,9 @@ namespace game {
 		updateCamera(player);
 		while(!glfwWindowShouldClose(state->getWindow()) && !stop) {
 			float start = glfwGetTime();
+
+			//Clear sound effect sources
+			SNDSRC->clearSources();
 
 			nk_glfw3_new_frame(state->getNkGlfw());
 

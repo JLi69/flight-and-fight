@@ -2,6 +2,7 @@
 #include "assets.hpp"
 #include "plants.hpp"
 #include "app.hpp"
+#include "audio.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace game {
@@ -76,6 +77,8 @@ namespace game {
 		SHADERS->importFromFile("assets/shaders.impfile");	
 		//Fonts	
 		FONTS->importFromFile("assets/fonts.impfile");
+		//Audio
+		SFX->importFromFile("assets/sfx.impfile");
 	}
 
 	void generateChunks(

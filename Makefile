@@ -8,9 +8,11 @@ FLAGS=$(INCLUDE) -std=c++17 -O2
 LD_FLAGS=-lglfw3
 
 ifeq ($(OS), Windows_NT)
+	LD_FLAGS+=-lOpenAL32
 	LD_FLAGS+=-static-libgcc -static-libstdc++ -lopengl32 -lgdi32 -mwindows
 	OBJ+=flight-and-fight.res
 else
+	LD_FLAGS+=-lopenal
 	LD_FLAGS+=-lGL
 endif
 

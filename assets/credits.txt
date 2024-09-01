@@ -12,6 +12,8 @@ glad
 nuklear
 stb_image
 fast_obj
+openal-soft
+dr_wav
 
 Font used:
 ----------
@@ -55,7 +57,8 @@ used "metall010-new-tileable.png" for plane and blimp texture
 by p0ss
 License: GPL 2.0, GPL 3.0, or CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
 
-used explosion particle by kenney (https://opengameart.org/content/smoke-particle-assets)
+used explosion particle by Kenney (www.kenney.nl)
+(https://opengameart.org/content/smoke-particle-assets)
 License: CC0
 
 used "Weave_01-128x128.png" for part of balloon texture
@@ -63,3 +66,9 @@ License: CC0
 
 Consider all textures used to be distributed under the CC-BY-SA 3.0 license
 (https://creativecommons.org/licenses/by-sa/3.0/)
+
+Sound Effects Used:
+-------------------
+"click.wav" by Kenney (www.kenney.nl) from "51 UI Sound Effects"
+License: CC0
+(https://opengameart.org/content/51-ui-sound-effects-buttons-switches-and-clicks)

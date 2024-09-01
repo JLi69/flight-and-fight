@@ -1,6 +1,7 @@
 #include "app.hpp"
 #include "assets.hpp"
 #include "game.hpp"
+#include "audio.hpp"
 #include <fstream>
 
 const float BUTTON_SZ = 320.0f;
@@ -106,16 +107,20 @@ namespace gui {
 			nk_layout_row_push(ctx, padding);
 			nk_spacing(ctx, 1);
 			nk_layout_row_push(ctx, BUTTON_SZ);
-			if(nk_button_label(ctx, "Resume"))
+			if(nk_button_label(ctx, "Resume")) {
+				SNDSRC->playid("click");
 				action = "unpause";
+			}
 			nk_layout_row_end(ctx);
 
 			nk_layout_row_begin(ctx, NK_STATIC, 64.0f, 2);
 			nk_layout_row_push(ctx, padding);
 			nk_spacing(ctx, 1);
 			nk_layout_row_push(ctx, BUTTON_SZ);
-			if(nk_button_label(ctx, "Quit to main menu"))
+			if(nk_button_label(ctx, "Quit to main menu")) {
+				SNDSRC->playid("click");
 				action = "quit";
+			}
 			FONTS->popFont();
 			nk_layout_row_end(ctx);
 		}
@@ -209,26 +214,34 @@ namespace gui {
 			nk_layout_row_push(ctx, padding);
 			nk_spacing(ctx, 1);
 			nk_layout_row_push(ctx, BUTTON_SZ);
-			if(nk_button_label(ctx, "Fight Mode"))
+			if(nk_button_label(ctx, "Fight Mode")) {
+				SNDSRC->playid("click");
 				selected = game::FIGHT;
+			}
 
 			nk_layout_row_push(ctx, padding);
 			nk_spacing(ctx, 1);
 			nk_layout_row_push(ctx, BUTTON_SZ);
-			if(nk_button_label(ctx, "Casual Mode"))
+			if(nk_button_label(ctx, "Casual Mode")) {
+				SNDSRC->playid("click");
 				selected = game::CASUAL;
+			}
 
 			nk_layout_row_push(ctx, padding);
 			nk_spacing(ctx, 1);
 			nk_layout_row_push(ctx, BUTTON_SZ);
-			if(nk_button_label(ctx, "Credits"))
+			if(nk_button_label(ctx, "Credits")) {	
+				SNDSRC->playid("click");
 				selected = game::CREDITS;
+			}
 
 			nk_layout_row_push(ctx, padding);
 			nk_spacing(ctx, 1);
 			nk_layout_row_push(ctx, BUTTON_SZ);
-			if(nk_button_label(ctx, "High Scores"))
+			if(nk_button_label(ctx, "High Scores")) {
+				SNDSRC->playid("click");
 				selected = game::HIGH_SCORE_SCREEN;
+			}
 			
 			nk_layout_row_push(ctx, padding);
 			nk_spacing(ctx, 1);
@@ -278,8 +291,10 @@ namespace gui {
 
 			nk_layout_row_begin(ctx, NK_STATIC, 32.0f, 1);
 			nk_layout_row_push(ctx, 120);
-			if(nk_button_label(ctx, "Close"))
+			if(nk_button_label(ctx, "Close")) {
+				SNDSRC->playid("click");
 				close = true;
+			}
 			nk_layout_row_end(ctx);
 			FONTS->popFont();
 		}
@@ -335,8 +350,10 @@ namespace gui {
 			nk_layout_row_push(ctx, w / 2 - BUTTON_SZ / 2);
 			nk_spacing(ctx, 1);
 			nk_layout_row_push(ctx, BUTTON_SZ);
-			if(nk_button_label(ctx, "Main Menu"))
+			if(nk_button_label(ctx, "Main Menu")) {
+				SNDSRC->playid("click");
 				close = true;
+			}
 			nk_layout_row_end(ctx);
 
 			FONTS->popFont();

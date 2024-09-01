@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "app.hpp"
+#include "audio.hpp"
 
 constexpr unsigned int DEFAULT_HEALTH = 50;
 constexpr float DAMAGE_COOLDOWN = 0.2f;
@@ -31,6 +32,10 @@ namespace gameobjects {
 			health = 0;
 		else
 			health -= amount;
+
+		if(health > 0)
+			SNDSRC->playid("hit", transform.position);
+
 		damagecooldown = DAMAGE_COOLDOWN;
 		damagetimer = DAMAGE_TIMER;
 	}

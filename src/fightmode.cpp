@@ -143,6 +143,7 @@ namespace game {
 				if(player.shoottimer <= 0.0f && 
 				   (keyIsHeld(spacebar) || keyIsHeld(leftbutton)) &&
 				   !player.crashed) {
+					SNDSRC->playid("shoot", player.transform.position);
 					player.resetShootTimer();
 					bullets.push_back(gobjs::Bullet(player, glm::vec3(-8.5f, -0.75f, 8.5f)));
 					bullets.push_back(gobjs::Bullet(player, glm::vec3(8.5f, -0.75f, 8.5f)));

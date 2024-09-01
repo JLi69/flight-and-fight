@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "audio.hpp"
 
 namespace gobjs = gameobjects;
 
@@ -45,6 +46,7 @@ namespace gameobjects {
 			values.at("rotationdirection") > 0.0f &&
 			dist < CHUNK_SZ * 12.0f &&
 			!player.crashed) {
+			SNDSRC->playid("shoot", transform.position, 2.0f);
 			values.at("shoottimer") = SHOOT_COOLDOWN;
 			bullets.push_back(gobjs::Bullet(transform, speed, glm::vec3(-8.5f, -0.75f, 8.5f)));
 			bullets.push_back(gobjs::Bullet(transform, speed, glm::vec3(8.5f, -0.75f, 8.5f)));

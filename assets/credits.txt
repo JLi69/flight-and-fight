@@ -35,6 +35,7 @@ waterdudv.png: https://www.dropbox.com/sh/lwvm5i223cwd5ue/AADedi_y3XTQ_j2aD2oH4D
 
 tree_bark.png - copyright Blender Foundation | apricot.blender.org 
 License: CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
+(https://opengameart.org/content/tree-bark-texture)
 Used as bark texture for tree textures
 
 shrub2.png - by "bart" (https://opengameart.org/content/3-tiling-shrub-textures) 
@@ -45,14 +46,15 @@ also used the shape of pine_leaves.png from quaternius to create the shape of
 the pine tree branches
 (https://opengameart.org/content/lowpoly-textured-trees-pineleavespng)
 
-used leaves texture from https://opengameart.org/node/10501
+used leaves texture from https://opengameart.org/node/10501 (Cutout plant textures 1)
 by lauris71
 licensed under CC-BY-SA 3.0 or GPL 3.0 
 used part of the leaves texture for leaves in "treetexture.png"
 also modified to be more "green"
 (https://creativecommons.org/licenses/by-sa/3.0/)
 
-used "metall010-new-tileable.png" for plane and blimp texture 
+used "metall010-new-tileable.png" from "rusted metal texture pack" 
+for plane and blimp texture 
 (https://opengameart.org/node/9070)
 by p0ss
 License: GPL 2.0, GPL 3.0, or CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
@@ -64,8 +66,8 @@ License: CC0
 used "Weave_01-128x128.png" for part of balloon texture
 License: CC0
 
-Consider all textures used to be distributed under the CC-BY-SA 3.0 license
-(https://creativecommons.org/licenses/by-sa/3.0/)
+Consider all textures used to be distributed under the CC-BY-SA 4.0 license
+(https://creativecommons.org/licenses/by-sa/4.0/)
 
 Sound Effects Used:
 -------------------
@@ -75,6 +77,16 @@ License: CC0
 
 "explosion.wav" by Marcelo Fernandez (http://www.marcelofernandezmusic.com)
 Taken from "Single and Multi Explosion"  
-Modifications made: Cut out multi-explosion and sped up audio
+Modifications made: Cut out multi-explosion and sped up audio and converted to
+wav file format
 License: CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
 (https://opengameart.org/content/single-and-multi-explosion)
+
+"hit.wav"
+from  Impact by Iwan 'qubodup' Gabovitch http://opengameart.org/users/qubodup
+License: CC0
+(https://opengameart.org/content/impact)
+
+"shoot.wav" by KuraiWolf (https://opengameart.org/content/light-machine-gun)
+Modifications made: Cut audio and converted to wav file format
+License: CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/)

@@ -12,6 +12,9 @@ ifeq ($(OS), Windows_NT)
 	LD_FLAGS+=-static-libgcc -static-libstdc++ -lopengl32 -lgdi32 -mwindows
 	OBJ+=flight-and-fight.res
 else
+	# Comment out the line below if you want to build a copy to distribute
+	# that has the binary search in the system path only for OpenAL
+	LD_FLAGS+=-Wl,-rpath='$$ORIGIN'
 	LD_FLAGS+=-lopenal
 	LD_FLAGS+=-lGL
 endif

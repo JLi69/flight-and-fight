@@ -19,74 +19,117 @@ Font used:
 ----------
 "Armata" - (c) Sorkin Type Co
 (Licensed under SIL Open Font License)
+Google Fonts: https://fonts.google.com/specimen/Armata
 
-Textures used:
---------------
-used in terraintextures.png:
-grass.png: https://opengameart.org/content/seamless-grass-texture
-sand.png: https://opengameart.org/content/seamless-beach-sand
-stone.png: https://opengameart.org/node/15623
-snow.png: https://opengameart.org/content/seamless-snow-texture-0
+Textures used in 'terraintextures.png':
+---------------------------------------
 
-used in watermaps.png:
-waternormals.png: https://watersimulation.tumblr.com/post/115928250077/scrolling-normal-maps
-waterdudv.png: https://www.dropbox.com/sh/lwvm5i223cwd5ue/AADedi_y3XTQ_j2aD2oH4DLKa?dl=0
-(linked from this wonderful video by ThinMatrix: https://www.youtube.com/watch?v=7T5o4vZXAvI)
+Title: Seamless Grass Texture (grass.png)
+Author: athile
+URL: https://opengameart.org/content/seamless-grass-texture
+License: CC0
+Notes: modified to be 'more green'
 
-tree_bark.png - copyright Blender Foundation | apricot.blender.org 
-License: CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
-(https://opengameart.org/content/tree-bark-texture)
-Used as bark texture for tree textures
+Title: Seamless Pattern Pack - beach_sand.png (sand.png)
+Author: n4
+URL: https://opengameart.org/content/seamless-pattern-pack-beachsandpng
+License: CC0
+Notes: cropped for use in 'terraintextures.png'
 
-shrub2.png - by "bart" (https://opengameart.org/content/3-tiling-shrub-textures) 
-used as texture for "pinetreetexture.png"
-License: CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
-
-also used the shape of pine_leaves.png from quaternius to create the shape of
-the pine tree branches
-(https://opengameart.org/content/lowpoly-textured-trees-pineleavespng)
-
-used leaves texture from https://opengameart.org/node/10501 (Cutout plant textures 1)
-by lauris71
-licensed under CC-BY-SA 3.0 or GPL 3.0 
-used part of the leaves texture for leaves in "treetexture.png"
-also modified to be more "green"
-(https://creativecommons.org/licenses/by-sa/3.0/)
-
-used "metall010-new-tileable.png" from "rusted metal texture pack" 
-for plane and blimp texture 
-(https://opengameart.org/node/9070)
-by p0ss
-License: GPL 2.0, GPL 3.0, or CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
-
-used explosion particle by Kenney (www.kenney.nl)
-(https://opengameart.org/content/smoke-particle-assets)
+Title: weathered rock pack - rock_weathered_10.png (stone.png)
+Author: para
+URL: https://opengameart.org/node/15623
 License: CC0
 
-used "Weave_01-128x128.png" for part of balloon texture
+Title: Seamless Snow Texture (snow.png)
+Author: GGBot
+URL: https://opengameart.org/content/seamless-snow-texture-0
 License: CC0
+
+Textures used in 'watermaps.png':
+---------------------------------
+
+Title: waterDUDV.png (waterdudv.png)
+Author: ThinMatrix
+URL: https://www.dropbox.com/sh/lwvm5i223cwd5ue/AADedi_y3XTQ_j2aD2oH4DLKa?dl=0
+Notes: linked from this wonderful video by ThinMatrix: https://www.youtube.com/watch?v=7T5o4vZXAvI
+
+Title: waternormals.png
+Author: Ludwig Pethrus Engström (watersimulation)
+URL: https://watersimulation.tumblr.com/post/115928250077/scrolling-normal-maps
+
+Other Third Party textures used:
+--------------------------------
+
+Title: Tree Bark Texture
+Author: Lamoot | Blender Foundation | (c) apricot.blender.org
+URL: https://opengameart.org/content/tree-bark-texture
+License: CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
+Notes: Used as texture for pinetreetexture.png and treetexture.png
+
+Title: 3 Tiling Shrub Textures
+Author: bart
+URL: https://opengameart.org/content/3-tiling-shrub-textures
+License: CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
+Notes: Used as texture pinetreetexture.png
+
+Title: LowPoly Textured Trees - Pine_Leaves.png
+Author: quaternius
+URL: https://opengameart.org/content/lowpoly-textured-trees-pineleavespng
+License: CC0
+Notes: Used as shape of branch for pinetreetexutre.png
+
+Title: Cutout plant textures 1 - Quercus_A_1024.png
+Author: lauris71
+URL: https://opengameart.org/node/10501
+License: CC-BY-SA 3.0 or GPL 3.0 (https://creativecommons.org/licenses/by-sa/3.0/)
+Notes: Used part of leaves texture for treetextures.png, also modified leaves
+texture to be 'more green'
+
+Title: rusted metal texture pack - metall010-new-tileable.png
+Author: p0ss
+URL: https://opengameart.org/node/9070
+License: GPL 2.0 or GPL 3.0 or CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
+Notes: used "metall010-new-tileable.png" from "rusted metal texture pack" for 
+plane (planetexture.png, enemyplanetexture.png) and blimp (blimptexture.png) texture
+
+Title: Smoke particle assets (explosionparticle.png)
+Author: Kenney (https://www.kenney.nl)
+URL: https://opengameart.org/content/smoke-particle-assets
+License: CC0
+
+Title: Tiny Texture Pack 3
+Author: Screaming Brain Studios
+URL: https://opengameart.org/content/tiny-texture-pack-3
+License: CC0
+Notes: used "Weave_01-128x128.png" for part of balloon texture
 
 Consider all textures used to be distributed under the CC-BY-SA 4.0 license
 (https://creativecommons.org/licenses/by-sa/4.0/)
 
 Sound Effects Used:
 -------------------
-"click.wav" by Kenney (www.kenney.nl) from "51 UI Sound Effects"
-License: CC0
-(https://opengameart.org/content/51-ui-sound-effects-buttons-switches-and-clicks)
 
-"explosion.wav" by Marcelo Fernandez (http://www.marcelofernandezmusic.com)
-Taken from "Single and Multi Explosion"  
-Modifications made: Cut out multi-explosion and sped up audio and converted to
-wav file format
+File: click.wav 
+Author: Kenney (www.kenney.nl)
+URL: https://opengameart.org/content/51-ui-sound-effects-buttons-switches-and-clicks
+License: CC0
+Notes: from "51 UI Sound Effects"
+
+File: explosion.wav
+Author: Marcelo Fernandez (http://www.marcelofernandezmusic.com)
+URL: https://opengameart.org/content/single-and-multi-explosion
 License: CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
-(https://opengameart.org/content/single-and-multi-explosion)
+Notes: Taken from "Single and Multi Explosion", Modifications made: Cut out 
+multi-explosion and sped up audio and converted to wav file format
 
-"hit.wav"
-from  Impact by Iwan 'qubodup' Gabovitch http://opengameart.org/users/qubodup
+File: hit.wav
+Author: Iwan 'qubodup' Gabovitch (http://opengameart.org/users/qubodup)
+URL: https://opengameart.org/content/impact
 License: CC0
-(https://opengameart.org/content/impact)
 
-"shoot.wav" by KuraiWolf (https://opengameart.org/content/light-machine-gun)
-Modifications made: Cut and sped up audio and converted to wav file format
+File: shoot.wav
+Author: KuraiWolf
+URL: https://opengameart.org/content/light-machine-gun
 License: CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+Notes: Modifications made: Cut and sped up audio and converted to wav file format

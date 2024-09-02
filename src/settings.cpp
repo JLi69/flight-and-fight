@@ -11,8 +11,8 @@ const char settingsFileComment[] =
 GlobalSettings::GlobalSettings()
 {
 	//Inititalize default settings
-	volume = 1.0f;
-	displayCrosshair = true;
+	values.volume = 1.0f;
+	values.canDisplayCrosshair = true;
 }
 
 void GlobalSettings::loadFromFile(const char *path)
@@ -25,15 +25,15 @@ void GlobalSettings::loadFromFile(const char *path)
 	impfile::Entry settings = entries.at(0);
 	
 	if(settings.getVar("display_crosshair") == "false")
-		displayCrosshair = false;
+		values.canDisplayCrosshair = false;
 	else
-		displayCrosshair = true;
+		values.canDisplayCrosshair = true;
 
 	std::string volumeStr = settings.getVar("volume");
 	if(volumeStr.empty())
-		volume = 1.0f;
+		values.volume = 1.0f;
 	else
-		volume = atof(volumeStr.c_str());
+		values.volume = atof(volumeStr.c_str());
 }
 
 void GlobalSettings::save(const char *path)
@@ -50,8 +50,8 @@ void GlobalSettings::save(const char *path)
 
 	impfile::Entry entry;
 	entry.name = "settings";
-	impfile::addBoolean(entry, "display_cursor", displayCrosshair);
-	impfile::addFloat(entry, "volume", volume);
+	impfile::addBoolean(entry, "display_cursor", values.canDisplayCrosshair);
+	impfile::addFloat(entry, "volume", values.volume);
 	std::string filecontents = impfile::entryToString(entry);
 
 	settingsfile << filecontents << '\n';

@@ -23,7 +23,7 @@ namespace game {
 		lcg.seed(randSeed);
 		bool paused = false;
 		bool stop = false;
-		bool displaycrosshair = true;
+		bool displaycrosshair = GlobalSettings::get()->values.canDisplayCrosshair;
 		unsigned int score = 0;
 		//Timers
 		TimerManager timers;

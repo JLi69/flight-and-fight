@@ -2,6 +2,7 @@
 
 #include "infworld.hpp"
 #include "hiscore.hpp"
+#include "settings.hpp"
 
 //Constants
 constexpr float SPEED = 48.0f;
@@ -24,7 +25,14 @@ namespace game {
 		FIGHT,
 		CREDITS,
 		HIGH_SCORE_SCREEN,
+		SETTINGS,
 		NONE_SELECTED,
+	};
+
+	enum SettingsScreenAction {
+		SAVE_SETTINGS,
+		CLEAR_SETTINGS,
+		SETTINGS_NONE_SELECTED,
 	};
 
 	struct Transform {
@@ -82,8 +90,9 @@ namespace game {
 	//Returns the game mode selected
 	game::GameMode mainMenu();
 	//High Score Table screen
-	//returns true if the user exited the screen
 	void highScoreTableScreen(const HighScoreTable &highscores);
+	//Settings screen	
+	void settingsScreen();
 }
 
 namespace gameobjects {
@@ -298,4 +307,7 @@ namespace gui {
 	bool displayCredits(const std::vector<std::string> &credits);
 	//Display High Scores
 	bool displayHighScores(const HighScoreTable &highscores);
+	//Display settings menu
+	//returns the action taken by the user
+	game::SettingsScreenAction displaySettingsMenu(SettingsValues &values);
 }

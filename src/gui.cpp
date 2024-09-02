@@ -243,6 +243,14 @@ namespace gui {
 				SNDSRC->playid("click");
 				selected = game::HIGH_SCORE_SCREEN;
 			}
+
+			nk_layout_row_push(ctx, padding);
+			nk_spacing(ctx, 1);
+			nk_layout_row_push(ctx, BUTTON_SZ);
+			if(nk_button_label(ctx, "Settings")) {
+				SNDSRC->playid("click");
+				selected = game::SETTINGS;
+			}
 			
 			nk_layout_row_push(ctx, padding);
 			nk_spacing(ctx, 1);
@@ -368,6 +376,95 @@ namespace gui {
 		nk_style_pop_style_item(ctx);
 
 		return close;
+	}
+
+	game::SettingsScreenAction displaySettingsMenu(SettingsValues &values)
+	{
+		game::SettingsScreenAction action = game::SETTINGS_NONE_SELECTED;
+
+		State* state = State::get();
+		nk_context* ctx = state->getNkContext();
+	
+		int w, h;
+		glfwGetWindowSize(state->getWindow(), &w, &h);
+		nk_style* s = &ctx->style;	
+		s->text.color = nk_rgb(80, 160, 235);
+		s->button.border = 0.0f;
+		s->button.text_hover = nk_rgb(255, 255, 255);
+		s->button.text_normal = nk_rgb(255, 255, 255);
+		s->button.text_active = nk_rgb(255, 255, 255);
+		nk_style_push_style_item(ctx, &s->window.fixed_background, nk_style_item_color(nk_rgba(0, 0, 0, 0)));
+		nk_style_push_style_item(ctx, &s->button.hover, nk_style_item_color(nk_rgba(80, 160, 255, 255)));
+		nk_style_push_style_item(ctx, &s->button.normal, nk_style_item_color(nk_rgba(100, 180, 255, 255)));	
+		nk_style_push_style_item(ctx, &s->button.active, nk_style_item_color(nk_rgba(80, 160, 255, 255)));
+		if(nk_begin(ctx, "mainmenu", nk_rect(0, 0, w, h), NK_WINDOW_NO_SCROLLBAR)) {	
+			nk_layout_row_begin(ctx, NK_STATIC, 32.0f, 1);
+			nk_spacing(ctx, 1);
+			nk_layout_row_end(ctx);
+
+			float padding = 48.0f;	
+			FONTS->pushFont("armata_large");
+			nk_layout_row_begin(ctx, NK_STATIC, 64.0f, 2);
+			nk_layout_row_push(ctx, padding);
+			nk_spacing(ctx, 1);
+			nk_layout_row_push(ctx, w - padding);
+			nk_label(ctx, "Settings", NK_TEXT_LEFT);
+			nk_layout_row_end(ctx);
+			FONTS->popFont();
+
+			nk_layout_row_dynamic(ctx, 16.0f, 1);
+			nk_spacing(ctx, 1);
+
+			FONTS->pushFont("armata_medium");
+
+			//Display crosshair setting
+			nk_layout_row_begin(ctx, NK_STATIC, 64.0f, 3);
+			nk_layout_row_push(ctx, padding);
+			nk_spacing(ctx, 1);
+			nk_layout_row_push(ctx, 240.0f);
+			nk_label(ctx, "Display Crosshair ", NK_TEXT_LEFT);
+			nk_checkbox_label(ctx, "", (nk_bool*)(&values.canDisplayCrosshair));
+
+			//Volume slider
+			nk_layout_row_begin(ctx, NK_STATIC, 64.0f, 3);
+			nk_layout_row_push(ctx, padding);
+			nk_spacing(ctx, 1);
+			nk_layout_row_push(ctx, 128.0f);
+			nk_label(ctx, "Volume: ", NK_TEXT_LEFT);
+			nk_layout_row_push(ctx, 512.0f);
+			nk_slider_float(ctx, 0.0f, &values.volume, 1.0f, 0.01f);
+			
+			nk_layout_row_begin(ctx, NK_STATIC, 64.0f, 1);
+			nk_spacing(ctx, 1);	
+
+			//Exit to main menu
+			nk_layout_row_begin(ctx, NK_STATIC, 64.0f, 4);	
+			nk_layout_row_push(ctx, padding);
+			nk_spacing(ctx, 1);
+			nk_layout_row_push(ctx, BUTTON_SZ);
+			if(nk_button_label(ctx, "Save Changes")) {
+				action = game::SAVE_SETTINGS;
+				SNDSRC->playid("click");
+			}
+			nk_layout_row_push(ctx, padding);
+			nk_spacing(ctx, 1);	
+			nk_layout_row_push(ctx, BUTTON_SZ);
+			if(nk_button_label(ctx, "Discard Changes")) {
+				action = game::CLEAR_SETTINGS;
+				SNDSRC->playid("click");
+			}
+			
+			nk_layout_row_end(ctx);
+			
+			FONTS->popFont();
+		}
+		nk_end(ctx);
+		nk_style_pop_style_item(ctx);
+		nk_style_pop_style_item(ctx);
+		nk_style_pop_style_item(ctx);
+		nk_style_pop_style_item(ctx);
+
+		return action;
 	}
 
 	std::vector<std::string> readTextFile(const char *path)

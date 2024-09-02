@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
 	audio::SoundDevice* device = audio::SoundDevice::get();
 	GlobalSettings* settings = GlobalSettings::get();
 	settings->loadFromFile("settings.impfile");
+	alListenerf(AL_GAIN, settings->values.volume);
 
 	//Initialize glfw and glad, if any of this fails, kill the program
 	if(!glfwInit()) 
@@ -31,7 +32,6 @@ int main(int argc, char *argv[])
 
 	//High score table
 	HighScoreTable highscores = loadHighScores(highScoreTablePath);
-
 	//Set OpenGL state
 	glClearColor(0.5f, 0.8f, 1.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
@@ -49,6 +49,9 @@ int main(int argc, char *argv[])
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		unsigned int score;	
 		switch(gamemode) {
+			case game::SETTINGS:
+				game::settingsScreen();
+				break;
 			case game::HIGH_SCORE_SCREEN:
 				game::highScoreTableScreen(highscores);
 				break;
@@ -59,7 +62,7 @@ int main(int argc, char *argv[])
 				score = game::fightModeGameLoop();
 				addHighScore(highscores, score);
 				saveHighScores(highScoreTablePath, highscores);
-				break;
+				break;	
 			default:
 				break;
 		}

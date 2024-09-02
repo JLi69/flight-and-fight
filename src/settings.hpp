@@ -8,12 +8,16 @@
 
 const char settingsPath[] = "settings.impfile";
 
+struct SettingsValues {
+	//From 0.0 to 1.0
+	float volume;
+	bool canDisplayCrosshair;
+};
+
 class GlobalSettings {
 	GlobalSettings();
 public:
-	//From 0.0 to 1.0
-	float volume;
-	bool displayCrosshair;
+	SettingsValues values;
 	void loadFromFile(const char *path);
 	void save(const char *path);
 	static GlobalSettings* get();

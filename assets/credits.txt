@@ -132,4 +132,4 @@ File: shoot.wav
 Author: KuraiWolf
 URL: https://opengameart.org/content/light-machine-gun
 License: CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
-Notes: Modifications made: Cut and sped up audio and converted to wav file format
+Notes: Modifications made: Cut audio and converted to wav file format

@@ -389,14 +389,27 @@ namespace gui {
 		glfwGetWindowSize(state->getWindow(), &w, &h);
 		nk_style* s = &ctx->style;	
 		s->text.color = nk_rgb(80, 160, 235);
+		//Button style
 		s->button.border = 0.0f;
 		s->button.text_hover = nk_rgb(255, 255, 255);
 		s->button.text_normal = nk_rgb(255, 255, 255);
 		s->button.text_active = nk_rgb(255, 255, 255);
+		//Slider style
+		s->slider.bar_normal = nk_rgb(100, 180, 255);
+		s->slider.bar_hover = nk_rgb(80, 160, 255);
+		s->slider.bar_active = nk_rgb(80, 160, 255);
+		s->slider.bar_filled = nk_rgb(0, 80, 255);
+		nk_style_push_style_item(ctx, &s->option.normal, nk_style_item_color(nk_rgb(80, 180, 255)));
+		nk_style_push_style_item(ctx, &s->option.hover, nk_style_item_color(nk_rgb(80, 160, 255)));
+		nk_style_push_style_item(ctx, &s->option.cursor_normal, nk_style_item_color(nk_rgb(0, 80, 255)));
+		nk_style_push_style_item(ctx, &s->option.cursor_hover, nk_style_item_color(nk_rgb(0, 60, 255)));
+		nk_style_push_style_item(ctx, &s->slider.cursor_normal, nk_style_item_color(nk_rgb(0, 80, 255)));
+		nk_style_push_style_item(ctx, &s->slider.cursor_hover, nk_style_item_color(nk_rgb(0, 80, 255)));
+		nk_style_push_style_item(ctx, &s->slider.cursor_active, nk_style_item_color(nk_rgb(0, 80, 255)));
 		nk_style_push_style_item(ctx, &s->window.fixed_background, nk_style_item_color(nk_rgba(0, 0, 0, 0)));
-		nk_style_push_style_item(ctx, &s->button.hover, nk_style_item_color(nk_rgba(80, 160, 255, 255)));
-		nk_style_push_style_item(ctx, &s->button.normal, nk_style_item_color(nk_rgba(100, 180, 255, 255)));	
-		nk_style_push_style_item(ctx, &s->button.active, nk_style_item_color(nk_rgba(80, 160, 255, 255)));
+		nk_style_push_style_item(ctx, &s->button.hover, nk_style_item_color(nk_rgb(80, 160, 255)));
+		nk_style_push_style_item(ctx, &s->button.normal, nk_style_item_color(nk_rgb(100, 180, 255)));	
+		nk_style_push_style_item(ctx, &s->button.active, nk_style_item_color(nk_rgb(80, 160, 255)));
 		if(nk_begin(ctx, "mainmenu", nk_rect(0, 0, w, h), NK_WINDOW_NO_SCROLLBAR)) {	
 			nk_layout_row_begin(ctx, NK_STATIC, 32.0f, 1);
 			nk_spacing(ctx, 1);
@@ -419,26 +432,31 @@ namespace gui {
 
 			//Display crosshair setting
 			nk_layout_row_begin(ctx, NK_STATIC, 64.0f, 3);
+
 			nk_layout_row_push(ctx, padding);
 			nk_spacing(ctx, 1);
 			nk_layout_row_push(ctx, 240.0f);
-			nk_label(ctx, "Display Crosshair ", NK_TEXT_LEFT);
-			nk_checkbox_label(ctx, "", (nk_bool*)(&values.canDisplayCrosshair));
+			nk_label(ctx, "Display Crosshair", NK_TEXT_LEFT);
+			nk_radio_label(ctx, "", (nk_bool*)&values.canDisplayCrosshair);
 
 			//Volume slider
-			nk_layout_row_begin(ctx, NK_STATIC, 64.0f, 3);
 			nk_layout_row_push(ctx, padding);
 			nk_spacing(ctx, 1);
-			nk_layout_row_push(ctx, 128.0f);
-			nk_label(ctx, "Volume: ", NK_TEXT_LEFT);
+			nk_layout_row_push(ctx, 100.0f);
+			nk_label(ctx, "Volume", NK_TEXT_LEFT);
 			nk_layout_row_push(ctx, 512.0f);
 			nk_slider_float(ctx, 0.0f, &values.volume, 1.0f, 0.01f);
-			
-			nk_layout_row_begin(ctx, NK_STATIC, 64.0f, 1);
-			nk_spacing(ctx, 1);	
+
+			nk_layout_row_end(ctx);
+
+			//Spacing
+			float space = std::max(h / 2.0f - 64.0f * 3.0f - 32.0f, 32.0f); 
+			nk_layout_row_begin(ctx, NK_STATIC, space, 1);
+			nk_spacing(ctx, 1);
+			nk_layout_row_end(ctx);
 
 			//Exit to main menu
-			nk_layout_row_begin(ctx, NK_STATIC, 64.0f, 4);	
+			nk_layout_row_begin(ctx, NK_STATIC, 64.0f, 4);
 			nk_layout_row_push(ctx, padding);
 			nk_spacing(ctx, 1);
 			nk_layout_row_push(ctx, BUTTON_SZ);
@@ -452,13 +470,19 @@ namespace gui {
 			if(nk_button_label(ctx, "Discard Changes")) {
 				action = game::CLEAR_SETTINGS;
 				SNDSRC->playid("click");
-			}
-			
+			}	
 			nk_layout_row_end(ctx);
 			
 			FONTS->popFont();
 		}
 		nk_end(ctx);
+		nk_style_pop_style_item(ctx);
+		nk_style_pop_style_item(ctx);
+		nk_style_pop_style_item(ctx);
+		nk_style_pop_style_item(ctx);
+		nk_style_pop_style_item(ctx);
+		nk_style_pop_style_item(ctx);
+		nk_style_pop_style_item(ctx);
 		nk_style_pop_style_item(ctx);
 		nk_style_pop_style_item(ctx);
 		nk_style_pop_style_item(ctx);

@@ -50,7 +50,7 @@ void GlobalSettings::save(const char *path)
 
 	impfile::Entry entry;
 	entry.name = "settings";
-	impfile::addBoolean(entry, "display_cursor", values.canDisplayCrosshair);
+	impfile::addBoolean(entry, "display_crosshair", values.canDisplayCrosshair);
 	impfile::addFloat(entry, "volume", values.volume);
 	std::string filecontents = impfile::entryToString(entry);
 

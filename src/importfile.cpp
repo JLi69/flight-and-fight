@@ -236,4 +236,49 @@ namespace impfile {
 		file.close();
 		return entries;
 	}
+
+	std::string entryToString(const Entry &entry) 
+	{
+		std::stringstream text;
+		text << "\"" << entry.name << "\" {\n";
+		for(const auto &var : entry.variables)
+			text << "\t\"" << var.first << "\" = \"" << var.second << "\";\n";
+		text << "}";
+		return text.str();
+	}
+
+	void writeComment(std::ofstream &file, const char *commentText) 
+	{
+		std::string text;
+		int index = 0;
+		while(commentText[index] != '\0') {
+			if(commentText[index] == '\n') {
+				file << "# " << text << '\n';
+				text.clear();
+				index++;
+				continue;
+			}
+			
+			text.push_back(commentText[index]);
+			index++;
+		}
+
+		if(!text.empty())
+			file << "# " << text << '\n';
+	}
+
+	void addBoolean(Entry &entry, const std::string &name, bool b)
+	{
+		if(b)
+			entry.variables.insert({ name, "true" });
+		else
+			entry.variables.insert({ name, "false" });
+	}
+
+	void addFloat(Entry &entry, const std::string &name, float f)
+	{
+		std::stringstream sstream;
+		sstream << f;
+		entry.variables.insert({ name, sstream.str() });
+	}
 }

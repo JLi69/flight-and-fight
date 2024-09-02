@@ -76,10 +76,32 @@ void test4()
 	assert(entries.empty());
 }
 
+void test5()
+{
+	impfile::Entry entry;
+	entry.name = "test";
+	entry.variables.insert({ "foo", "bar" });
+	entry.variables.insert({ "fizz", "buzz" });
+	std::string str = impfile::entryToString(entry);
+	str = impfile::stripWhitespace(str);
+	std::stringstream strstream(str);
+	
+	impfile::Entry entry2;
+	impfile::Result res = impfile::parseEntry(entry2, strstream);
+	res.output();
+	assert(!res.isError());
+	assert(entry2.name == entry.name);
+	for(const auto &var : entry.variables) {
+		assert(entry2.variables.count(var.first));
+		assert(entry2.variables.at(var.first) == var.second);
+	}
+}
+
 int main()
 {
 	TEST(test1());
 	TEST(test2());
 	TEST(test3());
 	TEST(test4());
+	TEST(test5());
 }

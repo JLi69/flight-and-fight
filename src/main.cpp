@@ -8,6 +8,7 @@
 #include "game.hpp"
 #include "hiscore.hpp"
 #include "audio.hpp"
+#include "settings.hpp"
 
 const char highScoreTablePath[] = "hiscores";
 
@@ -15,6 +16,8 @@ int main(int argc, char *argv[])
 {
 	State* state = State::get();
 	audio::SoundDevice* device = audio::SoundDevice::get();
+	GlobalSettings* settings = GlobalSettings::get();
+	settings->loadFromFile("settings.impfile");
 
 	//Initialize glfw and glad, if any of this fails, kill the program
 	if(!glfwInit()) 
@@ -63,6 +66,7 @@ int main(int argc, char *argv[])
 		audio::resetListener();
 	}
 
+	settings->save(settingsPath);
 	saveHighScores(highScoreTablePath, highscores);
 	glfwTerminate();
 }

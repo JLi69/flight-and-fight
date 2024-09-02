@@ -2,6 +2,7 @@
 #include "assets.hpp"
 #include "game.hpp"
 #include "audio.hpp"
+#include "settings.hpp"
 #include <fstream>
 
 const float BUTTON_SZ = 320.0f;
@@ -246,8 +247,10 @@ namespace gui {
 			nk_layout_row_push(ctx, padding);
 			nk_spacing(ctx, 1);
 			nk_layout_row_push(ctx, BUTTON_SZ);
-			if(nk_button_label(ctx, "Quit"))
+			if(nk_button_label(ctx, "Quit")) {
+				GlobalSettings::get()->save(settingsPath);
 				exit(0);
+			}
 			
 			nk_layout_row_end(ctx);
 			

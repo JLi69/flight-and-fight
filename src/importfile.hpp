@@ -59,4 +59,11 @@ namespace impfile {
 	Result parseEntry(Entry &entry, std::stringstream &stream);
 	
 	std::vector<Entry> parseFile(const char *path);
+	
+	//converts an entry into a string
+	std::string entryToString(const Entry &entry);
+	//Writes a comment to an impfile
+	void writeComment(std::ofstream &file, const char *commentText);
+	void addBoolean(Entry &entry, const std::string &name, bool b);
+	void addFloat(Entry &entry, const std::string &name, float f);
 }

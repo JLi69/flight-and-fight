@@ -104,6 +104,12 @@ URL: https://opengameart.org/content/tiny-texture-pack-3
 License: CC0
 Notes: used "Weave_01-128x128.png" for part of balloon texture
 
+Title: Sky Box - Sunny Day
+Author: Chad Wolfe (KIIRA)
+URL: https://opengameart.org/content/sky-box-sunny-day
+License: CC-BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
+Notes: used as skybox
+
 Consider all textures used to be distributed under the CC-BY-SA 4.0 license
 (https://creativecommons.org/licenses/by-sa/4.0/)
 
